@@ -3,7 +3,6 @@ import ChaireLayout from "@/Layouts/ChaireLayout";
 import GuestLayout from "@/Layouts/GuestLayout";
 import Login from "@/Pages/Login";
 import NotFoundPage from "@/Pages/NotFoundPage";
-import { Home } from "lucide-react";
 import { createBrowserRouter } from "react-router-dom";
 import BarberLayout from "@/Layouts/BarberLayout";
 import AdminDashboardLayout from "@/Layouts/Adminayout";
@@ -12,6 +11,7 @@ import ClientLayout from "@/Layouts/ClientLayout";
 import ClientDashboard from "@/components/Client/ClientDashboard";
 import ManageClients from "@/components/Admin/ManageClients";
 import ManageBarber from "@/components/Admin/ManageBarber";
+import Home from "@/Pages/Home";
 
 export const ROUTE_LOGIN = '/login'
 export const BARBER_DASHBOARD_ROUTE= '/barber/dashboard'
