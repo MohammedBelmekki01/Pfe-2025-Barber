@@ -11,11 +11,13 @@ import AdminDashboard from "@/components/Admin/AdminDashboard";
 import ClientLayout from "@/Layouts/ClientLayout";
 import ClientDashboard from "@/components/Client/ClientDashboard";
 import ManageClients from "@/components/Admin/ManageClients";
+import ManageBarber from "@/components/Admin/ManageBarber";
 
 export const ROUTE_LOGIN = '/login'
 export const BARBER_DASHBOARD_ROUTE= '/barber/dashboard'
 export const ADMIN_DASHBOARD_ROUTE = '/admin/dashboard'
 export const ADMIN_MANAGE_CLIENT_ROUTE = '/admin/manage-client'
+export const ADMIN_MANAGE_BARBERS_ROUTE = '/admin/manage-barber'
 export const client_DASHBOARD_ROUTE = '/client/dashboard'
 export const redirectToDashboard = (roleType : any) => {
             switch (roleType) {
@@ -76,6 +78,10 @@ export const router = createBrowserRouter([
                 path : ADMIN_MANAGE_CLIENT_ROUTE,
                 element : <ManageClients />
             },
+            {
+                path : ADMIN_MANAGE_BARBERS_ROUTE,
+                element : <ManageBarber />
+            }
         ]
     },
     {

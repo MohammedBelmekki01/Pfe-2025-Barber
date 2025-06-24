@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BarberController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\StudentController;
 use Illuminate\Http\Request;
@@ -23,11 +24,8 @@ Route::middleware(['auth:sanctum', 'ability:admin'])->prefix('admin')->group(sta
 
     Route::apiResources([
         'clients' => ClientController::class,
-        
+         'barbers' => BarberController::class
     ]);
-
-
-
 });
 
 Route::middleware(['auth:sanctum', 'ability:barber'])->prefix('barber')->group(static function () {

@@ -8,8 +8,9 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { toast } from "sonner"
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 
-import UpdateClient from "@/components/Admin/FormParentStudent/UpdateClient"
+
 import ClientApi from "@/Services/Api/ClientApi"
+import UpdateClient from "@/components/Admin/FormClient/UpdateClient"
 
 export type Client = {
     id: number

@@ -5,7 +5,7 @@ import {  UserApi } from "@/Services/Api/Barber/UserApi.js";
 import {  SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar.js";
 import { ROUTE_LOGIN } from "@/router";
 import { NavbarClient } from "./Base/NavbarClient";
-import { AppSidebar } from "@/components/Barber/app-sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
 import { Separator } from "@radix-ui/react-dropdown-menu";
 import { Footer } from "./Base/Footer";
 

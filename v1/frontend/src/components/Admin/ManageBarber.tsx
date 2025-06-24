@@ -5,9 +5,11 @@ import { ScrollArea, ScrollBar } from "../ui/scroll-area"
 
 import AdminClientList from "../data-table/client/AdminClientList"
 import CreateClient from "./FormClient/CreateClient"
+import CreateBarber from "./FormBarber/CreateBarber"
+import AdminBarberList from "../data-table/bareber/AdminBarberList"
 
 
-export default function ManageClients() {
+export default function ManageBarber() {
   const {user} = useUsercontext()
   return <>
     <div className="relative overflow-x-auto">
@@ -17,21 +19,21 @@ export default function ManageClients() {
             <div className="grid">
               <div className="col-span-3 lg:col-span-4">
                 <div className="h-full px-4 py-6 lg:px-8">
-                  <Tabs defaultValue="client_list" className="h-full space-y-6">
+                  <Tabs defaultValue="barber_list" className="h-full space-y-6">
                     <div className="space-between flex items-center">
                       <TabsList>
-                        <TabsTrigger value="client_list" className="relative">
-                          Client
+                        <TabsTrigger value="barber_list" className="relative">
+                          Barber
                         </TabsTrigger>
-                        <TabsTrigger value="add_client">Add new client</TabsTrigger>
+                        <TabsTrigger value="add_client">Add new barber</TabsTrigger>
                       </TabsList>
                     </div>
                     <TabsContent
-                      value="client_list"
+                      value="barber_list"
                       className="border-none p-0 outline-none"
                     >
                       <div className="flex items-center justify-between">
-                        <AdminClientList />
+                        <AdminBarberList />
                       </div>
                       <Separator className="my-4"/>
                       <div className="relative">
@@ -64,7 +66,7 @@ export default function ManageClients() {
                     <TabsContent
                       value="add_client">
                       <div className="space-y-1">
-                        <CreateClient />
+                        <CreateBarber />
                       </div>
                       <Separator className="my-4"/>
                     </TabsContent>

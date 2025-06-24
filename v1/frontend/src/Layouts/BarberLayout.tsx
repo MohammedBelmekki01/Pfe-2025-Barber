@@ -7,7 +7,7 @@ import { useUsercontext } from "@/context/UserContext"
 import { ROUTE_LOGIN } from "@/router"
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
 import { Separator } from "@/components/ui/separator"
-import { AppSidebar } from "@/components/Barber/app-sidebar"
+import { AppSidebar } from "@/components/app-sidebar"
 import { UserApi } from "@/Services/Api/Barber/UserApi"
 
 function BarberLayout() {

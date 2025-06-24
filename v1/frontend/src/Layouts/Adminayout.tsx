@@ -3,7 +3,7 @@ import {useEffect, useState,} from "react";
 import { useUsercontext } from "@/context/UserContext";
 import { ROUTE_LOGIN } from "@/router";
 import {  UserApi } from "@/Services/Api/Barber/UserApi";
-import { AppSidebar } from "@/components/Barber/app-sidebar";
+import { AppSidebar } from "@/components/app-sidebar";
 import { Footer } from "./Base/Footer";
 import { NavbarAdmin } from "./Base/NavbarAdmin";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";

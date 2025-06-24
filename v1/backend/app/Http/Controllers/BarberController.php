@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Barber;
 use App\Http\Requests\StoreBarberRequest;
 use App\Http\Requests\UpdateBarberRequest;
+use App\Http\Resources\BarberResource;
 
 class BarberController extends Controller
 {
@@ -13,7 +14,8 @@ class BarberController extends Controller
      */
     public function index()
     {
-        //
+                $barber = Barber::all();
+        return BarberResource::collection($barber);
     }
 
     /**
