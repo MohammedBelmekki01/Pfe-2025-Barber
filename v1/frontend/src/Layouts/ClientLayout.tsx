@@ -8,6 +8,7 @@ import { NavbarClient } from "./Base/NavbarClient";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Separator } from "@radix-ui/react-dropdown-menu";
 import { Footer } from "./Base/Footer";
+import { AppSideidebarClient } from "@/components/app-sidebarClient";
 
 export default function ClientLayout() {
     const navigate = useNavigate()
@@ -35,8 +36,8 @@ export default function ClientLayout() {
     return <>
                      <NavbarClient />
               {/* Sidebar Layout */}
-              <SidebarProvider>
-                <AppSidebar user={user} />
+              <SidebarProvider defaultOpen={false}>
+                <AppSideidebarClient user={user} />
                 <SidebarInset>
                   {/* Header with Sidebar Trigger */}
                   <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">

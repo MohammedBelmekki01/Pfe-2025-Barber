@@ -8,6 +8,7 @@ import { Footer } from "./Base/Footer";
 import { NavbarAdmin } from "./Base/NavbarAdmin";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { Separator } from "@radix-ui/react-dropdown-menu";
+import { AppSideidebarAdmin } from "@/components/app-sidebarAdmin";
 
 export default function AdminDashboardLayout() {
   const navigate = useNavigate()
@@ -39,8 +40,8 @@ export default function AdminDashboardLayout() {
   return <>
     <NavbarAdmin />
     {/* Sidebar Layout */}
-    <SidebarProvider>
-      <AppSidebar user={user} />
+    <SidebarProvider defaultOpen={false}>
+      <AppSideidebarAdmin user={user} />
       <SidebarInset>
         {/* Header with Sidebar Trigger */}
         <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">

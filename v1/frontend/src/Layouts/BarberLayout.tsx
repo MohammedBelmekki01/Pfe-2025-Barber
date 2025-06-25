@@ -9,6 +9,7 @@ import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/s
 import { Separator } from "@/components/ui/separator"
 import { AppSidebar } from "@/components/app-sidebar"
 import { UserApi } from "@/Services/Api/Barber/UserApi"
+import { AppSideidebarBarber } from "@/components/app-sidebarBarber"
 
 function BarberLayout() {
   type User = {
@@ -61,8 +62,8 @@ function BarberLayout() {
       {/* Your existing Navbar */}
       <NavbarBarber />
       {/* Sidebar Layout */}
-      <SidebarProvider>
-        <AppSidebar user={user} />
+      <SidebarProvider defaultOpen={false}>
+        <AppSideidebarBarber user={user} />
         <SidebarInset>
           {/* Header with Sidebar Trigger */}
           <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
