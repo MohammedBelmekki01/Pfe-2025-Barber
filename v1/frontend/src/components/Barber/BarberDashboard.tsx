@@ -107,13 +107,6 @@ const StatusBadge = ({ status }) => {
 
 // ✅ Main Component
 const BarberDashboard = () => {
-  const [darkMode, setDarkMode] = useState(() =>
-    document.documentElement.classList.contains("dark")
-  );
-
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", darkMode);
-  }, [darkMode]);
 
   const updateAppointmentStatus = (id, newStatus) => {
     console.log(`Updating appointment #${id} to ${newStatus}`);
@@ -136,9 +129,7 @@ const BarberDashboard = () => {
           </div>
         </div>
         <div className="flex items-center space-x-4">
-          <button onClick={() => setDarkMode(!darkMode)} className="p-2 bg-gray-200 dark:bg-gray-700 rounded-full hover:bg-gray-300 dark:hover:bg-gray-600">
-            {darkMode ? <Sun className="h-5 w-5 text-yellow-400" /> : <Moon className="h-5 w-5 text-gray-600" />}
-          </button>
+
           <Bell className="h-6 w-6 text-gray-400 dark:text-gray-300" />
           <Settings className="h-6 w-6 text-gray-400 dark:text-gray-300" />
         </div>

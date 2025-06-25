@@ -18,9 +18,7 @@ useEffect(() => {
 
   return (
     <>
-        <Navbar />
         <Outlet />
-        <Footer />
     </>
   )
 }
