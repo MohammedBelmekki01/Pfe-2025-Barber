@@ -14,13 +14,14 @@ class BarberController extends Controller
      */
     public function index()
     {
-                $barber = Barber::all();
+        $barber = Barber::all();
         return BarberResource::collection($barber);
     }
 
     /**
      * Show the form for creating a new resource.
      */
+
     public function create()
     {
         //
@@ -37,10 +38,17 @@ class BarberController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Barber $barber)
+    public function show($id)
     {
-        //
+        $barber = Barber::find($id);
+
+        if (!$barber) {
+            return response()->json(['message' => 'Barber not found'], 404);
+        }
+
+        return response()->json($barber);
     }
+
 
     /**
      * Show the form for editing the specified resource.
