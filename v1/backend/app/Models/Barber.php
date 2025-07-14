@@ -25,6 +25,7 @@ class Barber extends Authenticatable
         'bio',
         'experience',
         'location',
+        'status'
     ];
 
     protected $appends = ['role'];

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreClientRequest;
 use App\Http\Requests\UpdateClientRequest;
 use App\Http\Resources\ClientUserResource;
+use App\Models\Barber;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -62,4 +63,11 @@ class ClientController extends Controller
             'data' => new ClientUserResource($client),
         ]);
     }
+
+    public function show(User $client)
+    {
+        return response()->json($client);
+    }
+
+
 }

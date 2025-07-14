@@ -50,6 +50,11 @@ class User extends Authenticatable
 {
     return $this->hasMany(Review::class);
 }
+// User.php
+public function favoriteBarbers()
+{
+    return $this->belongsToMany(Barber::class, 'favorite_barbers');
+}
 
     /**
      * Get the attributes that should be cast.
