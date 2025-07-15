@@ -16,6 +16,8 @@ Route::middleware(['auth:sanctum'])->group(static function () {
     return $request->user();
   });
 });
+Route::post('register/clients',[ClientController::class, 'store']);
+Route::post('register/barbers',[BarberController::class, 'store']);
 //  Route::get('/barbers/{barber}/reviews', [ReviewController::class, 'index']);
 //   Route::post('/barbers/{barber}/reviews', [ReviewController::class, 'store']);
 
@@ -31,7 +33,8 @@ Route::middleware(['auth:sanctum', 'ability:client'])->prefix('client')->group(s
 
 
 });
-Route::post('register/clients',[ClientController::class, 'store']);
+
+
 Route::middleware(['auth:sanctum', 'ability:admin'])->prefix('admin')->group(static function () {
   Route::get('/barbers/{barber}/reviews', action: [ReviewController::class, 'index']);
     Route::get('/reservations', [ReservationController::class, 'allReservations']);
@@ -41,7 +44,7 @@ Route::middleware(['auth:sanctum', 'ability:admin'])->prefix('admin')->group(sta
     'barbers' => BarberController::class
   ]);
 });
-
+    
 Route::middleware(['auth:sanctum', 'ability:barber'])->prefix('barber')->group(static function () {
    Route::get('/reservations', [BarberController::class, 'myReservations']);
     Route::get('/reviews', [BarberController::class, 'myReviews']);

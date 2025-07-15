@@ -36,7 +36,7 @@ class UpdateClientRequest extends FormRequest
                 'size:10',
                 Rule::unique('users', 'phone')->ignore($this->client->id),
             ],
-            'password' => 'required|string|max:255'
+            'password' => 'string|max:255'
         ];
     }
 }

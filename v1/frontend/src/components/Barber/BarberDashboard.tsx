@@ -1,247 +1,337 @@
-import React, { useState, useEffect } from "react";
+"use client"
+
+import { useEffect, useState, useMemo } from "react"
 import {
-  Calendar, Clock, Users, Scissors, Star, Settings, Bell,
-  DollarSign, Plus, Edit, CheckCircle, XCircle, MapPin,
-  Sun, Moon
-} from "lucide-react";
+  Calendar,
+  Users,
+  DollarSign,
+  Star,
+  CheckCircle,
+  XCircle,
+  Bell,
+  Settings,
+  MapPin,
+  Clock,
+  Mail,
+  Phone,
+  Search,
+} from "lucide-react"
+import axiosClient from "@/api/axios"
+import { useUsercontext } from "@/context/UserContext"
 
-// ✅ Mock data
-const mockData = {
-  barber: {
-    firstname: "Ahmed",
-    lastname: "Benali",
-    location: "Casablanca, Maroc",
-    profile_photo: "/api/placeholder/50/50",
-  },
-  todayStats: {
-    appointments: 8,
-    revenue: 960,
-    rating: 4.8,
-    regularClients: 67,
-  },
-  appointments: [
-    {
-      id: 1,
-      client: "Mohamed Alami",
-      service: "Coupe Classique",
-      time: "10:00",
-      status: "confirmed",
-      phone: "+212 6 11 22 33 44",
-    },
-    {
-      id: 2,
-      client: "Youssef Karimi",
-      service: "Coupe + Barbe",
-      time: "14:30",
-      status: "pending",
-      phone: "+212 6 55 66 77 88",
-    },
-  ],
-  services: [
-    { id: 1, name: "Coupe Classique", price: 80, duration: 30 },
-    { id: 2, name: "Barbe + Moustache", price: 50, duration: 20 },
-  ],
-  reviews: [
-    {
-      id: 1,
-      client: "Ahmed S.",
-      rating: 5,
-      comment: "Excellent service!",
-      date: "2025-06-20",
-    },
-    {
-      id: 2,
-      client: "Omar K.",
-      rating: 4,
-      comment: "Bonne coupe, ambiance sympa.",
-      date: "2025-06-18",
-    },
-  ],
-};
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Input } from "@/components/ui/input"
 
-// ✅ Color classes
-const colorClasses = {
-  blue: "bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400",
-  green: "bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400",
-  yellow: "bg-yellow-100 dark:bg-yellow-900 text-yellow-600 dark:text-yellow-400",
-  purple: "bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-400",
-};
-
-// ✅ Reusable components
-const DashboardCard = ({ children, className = "" }) => (
-  <div className={`bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-4 sm:p-6 hover:shadow-md transition-shadow ${className}`}>
-    {children}
-  </div>
-);
-
-const StatCard = ({ icon: Icon, title, value, subtitle, color = "blue" }) => (
-  <DashboardCard>
-    <div className="flex justify-between items-center">
-      <div>
-        <p className="text-sm text-gray-600 dark:text-gray-400">{title}</p>
-        <p className="text-3xl font-bold text-gray-900 dark:text-white">{value}</p>
-        <p className="text-sm text-gray-500 dark:text-gray-400">{subtitle}</p>
-      </div>
-      <div className={`p-4 rounded-full ${colorClasses[color]}`}>
-        <Icon className="h-8 w-8" />
-      </div>
-    </div>
-  </DashboardCard>
-);
-
+// Status badge component using shadcn Badge
 const StatusBadge = ({ status }) => {
-  const configs = {
-    pending: { color: "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200", text: "En attente" },
-    confirmed: { color: "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200", text: "Confirmé" },
-    cancelled: { color: "bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200", text: "Annulé" },
-    done: { color: "bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200", text: "Terminé" },
-  };
-  const config = configs[status] || configs.pending;
+  const config = {
+    pending: { text: "En attente", variant: "warning" },
+    confirmed: { text: "Confirmé", variant: "success" },
+    cancelled: { text: "Annulé", variant: "destructive" },
+    done: { text: "Terminé", variant: "default" },
+  }[status] || { text: status, variant: "outline" }
 
-  return (
-    <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${config.color}`}>
-      {config.text}
-    </span>
-  );
-};
+  return <Badge variant={config.variant}>{config.text}</Badge>
+}
 
-// ✅ Main Component
-const BarberDashboard = () => {
+// Stats card component using shadcn Card
+const StatCard = ({ icon: Icon, label, value }) => (
+  <Card>
+    <CardContent className="flex items-center justify-between pt-6">
+      <div>
+        <p className="text-sm text-muted-foreground">{label}</p>
+        <p className="text-2xl font-bold mt-1">{value}</p>
+      </div>
+      <div className="rounded-full bg-primary/10 p-3">
+        <Icon className="h-6 w-6 text-primary" />
+      </div>
+    </CardContent>
+  </Card>
+)
 
-  const updateAppointmentStatus = (id, newStatus) => {
-    console.log(`Updating appointment #${id} to ${newStatus}`);
-  };
+// Helper: Average Rating
+const averageRating = (reviews) => {
+  if (reviews.length === 0) return "0.0"
+  const total = reviews.reduce((sum, r) => sum + r.rating, 0)
+  return (total / reviews.length).toFixed(1)
+}
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900">
-      {/* Header */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex justify-between items-center">
-        <div className="flex items-center gap-4">
-          <img src={mockData.barber.profile_photo} className="w-12 h-12 rounded-full border border-blue-300" />
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              {mockData.barber.firstname} {mockData.barber.lastname}
-            </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center">
-              <MapPin className="w-4 h-4 mr-1" />
-              {mockData.barber.location}
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center space-x-4">
-
-          <Bell className="h-6 w-6 text-gray-400 dark:text-gray-300" />
-          <Settings className="h-6 w-6 text-gray-400 dark:text-gray-300" />
+// Review card component
+const ReviewCard = ({ review }) => (
+  <Card>
+    <CardHeader className="pb-2">
+      <div className="flex justify-between items-center">
+        <div className="font-medium">{review.user?.name ?? "Client inconnu"}</div>
+        <div className="flex text-amber-500">
+          {Array(review.rating)
+            .fill()
+            .map((_, i) => (
+              <Star key={i} className="w-4 h-4" fill="currentColor" />
+            ))}
         </div>
       </div>
+    </CardHeader>
+    <CardContent>
+      <p className="text-sm text-muted-foreground">{review.comment}</p>
+    </CardContent>
+    <CardFooter className="pt-0">
+      <p className="text-xs text-muted-foreground">{new Date(review.created_at).toLocaleDateString()}</p>
+    </CardFooter>
+  </Card>
+)
 
-      {/* Content */}
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-10">
-        {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <StatCard icon={Calendar} title="Rdv Aujourd'hui" value={mockData.todayStats.appointments} subtitle="+2 vs hier" color="blue" />
-          <StatCard icon={DollarSign} title="Revenus" value={`${mockData.todayStats.revenue} MAD`} subtitle="+12% sem." color="green" />
-          <StatCard icon={Star} title="Note Moyenne" value={mockData.todayStats.rating} subtitle="Basé sur 124 avis" color="yellow" />
-          <StatCard icon={Users} title="Clients réguliers" value={mockData.todayStats.regularClients} subtitle="+5 ce mois" color="purple" />
-        </div>
+const BarberDashboard = () => {
+  const { user } = useUsercontext()
+  const [reservations, setReservations] = useState([])
+  const [reviews, setReviews] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState("")
 
-        {/* Appointments + Services */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
-            <DashboardCard>
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Rdv du jour</h2>
-                <button className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
-                  <Plus className="w-4 h-4 mr-2" /> Nouveau
-                </button>
-              </div>
+  // Load reservations & reviews
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!user || !user.id) {
+        setLoading(false)
+        return // Exit if user or user.id is not available
+      }
 
-              <div className="space-y-4">
-                {mockData.appointments.map((a) => (
-                  <div key={a.id} className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg flex justify-between items-center hover:bg-gray-100 dark:hover:bg-gray-700">
-                    <div>
-                      <p className="font-semibold text-gray-900 dark:text-white">{a.client}</p>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">{a.service}</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">{a.phone}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold text-gray-900 dark:text-white">{a.time}</p>
-                      <StatusBadge status={a.status} />
-                      <div className="flex mt-2 space-x-2 justify-end">
-                        <button onClick={() => updateAppointmentStatus(a.id, "confirmed")} className="text-green-600 hover:text-green-700">
-                          <CheckCircle className="h-5 w-5" />
-                        </button>
-                        <button onClick={() => updateAppointmentStatus(a.id, "cancelled")} className="text-red-600 hover:text-red-700">
-                          <XCircle className="h-5 w-5" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </DashboardCard>
-          </div>
+      try {
+        setLoading(true)
+        // Fetch reservations for the specific barber (backend should filter by authenticated user)
+        const res1 = await axiosClient.get("/api/barber/reservations")
+        // Fetch reviews for the specific barber (backend should filter by authenticated user)
+        const res2 = await axiosClient.get("/api/barber/reviews")
+        setReservations(res1.data.data)
+        setReviews(res2.data.data)
+      } catch (error) {
+        console.error("Error loading dashboard:", error)
+        // Optionally set an error state to display to the user
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchData()
+  }, [user]) // Re-run effect when user context changes
 
-          {/* Services */}
+  const updateStatus = async (id, newStatus) => {
+    try {
+      await axiosClient.put(`/api/barber/reservations/${id}/status`, { status: newStatus })
+      setReservations((prev) => prev.map((r) => (r.id === id ? { ...r, status: newStatus } : r)))
+    } catch (error) {
+      console.error("Failed to update status", error)
+    }
+  }
+
+  // Filter reservations based on search term
+  const filteredReservations = useMemo(() => {
+    if (!searchTerm) {
+      return reservations
+    }
+    const lowerCaseSearchTerm = searchTerm.toLowerCase()
+    return reservations.filter(
+      (reservation) =>
+        reservation.user?.name?.toLowerCase().includes(lowerCaseSearchTerm) ||
+        reservation.user?.email?.toLowerCase().includes(lowerCaseSearchTerm) ||
+        reservation.user?.phone?.includes(lowerCaseSearchTerm) ||
+        reservation.service?.toLowerCase().includes(lowerCaseSearchTerm),
+    )
+  }, [reservations, searchTerm])
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-lg">Chargement...</p>
+      </div>
+    )
+  }
+
+  // If user is not logged in or user.id is missing
+  if (!user || !user.id) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-lg text-destructive">
+          Veuillez vous connecter en tant que barbier pour voir le tableau de bord.
+        </p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="container mx-auto py-6 space-y-8">
+      {/* Header */}
+      <div className="flex justify-between items-center">
+        <div className="flex items-center gap-4">
+          <Avatar className="h-14 w-14 border-2 border-primary/10">
+            <AvatarImage src={user?.profile_photo || "/badgebarber.jpg"} alt={user?.firstname} />
+            <AvatarFallback>
+              {user?.firstname?.[0]}
+              {user?.lastname?.[0]}
+            </AvatarFallback>
+          </Avatar>
           <div>
-            <DashboardCard>
-              <div className="flex justify-between mb-4">
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Mes Services</h2>
-                <Edit className="h-5 w-5 text-blue-600 dark:text-blue-400 cursor-pointer" />
-              </div>
-              <div className="space-y-4">
-                {mockData.services.map((s) => (
-                  <div key={s.id} className="flex justify-between items-center border border-gray-200 dark:border-gray-600 rounded-lg p-4">
-                    <div>
-                      <p className="font-semibold text-gray-900 dark:text-white">{s.name}</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">{s.duration} min</p>
-                    </div>
-                    <p className="font-bold text-blue-600 dark:text-blue-400">{s.price} MAD</p>
-                  </div>
-                ))}
-              </div>
-              <button className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg">
-                Ajouter un Service
-              </button>
-            </DashboardCard>
-          </div>
-        </div>
-
-        {/* Reviews */}
-        <DashboardCard>
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Avis Récents</h2>
-            <div className="flex items-center space-x-1 text-yellow-400">
-              <Star className="h-5 w-5" />
-              <span className="font-semibold text-gray-900 dark:text-white">{mockData.todayStats.rating}</span>
-              <span className="text-gray-500 dark:text-gray-400">(124 avis)</span>
+            <h1 className="text-2xl font-bold">
+              {user?.firstname} {user?.lastname}
+            </h1>
+            <div className="flex items-center text-sm text-muted-foreground">
+              <MapPin className="w-4 h-4 mr-1" />
+              {user?.location || "Non défini"}
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {mockData.reviews.map((r) => (
-              <div key={r.id} className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                <div className="flex justify-between items-center mb-2">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-blue-100 dark:bg-blue-800 rounded-full flex items-center justify-center">
-                      <span className="text-blue-600 dark:text-blue-400 font-bold">{r.client.charAt(0)}</span>
-                    </div>
-                    <p className="text-gray-900 dark:text-white font-medium">{r.client}</p>
-                  </div>
-                  <div className="flex text-yellow-400">
-                    {[...Array(r.rating)].map((_, i) => (
-                      <Star key={i} className="h-4 w-4 fill-current" />
-                    ))}
-                  </div>
-                </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">{r.comment}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">{r.date}</p>
-              </div>
-            ))}
-          </div>
-        </DashboardCard>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" size="icon">
+            <Bell className="h-5 w-5" />
+            <span className="sr-only">Notifications</span>
+          </Button>
+          <Button variant="outline" size="icon">
+            <Settings className="h-5 w-5" />
+            <span className="sr-only">Paramètres</span>
+          </Button>
+        </div>
       </div>
-    </div>
-  );
-};
 
-export default BarberDashboard;
+      {/* Stats */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard icon={Calendar} label="Rdv Total" value={reservations.length} />
+        <StatCard icon={DollarSign} label="Revenus estimés" value={`${reservations.length * 100} MAD`} />
+        <StatCard icon={Star} label="Note Moyenne" value={averageRating(reviews)} />
+        <StatCard icon={Users} label="Avis" value={reviews.length} />
+      </div>
+
+      {/* Tabs for Reservations and Reviews */}
+      <Tabs defaultValue="reservations" className="w-full">
+        <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsTrigger value="reservations">Réservations</TabsTrigger>
+          <TabsTrigger value="reviews">Avis Clients</TabsTrigger>
+        </TabsList>
+
+        {/* Reservations Tab */}
+        <TabsContent value="reservations">
+          <Card>
+            <CardHeader>
+              <CardTitle>Mes Réservations</CardTitle>
+              <CardDescription>Gérez vos rendez-vous et mettez à jour leur statut</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {/* Search Input */}
+              <div className="relative mb-6">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="text"
+                  placeholder="Rechercher par client, email, téléphone ou service..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-9 pr-4"
+                />
+              </div>
+
+              {filteredReservations.length === 0 && searchTerm !== "" ? (
+                <p className="text-center py-8 text-muted-foreground">
+                  Aucune réservation trouvée pour "{searchTerm}".
+                </p>
+              ) : filteredReservations.length === 0 ? (
+                <p className="text-center py-8 text-muted-foreground">Aucune réservation.</p>
+              ) : (
+                <div className="space-y-4">
+                  {filteredReservations.map((reservation) => (
+                    <Card key={reservation.id} className="overflow-hidden">
+                      <div className="p-4 sm:p-6 flex flex-col sm:flex-row justify-between gap-4">
+                        <div className="space-y-1">
+                          <div className="font-semibold">{reservation.user?.name ?? "Client inconnu"}</div>
+                          <div className="text-sm text-muted-foreground">{reservation.service}</div>
+                          <div className="flex items-center text-xs text-muted-foreground">
+                            <Calendar className="mr-1 h-3 w-3" />
+                            {new Date(reservation.reservation_time).toLocaleDateString()}
+                            <Clock className="ml-2 mr-1 h-3 w-3" />
+                            {new Date(reservation.reservation_time).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </div>
+                          {/* Display client email and phone */}
+                          {reservation.user?.email && (
+                            <div className="flex items-center text-xs text-muted-foreground">
+                              <Mail className="mr-1 h-3 w-3" />
+                              {reservation.user.email}
+                            </div>
+                          )}
+                          {reservation.user?.phone && (
+                            <div className="flex items-center text-xs text-muted-foreground">
+                              <Phone className="mr-1 h-3 w-3" />
+                              {reservation.user.phone}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex flex-col items-end gap-2">
+                          <StatusBadge status={reservation.status} />
+                          {reservation.status === "pending" && (
+                            <div className="flex gap-2 mt-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="text-blue-600 border-blue-200 hover:bg-blue-50 hover:text-blue-700 bg-transparent"
+                                onClick={() => updateStatus(reservation.id, "confirmed")}
+                              >
+                                <CheckCircle className="mr-1 h-4 w-4" />
+                                Confirmer
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="text-green-600 border-green-200 hover:bg-green-50 hover:text-green-700 bg-transparent"
+                                onClick={() => updateStatus(reservation.id, "done")}
+                              >
+                                <CheckCircle className="mr-1 h-4 w-4" />
+                                Terminer
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 bg-transparent"
+                                onClick={() => updateStatus(reservation.id, "cancelled")}
+                              >
+                                <XCircle className="mr-1 h-4 w-4" />
+                                Annuler
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Reviews Tab */}
+        <TabsContent value="reviews">
+          <Card>
+            <CardHeader>
+              <CardTitle>Avis Clients</CardTitle>
+              <CardDescription>Consultez les avis laissés par vos clients</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {reviews.length === 0 ? (
+                <p className="text-center py-8 text-muted-foreground">Aucun avis pour le moment.</p>
+              ) : (
+                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {reviews.map((review) => (
+                    <ReviewCard key={review.id} review={review} />
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
+  )
+}
+
+export default BarberDashboard

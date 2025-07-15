@@ -24,7 +24,9 @@ const ClientApi = {
     // }
     // to use
     // clientapi.alldefcolumn(['name','email'])
-
+    createForRegister : async (payload) => {
+        return await axiosClient.post('/api/register/clients', payload)
+    },
 }
 
 export default ClientApi

@@ -42,7 +42,7 @@ public function index(Request $request)
     {
         $barberId = auth()->id();
 
-        $reviews = \App\Models\Review::with('user')
+        $reviews = Review::with('user')
             ->where('barber_id', $barberId)
             ->latest()
             ->get();
@@ -115,7 +115,7 @@ public function index(Request $request)
             'addrees'      => 'sometimes|string|max:255',
             'phone'        => 'sometimes|string|max:20',
             'email'        => 'sometimes|email|unique:barbers,email,' . $id,
-            'password'     => 'sometimes|string|min:6',
+            'password'     => 'string|min:6',
             'bio'          => 'nullable|string',
             'experience'   => 'nullable|string',
             'location'     => 'nullable|string',

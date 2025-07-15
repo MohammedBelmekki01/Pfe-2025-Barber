@@ -36,7 +36,7 @@ import {
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useUsercontext } from "@/context/UserContext"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { ROUTE_LOGIN } from "@/router"
 
 // Menu items for main navigation
@@ -48,17 +48,17 @@ const items = [
   },
   {
     title: "Appointments",
-    url: "/admin/appointments",
+    url: "/admin/reservations",
     icon: Calendar,
   },
   {
     title: "Barbers",
-    url: "/admin/barbers",
+    url: "/admin/manage-barber",
     icon: Scissors,
   },
   {
     title: "Clients",
-    url: "/admin/clients",
+    url: "/admin/manage-client",
     icon: Users,
   },
   {
@@ -70,7 +70,12 @@ const items = [
     title: "Analytics",
     url: "/admin/analytics",
     icon: BarChart3,
-  }
+  },
+  {
+    title: "Reviews",
+    url: "/admin/reviews",
+    icon: Home,
+  },
 ]
 
 // Quick actions menu
@@ -136,10 +141,10 @@ export function AppSideidebarAdmin({ user, ...props }: AppSidebarProps) {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild tooltip={item.title}>
-                    <a href={item.url}>
+                    <Link to={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                   {item.badge && (
                     <SidebarMenuAction className="peer-data-[size=sm]/menu-button:top-1">

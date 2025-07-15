@@ -1,23 +1,21 @@
-import { Booking } from "@/components/HomeComponents/Booking"
-import { Contact } from "@/components/HomeComponents/Contact"
+import { ContactSection } from "@/components/HomeComponents/ContactSection"
 import { Hero } from "@/components/HomeComponents/Hero"
-import { Portfolio } from "@/components/HomeComponents/Portfolio"
-import { Reviews } from "@/components/HomeComponents/Review"
-import { Services } from "@/components/HomeComponents/Services"
-import { Team } from "@/components/HomeComponents/Teams"
+import {  TestimonialsSection } from "@/components/HomeComponents/TestimonialsSection"
+import { GallerySection } from "@/components/HomeComponents/GallerySection"
+import { BarberCarousel } from "@/components/HomeComponents/AboutSection"
+import { ServicesCarousel } from "@/components/HomeComponents/ServicesSlider"
 
 function Home() {
   return (
     
         <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-800 text-gray-900 dark:text-gray-100">
 
-      <Hero />
-      <Services />
-      <Portfolio />
-      <Team />
-      <Booking />
-      <Reviews />
-      <Contact />
+            <Hero />
+      <ServicesCarousel />
+      <BarberCarousel />
+      <GallerySection />
+      <TestimonialsSection />
+      <ContactSection />
 
     </div>
   )

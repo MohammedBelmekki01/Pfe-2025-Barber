@@ -2,15 +2,14 @@
 
 import * as React from "react"
 
-import { Menu, Scissors } from "lucide-react"
+import { Menu } from "lucide-react"
 
 
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Link } from "react-router-dom"
-import DropDown from "@/components/UIcomponents/DropDown"
+
 import { ModeToggle } from "@/components/ui/mode-toggle"
-import logo from "../../assets/images/logo.jpeg"
 
 const navigation = [
   { name: "Home", to: "/" },
@@ -71,14 +70,16 @@ export function Navbar() {
                     <Link
                       key={item.name}
                       to={item.to}
-                      className="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-base font-medium transition-colors"
+                      className="text-white hover:text-gray-900 px-3 py-2 rounded-md text-base font-medium transition-colors"
                       onClick={() => setIsOpen(false)}
                     >
                       {item.name}
                     </Link>
                   ))}
-                  <div className="pt-4">
-                    <Button className="w-full">Get Started</Button>
+                  <div className="pt-4 mx-2">
+                    <Button className="w-full">
+                      <Link to={'/login'}>Login</Link>
+                    </Button>
                   </div>
                 </div>
               </SheetContent>

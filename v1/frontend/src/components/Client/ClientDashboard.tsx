@@ -1,16 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   Bell,
   User,
   Calendar,
-  Clock,
-  MapPin,
   Star,
-  Filter,
-  Search,
-  Sun,
-  Moon,
+  PhoneIcon,
+  MapPin,
 } from "lucide-react";
+import UserReservationsList from "./ForReservationClient/UserReservationsList";
+import BarberListThree from "../UIcomponents/BarberListThree";
+import { useUsercontext } from "@/context/UserContext"; // adjust path to your user context
 
 const DashboardCard = ({ children, className = "" }) => (
   <div
@@ -50,40 +49,56 @@ const StatusBadge = ({ status }) => {
 };
 
 const ClientDashboard = () => {
+  const { user } = useUsercontext();
 
+  // If user is not loaded or not authenticated, you can handle loading or redirect here
+  if (!user) {
+    return <p>Chargement de l'utilisateur...</p>;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
       {/* Header */}
-      <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center space-x-4">
-              <img
-                src="/api/placeholder/40/40"
-                alt="Profile"
-                className="w-10 h-10 rounded-full"
-              />
-              <div>
-                <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-                  Mohamed Alami
-                </h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Client Premium
-                </p>
-              </div>
+<div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="flex justify-between items-center py-4">
+      <div className="flex items-center space-x-4">
+        {/* Avatar */}
+        <img
+          src="/useravatar.png"
+          alt="Profile"
+          className="w-12 h-12 rounded-full border-2 border-blue-600 dark:border-blue-400"
+        />
+        <div>
+          <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+            {user.name}
+          </h1>
+          <div className="flex flex-col space-y-1 mt-1 text-gray-600 dark:text-gray-400 text-sm">
+            <div className="flex items-center space-x-2">
+              <User className="w-4 h-4" />
+              <span>{user.email}</span>
             </div>
-
-            <div className="flex items-center space-x-4">
-              <Bell className="h-5 w-5 text-gray-400 dark:text-gray-400" />
-              <User className="h-5 w-5 text-gray-400 dark:text-gray-400" />
-
-              {/* Dark Mode Toggle Button */}
-             
+            <div className="flex items-center space-x-2">
+              <PhoneIcon className="w-4 h-4" />
+              <span>{user?.phone || "Non renseigné"}</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <MapPin className="w-4 h-4" />
+              <span>{user?.addrees || "Non renseignée"}</span>
             </div>
           </div>
         </div>
       </div>
+
+      <div className="flex items-center space-x-4">
+        <Bell className="h-5 w-5 text-gray-400 dark:text-gray-400" />
+        <User className="h-5 w-5 text-gray-400 dark:text-gray-400" />
+        {/* Bouton dark mode ou autre actions ici */}
+      </div>
+    </div>
+  </div>
+</div>
+
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-gray-900 dark:text-gray-100">
         {/* Quick Action */}
@@ -107,129 +122,16 @@ const ClientDashboard = () => {
           {/* Upcoming Appointments */}
           <div className="lg:col-span-2">
             <DashboardCard>
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                  Mes Rendez-vous
-                </h2>
-                <div className="flex space-x-2">
-                  <button className="text-gray-400 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded">
-                    <Filter className="h-4 w-4" />
-                  </button>
-                  <button className="text-gray-400 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded">
-                    <Search className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div className="p-4 border-l-4 border-blue-500 bg-blue-50 dark:bg-blue-900 rounded-r-lg">
-                  <div className="flex flex-wrap justify-between items-start mb-2">
-                    <div>
-                      <p className="font-medium text-gray-900 dark:text-gray-100">Coupe + Barbe</p>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        Avec Ahmed Benali
-                      </p>
-                    </div>
-                    <StatusBadge status="confirmed" />
-                  </div>
-                  <div className="flex flex-wrap space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                    <span className="flex items-center mb-1">
-                      <Calendar className="h-4 w-4 mr-1" />
-                      25 Juin 2025
-                    </span>
-                    <span className="flex items-center mb-1">
-                      <Clock className="h-4 w-4 mr-1" />
-                      14:30
-                    </span>
-                    <span className="flex items-center mb-1">
-                      <MapPin className="h-4 w-4 mr-1" />
-                      Casablanca
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap space-x-2 mt-3">
-                    <button className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500 text-sm font-medium">
-                      Modifier
-                    </button>
-                    <button className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-500 text-sm font-medium">
-                      Annuler
-                    </button>
-                  </div>
-                </div>
-
-                <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <p className="font-medium text-gray-900 dark:text-gray-100">Coupe Classique</p>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        Avec Youssef Karimi
-                      </p>
-                    </div>
-                    <StatusBadge status="pending" />
-                  </div>
-                  <div className="flex flex-wrap space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                    <span className="flex items-center mb-1">
-                      <Calendar className="h-4 w-4 mr-1" />
-                      28 Juin 2025
-                    </span>
-                    <span className="flex items-center mb-1">
-                      <Clock className="h-4 w-4 mr-1" />
-                      10:00
-                    </span>
-                  </div>
-                </div>
-              </div>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">
+                Mes Rendez-vous
+              </h2>
+              <UserReservationsList />
             </DashboardCard>
           </div>
 
-          {/* Favorite Barbers */}
+          {/* Barbers List */}
           <div>
-            <DashboardCard>
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">
-                Mes Barbiers Favoris
-              </h2>
-
-              <div className="space-y-4">
-                <div className="flex items-center space-x-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg cursor-pointer">
-                  <img
-                    src="/api/placeholder/40/40"
-                    alt="Barbier"
-                    className="w-10 h-10 rounded-full"
-                  />
-                  <div className="flex-1">
-                    <p className="font-medium text-gray-900 dark:text-gray-100">Ahmed Benali</p>
-                    <div className="flex items-center space-x-1">
-                      <Star className="h-3 w-3 text-yellow-400 fill-current" />
-                      <span className="text-sm text-gray-500 dark:text-gray-400">4.8</span>
-                    </div>
-                  </div>
-                  <button className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500">
-                    <Calendar className="h-4 w-4" />
-                  </button>
-                </div>
-
-                <div className="flex items-center space-x-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg cursor-pointer">
-                  <img
-                    src="/api/placeholder/40/40"
-                    alt="Barbier"
-                    className="w-10 h-10 rounded-full"
-                  />
-                  <div className="flex-1">
-                    <p className="font-medium text-gray-900 dark:text-gray-100">Youssef Karimi</p>
-                    <div className="flex items-center space-x-1">
-                      <Star className="h-3 w-3 text-yellow-400 fill-current" />
-                      <span className="text-sm text-gray-500 dark:text-gray-400">4.6</span>
-                    </div>
-                  </div>
-                  <button className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-500">
-                    <Calendar className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-
-              <button className="w-full mt-4 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 py-2 px-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                Découvrir Plus de Barbiers
-              </button>
-            </DashboardCard>
+            <BarberListThree />
           </div>
         </div>
 
@@ -239,6 +141,7 @@ const ClientDashboard = () => {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6">
               Historique des Services
             </h2>
+            {/* You can dynamically fetch and display history here */}
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead className="bg-gray-50 dark:bg-gray-700">

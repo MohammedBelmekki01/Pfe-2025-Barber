@@ -70,14 +70,12 @@ function BarberLayout() {
             <div className="flex items-center gap-2 px-4">
               <SidebarTrigger className="-ml-1" />
               <Separator orientation="vertical" className="mr-2 h-4" />
-              <h2 className="text-lg font-semibold ">Dashboard </h2>
             </div>
           </header>
 
           {/* Main Content Area */}
           <main className="flex-1 flex flex-col">
             <div className="flex-1 p-6">
-              <h1>barber</h1>
               <Outlet />
             </div>
           </main>

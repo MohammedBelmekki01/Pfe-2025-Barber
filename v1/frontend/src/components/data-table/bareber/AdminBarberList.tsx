@@ -26,7 +26,8 @@ import {
 
 import { toast } from "sonner"
 import BarberApiii from "@/Services/Api/BarbersApiA/BarberApi"
-import UpdateBarber from "@/components/Admin/FormBarber/UpdateClient"
+import { Link } from "react-router-dom"
+import UpdateBarber from "@/components/Admin/FormBarber/UpdateBarber"
 
 export type Barber = {
   id: number
@@ -45,6 +46,7 @@ export type Barber = {
 
 function AdminBarberList() {
   const [data, setData] = useState<Barber[]>([])
+  
 
   const columns: ColumnDef<Barber>[] = [
     {
@@ -78,7 +80,9 @@ function AdminBarberList() {
     {
       accessorKey: "phone",
       header: ({ column }) => <DataTableColumnHeader column={column} title="Phone" />,
-      cell: ({ row }) => <div className="text-right font-medium">+212 {row.getValue("phone")}</div>,
+      cell: ({ row }) => (
+        <div className="text-right font-medium">+212 {row.getValue("phone")}</div>
+      ),
     },
     {
       accessorKey: "bio",
@@ -92,6 +96,10 @@ function AdminBarberList() {
       accessorKey: "location",
       header: ({ column }) => <DataTableColumnHeader column={column} title="Location" />,
     },
+        {
+      accessorKey: "status",
+      header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
+    },
     {
       accessorKey: "formatted_updated_at",
       header: ({ column }) => <DataTableColumnHeader column={column} title="Updated" />,
@@ -103,10 +111,10 @@ function AdminBarberList() {
         const [open, setOpen] = useState(false)
 
         return (
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2">
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
-                <Button variant="outline" className="w-full">Update</Button>
+                <Button variant="outline" className="w-full sm:w-auto">Update</Button>
               </SheetTrigger>
               <SheetContent className="overflow-y-auto max-w-lg">
                 <SheetHeader>
@@ -120,7 +128,7 @@ function AdminBarberList() {
 
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="destructive" className="w-full">Delete</Button>
+                <Button variant="destructive" className="w-full sm:w-auto">Delete</Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
@@ -153,6 +161,11 @@ function AdminBarberList() {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
+        <Button variant="secondary" className="w-full sm:w-auto">
+          <Link to={`/admin/barber-details?id=${barber.id}`} className="text-emerald-600 hover:underline block w-full text-center">
+            Details
+          </Link>
+        </Button>
           </div>
         )
       },
@@ -166,7 +179,7 @@ function AdminBarberList() {
   }, [])
 
   return (
-    <div className="p-4">
+    <div className="p-4 overflow-x-auto">
       <DataTable columns={columns} data={data} />
     </div>
   )

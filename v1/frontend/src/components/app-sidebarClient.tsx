@@ -46,19 +46,15 @@ const items = [
     url: "/client/dashboard",
     icon: Home,
   },
-  {
-    title: "My Appointments",
-    url: "/client/appointments",
-    icon: Calendar,
-  },
+
   {
     title: "Barbers",
     url: "/client/barbers",
     icon: Users,
   },
   {
-    title: "Services",
-    url: "/client/services",
+    title: "Reservation",
+    url: "/client/reservations",
     icon: Scissors,
   },
 ]
