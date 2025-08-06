@@ -16,7 +16,6 @@ return new class extends Migration
 
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->foreignId('barber_id')->constrained()->onDelete('cascade');
-
             $table->unsignedTinyInteger('rating'); // 1 to 5
             $table->text('comment');
             $table->string('service')->nullable(); // optional service name

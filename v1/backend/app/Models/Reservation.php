@@ -8,20 +8,26 @@ use Laravel\Sanctum\HasApiTokens;
 
 class Reservation extends Model
 {
-      use HasFactory, HasApiTokens;
-        protected $fillable = [
+    use HasFactory, HasApiTokens;
+    protected $fillable = [
         'user_id',
         'barber_id',
         'reservation_time',
-        'service',
+        'service_id',
         'status',
     ];
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function barber() {
+    public function barber()
+    {
         return $this->belongsTo(Barber::class);
+    }
+    public function service()
+    {
+        return $this->belongsTo(Service::class);
     }
 }

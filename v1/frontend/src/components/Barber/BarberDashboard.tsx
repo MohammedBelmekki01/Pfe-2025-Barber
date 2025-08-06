@@ -67,13 +67,17 @@ const ReviewCard = ({ review }) => (
       <div className="flex justify-between items-center">
         <div className="font-medium">{review.user?.name ?? "Client inconnu"}</div>
         <div className="flex text-amber-500">
-          {Array(review.rating)
-            .fill()
-            .map((_, i) => (
-              <Star key={i} className="w-4 h-4" fill="currentColor" />
-            ))}
+          {Array(review.rating).fill().map((_, i) => (
+            <Star key={i} className="w-4 h-4" fill="currentColor" />
+          ))}
         </div>
       </div>
+      {/* Add service name here */}
+      {review.service?.name && (
+        <div className="text-sm text-muted-foreground mt-1">
+          Servicqdqsfgqe : {review.service.name}
+        </div>
+      )}
     </CardHeader>
     <CardContent>
       <p className="text-sm text-muted-foreground">{review.comment}</p>
@@ -180,6 +184,9 @@ const BarberDashboard = () => {
               <MapPin className="w-4 h-4 mr-1" />
               {user?.location || "Non défini"}
             </div>
+            <div>
+               
+            </div>
           </div>
         </div>
         <div className="flex gap-2">
@@ -241,8 +248,11 @@ const BarberDashboard = () => {
                     <Card key={reservation.id} className="overflow-hidden">
                       <div className="p-4 sm:p-6 flex flex-col sm:flex-row justify-between gap-4">
                         <div className="space-y-1">
+                          <div>
+                             {reservation.service?.name || "Service inconnu"}
+                          </div>
                           <div className="font-semibold">{reservation.user?.name ?? "Client inconnu"}</div>
-                          <div className="text-sm text-muted-foreground">{reservation.service}</div>
+                          <div className="text-sm text-muted-foreground">{reservation.service?.name}</div>
                           <div className="flex items-center text-xs text-muted-foreground">
                             <Calendar className="mr-1 h-3 w-3" />
                             {new Date(reservation.reservation_time).toLocaleDateString()}
@@ -264,6 +274,7 @@ const BarberDashboard = () => {
                               <Phone className="mr-1 h-3 w-3" />
                               {reservation.user.phone}
                             </div>
+                              
                           )}
                         </div>
                         <div className="flex flex-col items-end gap-2">

@@ -54,7 +54,7 @@ public function index(Request $request)
     public function myReservations(Request $request)
     {
         $barberId = auth()->id(); // authenticated barber
-        $query = Reservation::with(['user'])
+        $query = Reservation::with(['user','service'])
             ->where('barber_id', $barberId);
 
         // Optional filter by client name
@@ -141,7 +141,7 @@ public function index(Request $request)
     }
     public function show($id)
     {
-        $barber = Barber::find($id);
+        $barber = Barber::with('services')->find($id);
 
         if (!$barber) {
             return response()->json(['message' => 'Barber not found'], 404);

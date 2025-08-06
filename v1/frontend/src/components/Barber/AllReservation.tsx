@@ -1,14 +1,13 @@
 "use client"
 
-import { useEffect, useState, useMemo } from "react" // Added useMemo
+import { useEffect, useState, useMemo } from "react"
 import axiosClient from "@/api/axios"
-import { Clock, Calendar, Mail, Phone, Search } from "lucide-react" // Added Search icon
-
+import { Clock, Calendar, Mail, Phone, Search } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input" // Added Input component
+import { Input } from "@/components/ui/input"
 
-// Status badge component (re-using the one from the barber dashboard)
+// Badge de statut
 const StatusBadge = ({ status }) => {
   const config = {
     pending: { text: "En attente", variant: "warning" },
@@ -24,7 +23,7 @@ const AllReservationClient = () => {
   const [reservations, setReservations] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [searchTerm, setSearchTerm] = useState("") // New state for search term
+  const [searchTerm, setSearchTerm] = useState("")
 
   useEffect(() => {
     const fetchClientReservations = async () => {
@@ -34,7 +33,7 @@ const AllReservationClient = () => {
         setReservations(response.data.data)
       } catch (err) {
         console.error("Error fetching client reservations:", err)
-        setError("Failed to load reservations. Please try again later.")
+        setError("Erreur lors du chargement des réservations.")
       } finally {
         setLoading(false)
       }
@@ -43,19 +42,16 @@ const AllReservationClient = () => {
     fetchClientReservations()
   }, [])
 
-  // Filter reservations based on search term
   const filteredReservations = useMemo(() => {
-    if (!searchTerm) {
-      return reservations
-    }
-    const lowerCaseSearchTerm = searchTerm.toLowerCase()
-    return reservations.filter(
-      (reservation) =>
-        reservation.barber?.firstname?.toLowerCase().includes(lowerCaseSearchTerm) ||
-        reservation.barber?.lastname?.toLowerCase().includes(lowerCaseSearchTerm) ||
-        reservation.barber?.email?.toLowerCase().includes(lowerCaseSearchTerm) ||
-        reservation.barber?.phone?.includes(lowerCaseSearchTerm) ||
-        reservation.service?.toLowerCase().includes(lowerCaseSearchTerm),
+    if (!searchTerm) return reservations
+
+    const term = searchTerm.toLowerCase()
+    return reservations.filter((reservation) =>
+      reservation.barber?.firstname?.toLowerCase().includes(term) ||
+      reservation.barber?.lastname?.toLowerCase().includes(term) ||
+      reservation.barber?.email?.toLowerCase().includes(term) ||
+      reservation.barber?.phone?.includes(term) ||
+      reservation.service?.toLowerCase().includes(term)
     )
   }, [reservations, searchTerm])
 
@@ -95,24 +91,29 @@ const AllReservationClient = () => {
             />
           </div>
 
-          {filteredReservations.length === 0 && searchTerm !== "" ? (
-            <p className="text-center py-8 text-muted-foreground">Aucune réservation trouvée pour "{searchTerm}".</p>
-          ) : filteredReservations.length === 0 ? (
-            <p className="text-center py-8 text-muted-foreground">Vous n'avez aucune réservation pour le moment.</p>
+          {/* Aucune réservation trouvée */}
+          {filteredReservations.length === 0 ? (
+            <p className="text-center py-8 text-muted-foreground">
+              {searchTerm
+                ? `Aucune réservation trouvée pour "${searchTerm}".`
+                : "Vous n'avez aucune réservation pour le moment."}
+            </p>
           ) : (
             <div className="grid gap-4">
               {filteredReservations.map((reservation) => (
-                <Card
-                  key={reservation.id}
-                  className="overflow-hidden border-border hover:bg-accent/50 transition-colors"
-                >
+                <Card key={reservation.id} className="overflow-hidden border-border hover:bg-accent/50 transition-colors">
                   <div className="p-4 sm:p-6 flex flex-col sm:flex-row justify-between gap-4 items-start sm:items-center">
                     <div className="space-y-1">
-                      <div className="font-semibold text-lg">{reservation.service || "Service inconnu"}</div>
+                      {/* Service */}
+  {reservation.service?.name || "Service inconnu"}
+
+                      {/* Date */}
                       <div className="flex items-center text-sm text-muted-foreground">
                         <Calendar className="mr-1 h-4 w-4" />
                         {new Date(reservation.reservation_time).toLocaleDateString()}
                       </div>
+
+                      {/* Heure */}
                       <div className="flex items-center text-xs text-muted-foreground">
                         <Clock className="mr-1 h-3 w-3" />
                         {new Date(reservation.reservation_time).toLocaleTimeString([], {
@@ -120,15 +121,16 @@ const AllReservationClient = () => {
                           minute: "2-digit",
                         })}
                       </div>
+
+                      {/* Barbier */}
                       {reservation.barber && (
                         <>
                           <div className="text-sm text-muted-foreground mt-1">
                             Avec:{" "}
                             <span className="font-medium">
-                              {reservation.barber.firstname} {reservation.barber.lastname || "Barbier inconnu"}
+                              {reservation.barber.firstname} {reservation.barber.lastname || ""}
                             </span>
                           </div>
-                          {/* Display barber's email and phone */}
                           {reservation.barber.email && (
                             <div className="flex items-center text-xs text-muted-foreground">
                               <Mail className="mr-1 h-3 w-3" />
@@ -143,10 +145,17 @@ const AllReservationClient = () => {
                           )}
                         </>
                       )}
+
+                      {/* Client */}
+                      {reservation.user && (
+                        <div className="text-sm text-muted-foreground mt-1">
+                          Client: <span className="font-medium">{reservation.user.name}</span>
+                        </div>
+                      )}
                     </div>
+
                     <div className="flex flex-col items-end gap-2">
                       <StatusBadge status={reservation.status} />
-                      {/* You can add client-specific actions here if needed, e.g., cancel button for pending */}
                     </div>
                   </div>
                 </Card>

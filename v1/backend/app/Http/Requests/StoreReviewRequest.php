@@ -25,7 +25,7 @@ class StoreReviewRequest extends FormRequest
             'user_id' => 'required|exists:users,id',
             'rating' => 'required|integer|between:1,5',
             'comment' => 'required|string',
-            'service' => 'nullable|string|max:255',
+            'service_id' => 'required|exists:services,id',
             'customerName' => 'nullable|string|max:255'
         ];
     }

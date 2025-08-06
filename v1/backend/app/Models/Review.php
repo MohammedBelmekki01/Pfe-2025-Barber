@@ -11,7 +11,7 @@ class Review extends Model
         'barber_id',
         'rating',
         'comment',
-        'service',
+        'service_id',
     ];
 
     // Relations
@@ -23,5 +23,9 @@ class Review extends Model
     public function barber()
     {
         return $this->belongsTo(Barber::class);
+    }
+       public function service()
+    {
+        return $this->belongsTo(Service::class);
     }
 }

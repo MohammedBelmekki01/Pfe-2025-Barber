@@ -26,14 +26,14 @@ class ReservationController extends Controller
         $request->validate([
             'barber_id' => 'required|exists:barbers,id',
             'reservation_time' => 'required|date|after:now',
-            'service' => 'required|string|max:255',
+            'service_id' => 'required|exists:services,id',
         ]);
 
         $reservation = Reservation::create([
             'user_id' => Auth::id(),
             'barber_id' => $request->barber_id,
             'reservation_time' => $request->reservation_time,
-            'service' => $request->service,
+            'service_id' => $request->service_id,
             'status' => 'pending',
         ]);
 
@@ -58,7 +58,7 @@ class ReservationController extends Controller
         $user = $request->user();
 
         $reservations = Reservation::where('user_id', $user->id)
-            ->with('barber')
+            ->with(['barber','service'])
             ->orderBy('reservation_time', 'desc')
             ->get();
 

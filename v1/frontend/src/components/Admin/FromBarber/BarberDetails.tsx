@@ -10,6 +10,8 @@ import {
   User,
   Scissors,
   CircleDot,
+  DollarSign,
+  Clock,
 } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
@@ -184,7 +186,61 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
           </div>
         </CardContent>
       </Card>
+            {barber.services && barber.services.length > 0 && (
+              <Card className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Scissors className="w-5 h-5 text-emerald-500" />
+                    Services Offered
+                  </CardTitle>
+                  <CardDescription>Professional services available</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {barber.services.map((service) => (
+                      <Card
+                        key={service.id}
+                        className="relative overflow-hidden hover:shadow-lg transition-shadow duration-300"
+                      >
+                        {service.popular && (
+                          <Badge className="absolute top-2 right-2 bg-orange-500 text-white">Popular</Badge>
+                        )}
 
+                        {service.image && (
+                          <div className="h-32 overflow-hidden">
+                            <img
+                                                              src={`${import.meta.env.VITE_BACKEND_URL}/storage/${service.image}` || 'placholder.png'}
+
+                              alt={service.name}
+                              className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                            />
+                          </div>
+                        )}
+
+                        <CardContent className="p-4">
+                          <h4 className="font-semibold text-lg mb-2">{service.name}</h4>
+                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{service.description}</p>
+
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                              <div className="flex items-center gap-1">
+                                <DollarSign className="w-4 h-4 text-emerald-500" />
+                                <span className="font-semibold text-emerald-600">{service.price} MAD</span>
+                              </div>
+
+                              <div className="flex items-center gap-1">
+                                <Clock className="w-4 h-4 text-blue-500" />
+                                <span className="text-sm text-gray-600">{service.duration}min</span>
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
       {/* ✅ Add Barber Reviews Component Here */}
       <div className="w-full max-w-3xl">
         <BarberReviewsAdmin barberId={barber.id} />

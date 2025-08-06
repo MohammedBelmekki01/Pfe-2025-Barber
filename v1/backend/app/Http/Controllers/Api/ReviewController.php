@@ -13,7 +13,7 @@ class ReviewController extends Controller
 {
     public function index(Barber $barber)
     {
-        $reviews = $barber->reviews()->with('user')->latest()->get();
+        $reviews = $barber->reviews()->with(['user', 'service'])->latest()->get();
 
         return response()->json($reviews->map(function ($review) {
             return [
@@ -26,7 +26,8 @@ class ReviewController extends Controller
                 'comment' => $review->comment,
                 'created_at' => $review->created_at,
                 'updated_at' => $review->updated_at,
-                'service' => $review->service,
+                'service_id' => $review->service_id,
+                'service_name' => $review->service->name ?? null,
                 'avatar' => $review->user->avatar ?? null,
                 'likes' => 0,
                 'isLiked' => false,
@@ -43,18 +44,21 @@ class ReviewController extends Controller
 
         $review = Review::create($data);
 
+        $user = User::find($review->user_id);
+
         return response()->json([
             'id' => $review->id,
             'user_id' => $review->user_id,
             'barber_id' => $review->barber_id,
-            'displayName' => User::find($review->user_id)->name ?? 'User',
-            'customerName' => User::find($review->user_id)->username ?? 'user',
+            'displayName' => $user->name ?? 'User',
+            'customerName' => $user->username ?? 'user',
             'rating' => $review->rating,
             'comment' => $review->comment,
             'created_at' => $review->created_at,
             'updated_at' => $review->updated_at,
-            'service' => $review->service,
-            'avatar' => User::find($review->user_id)->avatar ?? null,
+            'service_id' => $review->service_id,
+            'service_name' => optional($review->service)->name,
+            'avatar' => $user->avatar ?? null,
             'likes' => 0,
             'isLiked' => false,
             'replies' => 0,

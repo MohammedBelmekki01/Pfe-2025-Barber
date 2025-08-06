@@ -23,6 +23,10 @@ import AllClientDoReservation from "@/components/Barber/AllClientDoReservation";
 import AllReservationBarber from "@/components/Admin/AllReservationBarber";
 import RegisterClient from "@/Pages/RegisterClient";
 import RegisterBarber from "@/Pages/RegisterBarber";
+import ServiceParent from "@/components/Barber/Services/ServiceParent";
+import AllServices from "@/components/Admin/ForSevices/AllServices";
+import BarberServices from "@/components/Client/FromBarber/BarberServicesForClient";
+import BarberServicesForClient from "@/components/Client/FromBarber/BarberServicesForClient";
 
 export const ROUTE_LOGIN = '/login'
 export const BARBER_DASHBOARD_ROUTE = '/barber/dashboard'
@@ -39,7 +43,11 @@ export const BARBER_DETAILSFORCLIENT = '/client/barber-details'
 export const BARBER_ALL = '/client/barbers'
 export const ALL_RESERVATION = '/barber/reservations'
 export const ALL_CLIENT_RESERVATION = '/barber/clients'
+export const ALL_SERVICE_BARBER = '/barber/services'
+
 export const ALL_RESERVATION_BARBERS_ADMIN = '/admin/reservations'
+
+
 export const Reservation_ALL_FOR_USER = '/client/reservations'
 export const REGISTER_CLIENT = '/register/clients'
 export const REGISTER_BARBER = '/register/barbers'
@@ -89,6 +97,10 @@ export const router = createBrowserRouter([
             {
                 path: ALL_CLIENT_RESERVATION,
                 element: <AllClientDoReservation />
+            },
+            {
+                path : ALL_SERVICE_BARBER,
+                element : <ServiceParent />
             }
         ]
     },
@@ -143,6 +155,10 @@ export const router = createBrowserRouter([
                 element: <AllReservationBarber />
 
             },
+                        {
+                path: ALL_SERVICES_BARBERFOR_Admin,
+                element: <AllServices />
+            },
         ]
     },
     {
@@ -152,10 +168,7 @@ export const router = createBrowserRouter([
                 path: client_DASHBOARD_ROUTE,
                 element: <ClientDashboard />
             },
-            {
-                path: ALL_SERVICES_BARBERFOR_CLIENT,
-                element: <AllServicesPage />
-            }
+
             ,
             {
                 path: BARBER_DETAILSFORCLIENT,
@@ -173,6 +186,10 @@ export const router = createBrowserRouter([
                 element: <UserReservationsList />
 
             },
+            {
+                path : ALL_SERVICES_BARBERFOR_CLIENT,
+                element : <BarberServicesForClient />
+            }
         ]
     }
 ])

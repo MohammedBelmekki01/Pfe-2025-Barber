@@ -62,7 +62,7 @@ export default function UserReservationsList() {
             <div className="flex flex-wrap justify-between items-start mb-2">
               <div>
                 <p className="text-md font-medium text-gray-900 dark:text-gray-100">
-                  {res.service}
+                  {res.service?.name}
                 </p>
                 {res.barber && (
                   <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -80,6 +80,7 @@ export default function UserReservationsList() {
                 <Clock className="h-4 w-4 mr-1" />
                 {format(new Date(res.reservation_time), 'p')}
               </span>
+              <p>{res.status}</p>
             </div>
           </div>
         ))}

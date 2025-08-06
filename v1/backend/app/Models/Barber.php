@@ -42,4 +42,9 @@ class Barber extends Authenticatable
     return $this->hasMany(Review::class);
 }
 
+
+    public function services()
+{
+    return $this->hasMany(Service::class);
+}
 }
