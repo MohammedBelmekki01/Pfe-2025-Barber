@@ -18,30 +18,32 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // User::factory(10)->create();
-        // User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        //     'password' => '123456789',
-        // ]);
+        User::factory()->create([
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+            'password' => '123456789',
+            'addrees' => 'casa',
+            'phone' => '0612345678',
+        ]);
 
 
 
-        // Admin::factory()->create([
-        //     'firstname' => 'Super',
-        //     'lastname' => 'Admin',
-        //     'date_of_birth' => '1990-01-01',
-        //     'gender' => 'm',
-        //     'addrees' => '123 Admin Street',
-        //     'phone' => '0612345678',
-        //     'email' => 'admin@example.com',
-        //     'password' => Hash::make('password123'),
-        // ]);
+        Admin::factory()->create([
+            'firstname' => 'Super',
+            'lastname' => 'Admin',
+            'date_of_birth' => '1990-01-01',
+            'gender' => 'm',
+            'addrees' => '123 Admin Street',
+            'phone' => '0612345678',
+            'email' => 'admin@example.com',
+            'password' => Hash::make('password123'),
+        ]);
 
 
         Barber::factory()->create([
             'firstname'    => 'barber111',
             'lastname'     => 'barber111',
-            'date_of_birth'=> '1985-05-15',
+            'date_of_birth' => '1985-05-15',
             'gender'       => 'm',
             'addrees'      => '456 Barber Ave',
             'phone'        => '0698865432',
