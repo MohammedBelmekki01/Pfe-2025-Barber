@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import ServiceForm from './ServiceForm';
 import ServiceList from './ServiceList';
 import axiosClient from '@/api/axios';

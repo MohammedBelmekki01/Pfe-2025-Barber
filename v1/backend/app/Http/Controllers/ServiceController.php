@@ -11,7 +11,7 @@ class ServiceController extends Controller
     // Liste services (client & admin)
 public function index(Request $request)
 {
-    $query = Service::query();
+    $query = Service::query()->with('barber');
 
     if ($request->has('barber_id')) {
         $query->where('barber_id', $request->barber_id);

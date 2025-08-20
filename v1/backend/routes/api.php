@@ -20,6 +20,9 @@ Route::middleware(['auth:sanctum'])->group(static function () {
   });
 });
 Route::post('register/clients', [ClientController::class, 'store']);
+  Route::get('/services', [ServiceController::class, 'index']);
+  Route::get('/barbers', [BarberController::class, 'index']);
+
 Route::post('register/barbers', [BarberController::class, 'store']);
 //  Route::get('/barbers/{barber}/reviews', [ReviewController::class, 'index']);
 //   Route::post('/barbers/{barber}/reviews', [ReviewController::class, 'store']);
