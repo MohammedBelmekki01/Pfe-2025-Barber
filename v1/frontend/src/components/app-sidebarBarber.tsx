@@ -36,7 +36,7 @@ import {
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useUsercontext } from "@/context/UserContext"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { ROUTE_LOGIN } from "@/router"
 
 // Menu items for main navigation
@@ -61,11 +61,7 @@ const items = [
     url: "/barber/services",
     icon: Scissors,
   },
-  {
-    title: "My Schedule",
-    url: "/barber/schedule",
-    icon: Clock,
-  },
+
 ]
 
 
@@ -96,12 +92,12 @@ export function AppSideidebarBarber({ user, ...props }: AppSidebarProps) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="/dashboard">
+              <Link to="/barber/dashboard">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 text-sidebar-primary-foreground">
                   <Scissors className="size-4" />
                   
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -116,10 +112,10 @@ export function AppSideidebarBarber({ user, ...props }: AppSidebarProps) {
               {items.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild tooltip={item.title}>
-                    <a href={item.url}>
+                    <Link to={item.url}>
                       <item.icon />
                       <span>{item.title}</span>
-                    </a>
+                    </Link>
                   </SidebarMenuButton>
                   {item.badge && (
                     <SidebarMenuAction className="peer-data-[size=sm]/menu-button:top-1">

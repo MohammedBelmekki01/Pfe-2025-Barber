@@ -13,7 +13,7 @@ class Barber extends Authenticatable
 {
     use HasApiTokens, HasFactory, SoftDeletes;
 
-     protected $fillable = [
+    protected $fillable = [
         'firstname',
         'lastname',
         'date_of_birth',
@@ -25,7 +25,9 @@ class Barber extends Authenticatable
         'bio',
         'experience',
         'location',
-        'status'
+        'status',
+            'image' // <-- add this
+
     ];
 
     protected $appends = ['role'];
@@ -38,13 +40,13 @@ class Barber extends Authenticatable
 
 
     public function reviews()
-{
-    return $this->hasMany(Review::class);
-}
+    {
+        return $this->hasMany(Review::class);
+    }
 
 
     public function services()
-{
-    return $this->hasMany(Service::class);
-}
+    {
+        return $this->hasMany(Service::class);
+    }
 }

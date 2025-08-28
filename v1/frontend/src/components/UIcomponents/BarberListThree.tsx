@@ -46,7 +46,7 @@ export default function BarberListAll() {
             className="flex items-center space-x-3 p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg cursor-pointer transition"
           >
             <img
-              src={barber.avatar || "/badgebarber.jpg"}
+                    src={`${import.meta.env.VITE_BACKEND_URL}/storage/${barber?.image}` || "/placeholder.svg"}
               alt="Barbier"
               className="w-10 h-10 rounded-full"
             />

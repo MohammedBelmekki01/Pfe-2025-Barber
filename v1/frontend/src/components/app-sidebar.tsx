@@ -62,36 +62,11 @@ const items = [
     url: "/services",
     icon: Scissors,
   },
-  {
-    title: "Analytics",
-    url: "/analytics",
-    icon: BarChart3,
-  },
-  {
-    title: "Schedule",
-    url: "/schedule",
-    icon: Clock,
-  },
+  
 ]
 
 // Quick actions menu
-const quickActions = [
-  {
-    title: "New Appointment",
-    url: "/appointments/new",
-    icon: Plus,
-  },
-  {
-    title: "Add Client",
-    url: "/clients/new",
-    icon: User2,
-  },
-  {
-    title: "View Reviews",
-    url: "/reviews",
-    icon: Star,
-  },
-]
+
 
 // Settings menu
 const settingsItems = [
@@ -176,27 +151,7 @@ export function AppSidebar({ user, ...props }: AppSidebarProps) {
         </SidebarGroup>
 
         {/* Quick Actions */}
-        <SidebarGroup>
-          <SidebarGroupLabel>Quick Actions</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {quickActions.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild tooltip={item.title}>
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                  <SidebarMenuAction showOnHover>
-                    <MoreHorizontal />
-                    <span className="sr-only">More</span>
-                  </SidebarMenuAction>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+
 
         {/* Settings */}
         <SidebarGroup>

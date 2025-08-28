@@ -27,13 +27,18 @@ import ServiceParent from "@/components/Barber/Services/ServiceParent";
 import AllServices from "@/components/Admin/ForSevices/AllServices";
 import BarberServices from "@/components/Client/FromBarber/BarberServicesForClient";
 import BarberServicesForClient from "@/components/Client/FromBarber/BarberServicesForClient";
+import SendWelcomeEmail from "@/TestSendEmail";
+import Profile from "@/components/Barber/Profile/Profile";
+import ClientProfile from "@/components/Client/profile/ClientProfile";
+import ClientProfileWithTabs from "@/components/Client/profile/ClientProfileWithTabs";
 
 export const ROUTE_LOGIN = '/login'
 export const BARBER_DASHBOARD_ROUTE = '/barber/dashboard'
 export const ADMIN_DASHBOARD_ROUTE = '/admin/dashboard'
 export const ADMIN_MANAGE_CLIENT_ROUTE = '/admin/manage-client'
 export const ADMIN_MANAGE_BARBERS_ROUTE = '/admin/manage-barber'
-export const client_DASHBOARD_ROUTE = '/client/dashboard'
+export const CLIENT_DASHBOARD_ROUTE = '/client/dashboard'
+export const CLIENT_PROFILE = '/client/profile'
 export const Reviews_DASHBOARD_ROUTE = '/admin/reviews'
 export const BARBER_DETAILS = '/admin/barber-details'
 export const CLIENT_DETAILS = '/admin/client-details'
@@ -44,7 +49,8 @@ export const BARBER_ALL = '/client/barbers'
 export const ALL_RESERVATION = '/barber/reservations'
 export const ALL_CLIENT_RESERVATION = '/barber/clients'
 export const ALL_SERVICE_BARBER = '/barber/services'
-
+export const TestEMAIL = '/barber/testemail'
+export const BARBER_PROFILE = '/barber/profile'
 export const ALL_RESERVATION_BARBERS_ADMIN = '/admin/reservations'
 
 
@@ -62,7 +68,7 @@ export const redirectToDashboard = (roleType: any) => {
             return (ADMIN_DASHBOARD_ROUTE)
 
         case 'client':
-            return (client_DASHBOARD_ROUTE)
+            return (CLIENT_DASHBOARD_ROUTE)
 
         default:
 
@@ -101,6 +107,14 @@ export const router = createBrowserRouter([
             {
                 path : ALL_SERVICE_BARBER,
                 element : <ServiceParent />
+            },
+                        {
+                path : TestEMAIL,
+                element : <SendWelcomeEmail />
+            },
+                                    {
+                path : BARBER_PROFILE,
+                element : <Profile />
             }
         ]
     },
@@ -165,11 +179,10 @@ export const router = createBrowserRouter([
         element: <ClientLayout />,
         children: [
             {
-                path: client_DASHBOARD_ROUTE,
+                path: CLIENT_DASHBOARD_ROUTE,
                 element: <ClientDashboard />
             },
 
-            ,
             {
                 path: BARBER_DETAILSFORCLIENT,
                 element: <BarberDetailsPageForClient />
@@ -189,7 +202,12 @@ export const router = createBrowserRouter([
             {
                 path : ALL_SERVICES_BARBERFOR_CLIENT,
                 element : <BarberServicesForClient />
-            }
+            },
+                        {
+                path: CLIENT_PROFILE,
+                element: <ClientProfileWithTabs />
+
+            },
         ]
     }
 ])

@@ -66,11 +66,7 @@ const items = [
     url: "/admin/services",
     icon: Clock,
   },
-  {
-    title: "Analytics",
-    url: "/admin/analytics",
-    icon: BarChart3,
-  },
+
   {
     title: "Reviews",
     url: "/admin/reviews",
@@ -79,23 +75,7 @@ const items = [
 ]
 
 // Quick actions menu
-const quickActions = [
-  {
-    title: "New Appointment",
-    url: "/appointments/new",
-    icon: Plus,
-  },
-  {
-    title: "Add Client",
-    url: "/admin/manage-client",
-    icon: User2,
-  },
-  {
-    title: "View Reviews",
-    url: "/reviews",
-    icon: Star,
-  },
-]
+
 
 
 
@@ -121,12 +101,12 @@ export function AppSideidebarAdmin({ user, ...props }: AppSidebarProps) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="/dashboard">
+              <Link to="/admin/dashboard">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 text-sidebar-primary-foreground">
                   <Scissors className="size-4" />
                   
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -157,28 +137,7 @@ export function AppSideidebarAdmin({ user, ...props }: AppSidebarProps) {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* Quick Actions */}
-        <SidebarGroup>
-          <SidebarGroupLabel>Quick Actions</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {quickActions.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild tooltip={item.title}>
-                    <a href={item.url}>
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                  <SidebarMenuAction showOnHover>
-                    <MoreHorizontal />
-                    <span className="sr-only">More</span>
-                  </SidebarMenuAction>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+
 
 
       </SidebarContent>

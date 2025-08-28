@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\BarberController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\MailController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\StudentController;
@@ -11,6 +12,10 @@ use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+
+
+use Illuminate\Support\Facades\Mail;
+use App\Mail\WelcomeUserMail;
 
 
 
@@ -35,6 +40,7 @@ Route::get('/barbers/{barber}/services', function (Barber $barber) {
 // Route::get('/barbers/{id}', action: [BarberController::class, 'show']);
 Route::middleware(['auth:sanctum', 'ability:client'])->prefix('client')->group(static function () {
   Route::get('/barbers/{barber}/reviews', action: [ReviewController::class, 'index']);
+  Route::put('/profile', [ClientController::class, 'updateProfile']);
   Route::post('/barbers/{barber}/reviews', [ReviewController::class, 'store']);
   Route::get('/barbers/{id}', action: [BarberController::class, 'show']);
   Route::get('/barbers', action: [BarberController::class, 'index']);
@@ -63,5 +69,10 @@ Route::middleware(['auth:sanctum', 'ability:barber'])->prefix('barber')->group(s
    Route::get('/services', [ServiceController::class, 'myServices']);
     Route::post('/services', [ServiceController::class, 'store']);
     Route::delete('/services/{id}', [ServiceController::class, 'destroy']);
+    Route::post('/test-email', [MailController::class, 'testEmail']);
     Route::put('/services/{id}', [ServiceController::class, 'update']);
-});
+Route::put('/profile', [BarberController::class, 'updateProfile']);
+    Route::post('/emails/welcome', [MailController::class, 'sendWelcome']);
+  });
+// Add this outside any middleware groups for testing
+Route::post('/test-email', [MailController::class, 'testEmail']);

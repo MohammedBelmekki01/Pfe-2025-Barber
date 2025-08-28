@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
-import { CalendarIcon, ClockIcon, SearchIcon } from "lucide-react" // Using specific icons for clarity
+import { useState, useEffect, useCallback, useMemo } from "react"
+import { CalendarIcon, ClockIcon, SearchIcon } from "lucide-react"
 import axiosClient from "@/api/axios"
 import debounce from "lodash.debounce"
 
@@ -10,11 +10,18 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-// Assuming these components exist and are styled with shadcn/ui
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
+
 import AdminBarberList from "../data-table/bareber/AdminBarberList"
 import AdminClientList from "../data-table/client/AdminClientList"
 
-// Status badge component using shadcn Badge
 const StatusBadge = ({ status }) => {
   const config = {
     pending: { text: "En attente", variant: "warning" },
@@ -29,10 +36,15 @@ const StatusBadge = ({ status }) => {
 export default function AdminDashboard() {
   const [appointments, setAppointments] = useState([])
   const [loading, setLoading] = useState(true)
-  const [filterType, setFilterType] = useState("client") // or "barber"
+
+  const [filterType, setFilterType] = useState("client")
   const [filterText, setFilterText] = useState("")
 
-  // Fetch reservations from API with optional filters
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1)
+  const perPage = 5
+
+  // Fetch all reservations
   const fetchReservations = useCallback((filterTypeParam, filterTextParam) => {
     setLoading(true)
     axiosClient
@@ -61,8 +73,7 @@ export default function AdminDashboard() {
       .finally(() => setLoading(false))
   }, [])
 
-  // Debounce API call when filter changes
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // Debounced fetch
   const debouncedFetch = useCallback(
     debounce((type, text) => {
       fetchReservations(type, text)
@@ -76,9 +87,17 @@ export default function AdminDashboard() {
     } else {
       debouncedFetch(filterType, filterText)
     }
+    setCurrentPage(1) // reset page when filtering
   }, [filterText, filterType, debouncedFetch, fetchReservations])
 
-  // Removed updateStatus function as per request
+  // Apply client-side pagination
+  const filteredAppointments = useMemo(() => appointments, [appointments])
+  const indexOfLast = currentPage * perPage
+  const indexOfFirst = indexOfLast - perPage
+  const currentAppointments = filteredAppointments.slice(indexOfFirst, indexOfLast)
+  const totalPages = Math.ceil(filteredAppointments.length / perPage)
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber)
 
   return (
     <div className="container mx-auto py-6 space-y-8 bg-background text-foreground min-h-screen">
@@ -123,32 +142,65 @@ export default function AdminDashboard() {
         <CardContent>
           {loading ? (
             <p className="text-center text-muted-foreground py-8">Loading appointments...</p>
-          ) : appointments.length === 0 ? (
+          ) : currentAppointments.length === 0 ? (
             <p className="text-center text-muted-foreground py-8">No appointments found.</p>
           ) : (
-            <div className="space-y-4">
-              {appointments.map((appt) => (
-                <div
-                  key={appt.id}
-                  className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors"
-                >
-                  <div>
-                    <p className="font-semibold">
-                      {appt.client} with {appt.barber}
-                    </p>
-                    <p className="text-muted-foreground">{appt.service}</p>
-                    <p className="text-sm text-muted-foreground flex items-center gap-1">
-                      <CalendarIcon className="h-3 w-3" /> {appt.date} <ClockIcon className="h-3 w-3 ml-2" />{" "}
-                      {appt.time}
-                    </p>
+            <>
+              <div className="space-y-4">
+                {currentAppointments.map((appt) => (
+                  <div
+                    key={appt.id}
+                    className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-border rounded-lg hover:bg-accent/50 transition-colors"
+                  >
+                    <div>
+                      <p className="font-semibold">
+                        {appt.client} with {appt.barber}
+                      </p>
+                      <p className="text-muted-foreground">{appt.service}</p>
+                      <p className="text-sm text-muted-foreground flex items-center gap-1">
+                        <CalendarIcon className="h-3 w-3" /> {appt.date} <ClockIcon className="h-3 w-3 ml-2" /> {appt.time}
+                      </p>
+                    </div>
+                    <div className="flex items-center space-x-4 mt-4 sm:mt-0">
+                      <StatusBadge status={appt.status} />
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-4 mt-4 sm:mt-0">
-                    <StatusBadge status={appt.status} />
-                    {/* Removed update buttons for view-only */}
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <Pagination className="mt-8">
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        href="#"
+                        onClick={() => paginate(currentPage - 1)}
+                        className={currentPage === 1 ? "pointer-events-none opacity-50" : undefined}
+                      />
+                    </PaginationItem>
+                    {Array.from({ length: totalPages }, (_, i) => (
+                      <PaginationItem key={i + 1}>
+                        <PaginationLink
+                          href="#"
+                          isActive={i + 1 === currentPage}
+                          onClick={() => paginate(i + 1)}
+                        >
+                          {i + 1}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ))}
+                    <PaginationItem>
+                      <PaginationNext
+                        href="#"
+                        onClick={() => paginate(currentPage + 1)}
+                        className={currentPage === totalPages ? "pointer-events-none opacity-50" : undefined}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              )}
+            </>
           )}
         </CardContent>
       </Card>

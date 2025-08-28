@@ -1,0 +1,152 @@
+"use client"
+
+import * as React from "react"
+import { useEffect, useState } from "react"
+import { Clock, MapPin, Calendar } from "lucide-react"
+
+import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel"
+
+interface Barber {
+  id: number
+  firstname: string
+  lastname: string
+  location: string
+  profile_photo: string
+}
+
+interface Service {
+  id: number
+  name: string
+  price: number
+  duration: number
+  description: string
+  barber: Barber
+}
+
+export function ServicesCarousel() {
+  const [services, setServices] = useState<Service[]>([])
+
+  useEffect(() => {
+    // Replace this with real API call
+    const mock: Service[] = [
+      {
+        id: 1,
+        name: "Coupe Classique",
+        price: 35,
+        duration: 45,
+        description: "Une coupe moderne avec finition professionnelle.",
+        barber: {
+          id: 1,
+          firstname: "Antoine",
+          lastname: "Dubois",
+          location: "Casablanca",
+          profile_photo: "/placeholder.svg",
+        },
+      },
+      {
+        id: 2,
+        name: "Rasage Traditionnel",
+        price: 20,
+        duration: 30,
+        description: "Rasage doux avec serviette chaude.",
+        barber: {
+          id: 2,
+          firstname: "Jean",
+          lastname: "Martin",
+          location: "Rabat",
+          profile_photo: "/placeholder.svg",
+        },
+      },
+            {
+        id: 1,
+        name: "Coupe Classique",
+        price: 35,
+        duration: 45,
+        description: "Une coupe moderne avec finition professionnelle.",
+        barber: {
+          id: 1,
+          firstname: "Antoine",
+          lastname: "Dubois",
+          location: "Casablanca",
+          profile_photo: "/placeholder.svg",
+        },
+      },
+      {
+        id: 2,
+        name: "Rasage Traditionnel",
+        price: 20,
+        duration: 30,
+        description: "Rasage doux avec serviette chaude.",
+        barber: {
+          id: 2,
+          firstname: "Jean",
+          lastname: "Martin",
+          location: "Rabat",
+          profile_photo: "/placeholder.svg",
+        },
+      },
+    ]
+
+    setServices(mock)
+  }, [])
+
+  return (
+    <section className="py-16 px-4">
+      <h2 className="text-2xl font-bold text-center mb-6">Nos Services</h2>
+      <Carousel className="w-full max-w-5xl mx-auto">
+        <CarouselContent className="-ml-4">
+          {services.map((service) => (
+            <CarouselItem
+              key={service.id}
+              className="pl-4 md:basis-1/2 lg:basis-1/3"
+            >
+              <Card className="hover:shadow-md transition-shadow">
+                <CardContent className="p-4">
+                  <div className="mb-3 space-y-2">
+                    <h3 className="text-lg font-semibold">{service.name}</h3>
+                    <p className="text-sm text-muted-foreground">
+                      {service.description}
+                    </p>
+                  </div>
+
+                  <div className="flex justify-between text-sm text-muted-foreground mb-4">
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-4 h-4" />
+                      <span>{service.duration} min</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <MapPin className="w-4 h-4" />
+                      <span>{service.barber.location}</span>
+                    </div>
+                  </div>
+
+                  <div className="mb-4 text-sm">
+                    Barbier:{" "}
+                    <span className="text-foreground font-medium">
+                      {service.barber.firstname} {service.barber.lastname}
+                    </span>
+                  </div>
+
+                  <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white">
+                    <Calendar className="w-4 h-4 mr-2" />
+                    Réserver pour {service.price} MAD
+                  </Button>
+                </CardContent>
+              </Card>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselPrevious />
+        <CarouselNext />
+      </Carousel>
+    </section>
+  )
+}

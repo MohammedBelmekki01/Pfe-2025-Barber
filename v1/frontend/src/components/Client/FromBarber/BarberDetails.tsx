@@ -110,9 +110,10 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
             <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
               {/* Avatar */}
               <div className="relative">
+
                 <Avatar className="w-32 h-32 border-4 border-white dark:border-gray-800 shadow-xl">
                   <AvatarImage
-                    src={barber.avatar || "/placeholder.svg"}
+                    src={`${import.meta.env.VITE_BACKEND_URL}/storage/${barber?.image}` || "/placeholder.svg"}
                     alt={`${barber.firstname} ${barber.lastname}`}
                   />
                   <AvatarFallback className="text-2xl font-bold bg-gradient-to-r from-emerald-500 to-blue-500 text-white">
@@ -143,11 +144,10 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
                         {[...Array(5)].map((_, i) => (
                           <Star
                             key={i}
-                            className={`w-5 h-5 ${
-                              i < Math.floor(barber.rating!)
+                            className={`w-5 h-5 ${i < Math.floor(barber.rating!)
                                 ? "text-yellow-400 fill-current"
                                 : "text-gray-300"
-                            }`}
+                              }`}
                           />
                         ))}
                       </div>
@@ -347,9 +347,8 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
                             {service.image && (
                               <div className="h-40 overflow-hidden">
                                 <img
-                                  src={`${
-                                    import.meta.env.VITE_BACKEND_URL
-                                  }/storage/${service.image}`}
+                                  src={`${import.meta.env.VITE_BACKEND_URL
+                                    }/storage/${service.image}`}
                                   alt={service.name}
                                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                                   onError={(e) => {

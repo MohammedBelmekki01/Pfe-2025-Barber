@@ -15,6 +15,8 @@ import {
   Mail,
   Phone,
   Search,
+  Sun,
+  Moon,
 } from "lucide-react"
 import axiosClient from "@/api/axios"
 import { useUsercontext } from "@/context/UserContext"
@@ -25,6 +27,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
+import { useTheme } from "next-themes"
 
 // Status badge component using shadcn Badge
 const StatusBadge = ({ status }) => {
@@ -40,7 +43,7 @@ const StatusBadge = ({ status }) => {
 
 // Stats card component using shadcn Card
 const StatCard = ({ icon: Icon, label, value }) => (
-  <Card>
+  <Card className="shadow-md hover:shadow-xl transition-shadow">
     <CardContent className="flex items-center justify-between pt-6">
       <div>
         <p className="text-sm text-muted-foreground">{label}</p>
@@ -62,7 +65,7 @@ const averageRating = (reviews) => {
 
 // Review card component
 const ReviewCard = ({ review }) => (
-  <Card>
+  <Card className="hover:shadow-lg transition-shadow">
     <CardHeader className="pb-2">
       <div className="flex justify-between items-center">
         <div className="font-medium">{review.user?.name ?? "Client inconnu"}</div>
@@ -72,10 +75,9 @@ const ReviewCard = ({ review }) => (
           ))}
         </div>
       </div>
-      {/* Add service name here */}
       {review.service?.name && (
         <div className="text-sm text-muted-foreground mt-1">
-          Servicqdqsfgqe : {review.service.name}
+          Service : {review.service.name}
         </div>
       )}
     </CardHeader>
@@ -88,38 +90,51 @@ const ReviewCard = ({ review }) => (
   </Card>
 )
 
+// Theme toggle button
+function ThemeToggle() {
+  const { theme, setTheme } = useTheme();
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      aria-label="Toggle theme"
+      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      className="absolute right-4 top-4"
+    >
+      {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+    </Button>
+  );
+}
+
 const BarberDashboard = () => {
   const { user } = useUsercontext()
   const [reservations, setReservations] = useState([])
   const [reviews, setReviews] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 5 // Nombre d'éléments par page
 
-  // Load reservations & reviews
   useEffect(() => {
     const fetchData = async () => {
       if (!user || !user.id) {
         setLoading(false)
-        return // Exit if user or user.id is not available
+        return
       }
-
       try {
         setLoading(true)
-        // Fetch reservations for the specific barber (backend should filter by authenticated user)
         const res1 = await axiosClient.get("/api/barber/reservations")
-        // Fetch reviews for the specific barber (backend should filter by authenticated user)
         const res2 = await axiosClient.get("/api/barber/reviews")
         setReservations(res1.data.data)
         setReviews(res2.data.data)
       } catch (error) {
         console.error("Error loading dashboard:", error)
-        // Optionally set an error state to display to the user
       } finally {
         setLoading(false)
       }
     }
     fetchData()
-  }, [user]) // Re-run effect when user context changes
+  }, [user])
 
   const updateStatus = async (id, newStatus) => {
     try {
@@ -130,7 +145,6 @@ const BarberDashboard = () => {
     }
   }
 
-  // Filter reservations based on search term
   const filteredReservations = useMemo(() => {
     if (!searchTerm) {
       return reservations
@@ -141,19 +155,30 @@ const BarberDashboard = () => {
         reservation.user?.name?.toLowerCase().includes(lowerCaseSearchTerm) ||
         reservation.user?.email?.toLowerCase().includes(lowerCaseSearchTerm) ||
         reservation.user?.phone?.includes(lowerCaseSearchTerm) ||
-        reservation.service?.toLowerCase().includes(lowerCaseSearchTerm),
+        reservation.service?.name?.toLowerCase().includes(lowerCaseSearchTerm)
     )
   }, [reservations, searchTerm])
+
+  // Calcul de la pagination
+  const totalPages = Math.ceil(filteredReservations.length / itemsPerPage)
+  const currentReservations = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage
+    const endIndex = startIndex + itemsPerPage
+    return filteredReservations.slice(startIndex, endIndex)
+  }, [filteredReservations, currentPage, itemsPerPage])
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber)
+  }
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg">Chargement...</p>
+        <p className="text-lg text-muted-foreground">Chargement du tableau de bord...</p>
       </div>
     )
   }
 
-  // If user is not logged in or user.id is missing
   if (!user || !user.id) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -165,53 +190,66 @@ const BarberDashboard = () => {
   }
 
   return (
-    <div className="container mx-auto py-6 space-y-8">
+    <div className="container mx-auto py-6 space-y-8 relative">
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <div className="flex items-center gap-4">
-          <Avatar className="h-14 w-14 border-2 border-primary/10">
-            <AvatarImage src={user?.profile_photo || "/badgebarber.jpg"} alt={user?.firstname} />
-            <AvatarFallback>
-              {user?.firstname?.[0]}
-              {user?.lastname?.[0]}
-            </AvatarFallback>
-          </Avatar>
-          <div>
-            <h1 className="text-2xl font-bold">
-              {user?.firstname} {user?.lastname}
-            </h1>
-            <div className="flex items-center text-sm text-muted-foreground">
-              <MapPin className="w-4 h-4 mr-1" />
-              {user?.location || "Non défini"}
-            </div>
+      <Card className="shadow-lg dark:shadow-none mb-6">
+        <CardContent className="flex justify-between items-center py-6">
+          <div className="flex items-center gap-4">
+            <Avatar className="h-16 w-16 border-2 border-primary/10">
+<AvatarImage
+  src={
+    user?.image
+      ? `${import.meta.env.VITE_BACKEND_URL}/storage/${user.image}`
+      : "/badgebarber.jpg"
+  }
+  alt={user?.firstname}
+  
+/>
+              <AvatarFallback>
+                {user?.firstname?.[0]}
+                {user?.lastname?.[0]}
+              </AvatarFallback>
+            </Avatar>
             <div>
-               
+              <h1 className="text-2xl font-bold">
+                {user?.firstname} {user?.lastname}
+              </h1>
+              <div className="flex items-center text-sm text-muted-foreground">
+                <MapPin className="w-4 h-4 mr-1" />
+                {user?.location || "Non défini"}
+              </div>
+              <div className="flex items-center gap-2 mt-1">
+                <Mail className="w-4 h-4 text-muted-foreground" />
+                <span className="text-xs">{user?.email}</span>
+                <Phone className="w-4 h-4 text-muted-foreground ml-2" />
+                <span className="text-xs">{user?.phone}
+</span>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="icon">
-            <Bell className="h-5 w-5" />
-            <span className="sr-only">Notifications</span>
-          </Button>
-          <Button variant="outline" size="icon">
-            <Settings className="h-5 w-5" />
-            <span className="sr-only">Paramètres</span>
-          </Button>
-        </div>
-      </div>
+          <div className="flex gap-2">
+            <Button variant="outline" size="icon">
+              <Bell className="h-5 w-5" />
+              <span className="sr-only">Notifications</span>
+            </Button>
+            <Button variant="outline" size="icon">
+              <Settings className="h-5 w-5" />
+              <span className="sr-only">Paramètres</span>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard icon={Calendar} label="Rdv Total" value={reservations.length} />
-        <StatCard icon={DollarSign} label="Revenus estimés" value={`${reservations.length * 100} MAD`} />
         <StatCard icon={Star} label="Note Moyenne" value={averageRating(reviews)} />
         <StatCard icon={Users} label="Avis" value={reviews.length} />
       </div>
 
       {/* Tabs for Reservations and Reviews */}
-      <Tabs defaultValue="reservations" className="w-full">
-        <TabsList className="grid w-full max-w-md grid-cols-2">
+      <Tabs defaultValue="reservations" className="w-full mt-8">
+        <TabsList className="grid w-full max-w-md grid-cols-2 mx-auto mb-4">
           <TabsTrigger value="reservations">Réservations</TabsTrigger>
           <TabsTrigger value="reviews">Avis Clients</TabsTrigger>
         </TabsList>
@@ -236,23 +274,22 @@ const BarberDashboard = () => {
                 />
               </div>
 
-              {filteredReservations.length === 0 && searchTerm !== "" ? (
+              {currentReservations.length === 0 && searchTerm !== "" ? (
                 <p className="text-center py-8 text-muted-foreground">
                   Aucune réservation trouvée pour "{searchTerm}".
                 </p>
-              ) : filteredReservations.length === 0 ? (
+              ) : currentReservations.length === 0 ? (
                 <p className="text-center py-8 text-muted-foreground">Aucune réservation.</p>
               ) : (
                 <div className="space-y-4">
-                  {filteredReservations.map((reservation) => (
-                    <Card key={reservation.id} className="overflow-hidden">
+                  {currentReservations.map((reservation) => (
+                    <Card key={reservation.id} className="overflow-hidden hover:shadow-lg transition-shadow border border-muted">
                       <div className="p-4 sm:p-6 flex flex-col sm:flex-row justify-between gap-4">
                         <div className="space-y-1">
-                          <div>
-                             {reservation.service?.name || "Service inconnu"}
+                          <div className="font-semibold text-primary">
+                            {reservation.service?.name || "Service inconnu"}
                           </div>
                           <div className="font-semibold">{reservation.user?.name ?? "Client inconnu"}</div>
-                          <div className="text-sm text-muted-foreground">{reservation.service?.name}</div>
                           <div className="flex items-center text-xs text-muted-foreground">
                             <Calendar className="mr-1 h-3 w-3" />
                             {new Date(reservation.reservation_time).toLocaleDateString()}
@@ -262,7 +299,6 @@ const BarberDashboard = () => {
                               minute: "2-digit",
                             })}
                           </div>
-                          {/* Display client email and phone */}
                           {reservation.user?.email && (
                             <div className="flex items-center text-xs text-muted-foreground">
                               <Mail className="mr-1 h-3 w-3" />
@@ -274,7 +310,6 @@ const BarberDashboard = () => {
                               <Phone className="mr-1 h-3 w-3" />
                               {reservation.user.phone}
                             </div>
-                              
                           )}
                         </div>
                         <div className="flex flex-col items-end gap-2">
@@ -316,6 +351,38 @@ const BarberDashboard = () => {
                   ))}
                 </div>
               )}
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                <div className="flex justify-center items-center space-x-2 mt-6">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    Précédent
+                  </Button>
+                  {[...Array(totalPages)].map((_, index) => (
+                    <Button
+                      key={index}
+                      variant={currentPage === index + 1 ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => handlePageChange(index + 1)}
+                    >
+                      {index + 1}
+                    </Button>
+                  ))}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                  >
+                    Suivant
+                  </Button>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -346,3 +413,5 @@ const BarberDashboard = () => {
 }
 
 export default BarberDashboard
+
+

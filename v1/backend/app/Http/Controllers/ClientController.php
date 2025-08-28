@@ -9,6 +9,7 @@ use App\Models\Barber;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class ClientController extends Controller
 {
@@ -53,6 +54,34 @@ class ClientController extends Controller
         ]);
     }
 
+public function updateProfile(UpdateClientRequest $request)
+{
+    // Get the authenticated client
+    $client = auth()->user();
+
+    if (!$client) {
+        return response()->json(['error' => 'Unauthorized'], 401);
+    }
+
+    // Validate request data using your existing form request
+    $formFields = $request->validated();
+
+    // Hash password if provided
+    if (!empty($formFields['password'])) {
+        $formFields['password'] = Hash::make($formFields['password']);
+    } else {
+        unset($formFields['password']);
+    }
+
+
+
+    $client->update($formFields);
+
+    return response()->json([
+        'message' => 'Client profile updated successfully.',
+        'client' => new ClientUserResource($client),
+    ]);
+}
 
     public function destroy(User $client)
     {
