@@ -1,154 +1,632 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { CheckCircle, XCircle } from "lucide-react";
+
+"use client";
+
+import { useState, useEffect, useCallback, useMemo } from "react";
+import {
+  CalendarIcon,
+  ClockIcon,
+  SearchIcon,
+  Calendar,
+  Filter,
+  Mail,
+  Phone,
+  MapPin,
+  Star,
+  CheckCircle,
+  AlertCircle,
+  XCircle,
+  Clock,
+  Scissors,
+} from "lucide-react";
 import axiosClient from "@/api/axios";
 import debounce from "lodash.debounce";
+import { format } from "date-fns";
 
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
-const StatusBadge = ({ status }) => {
-  const configs = {
-    pending: {
-      color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-200",
-      text: "En attente",
-    },
-    confirmed: {
-      color: "bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-200",
-      text: "Confirmé",
-    },
-    cancelled: {
-      color: "bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-200",
-      text: "Annulé",
-    },
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  addrees: string;
+  role: string;
+}
+
+interface Barber {
+  id: number;
+  firstname: string;
+  lastname: string;
+  email: string;
+  phone: string;
+  location: string;
+  experience: string;
+  bio: string;
+  status: string;
+}
+
+interface Service {
+  id: number;
+  name: string;
+  description: string;
+  price: string;
+  duration: number;
+}
+
+interface Reservation {
+  id: number;
+  user_id: number;
+  barber_id: number;
+  service_id: number;
+  reservation_time: string;
+  status: "pending" | "confirmed" | "cancelled" | "done";
+  created_at: string;
+  updated_at: string;
+  user: User;
+  barber: Barber;
+  service?: Service;
+}
+
+// Normalize status values and provide a matching helper
+const normalizeStatus = (status: unknown) => {
+  if (status === null || status === undefined) return "";
+  // handle numbers and numeric strings often used in DBs
+  if (typeof status === "number") {
+    if (status === 0) return "pending";
+    if (status === 1) return "confirmed";
+    if (status === 2) return "cancelled";
+    if (status === 3) return "done";
+  }
+  const s = String(status).toLowerCase().trim();
+  if (["0", "pending", "en_attente", "attente"].includes(s)) return "pending";
+  if (
+    ["1", "confirmed", "confirm", "accept", "accepted", "confirme"].includes(s)
+  )
+    return "confirmed";
+  if (
+    [
+      "2",
+      "cancelled",
+      "canceled",
+      "cancel",
+      "rejected",
+      "reject",
+      "annule",
+      "refuse",
+    ].includes(s)
+  )
+    return "cancelled";
+  if (
+    [
+      "3",
+      "done",
+      "complete",
+      "completed",
+      "finished",
+      "finish",
+      "termine",
+      "terminé",
+    ].includes(s)
+  )
+    return "done";
+  return s;
+};
+
+const matchesStatus = (itemStatus: unknown, filterStatus: string) => {
+  if (!filterStatus || filterStatus === "all") return true;
+  return normalizeStatus(itemStatus) === normalizeStatus(filterStatus);
+};
+
+const StatusBadge = ({ status }: { status: string }) => {
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "confirmed":
+        return <CheckCircle className="w-4 h-4 text-green-500" />;
+      case "pending":
+        return <AlertCircle className="w-4 h-4 text-yellow-500" />;
+      case "cancelled":
+        return <XCircle className="w-4 h-4 text-red-500" />;
+      case "done":
+        return <CheckCircle className="w-4 h-4 text-blue-500" />;
+      default:
+        return <AlertCircle className="w-4 h-4 text-gray-500" />;
+    }
   };
-  const config = configs[status] || configs.pending;
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "confirmed":
+        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
+      case "pending":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300";
+      case "cancelled":
+        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
+      case "done":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300";
+      default:
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300";
+    }
+  };
+
   return (
-    <span
-      className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${config.color}`}
+    <Badge
+      className={`${getStatusColor(status)} border-0 flex items-center gap-1`}
     >
-      {config.text}
-    </span>
+      {getStatusIcon(status)}
+      {status.charAt(0).toUpperCase() + status.slice(1)}
+    </Badge>
   );
 };
 
 export default function AllReservationBarber() {
-  const [appointments, setAppointments] = useState([]);
+  const [reservations, setReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filterType, setFilterType] = useState("client"); // or "barber"
-  const [filterText, setFilterText] = useState("");
 
-  // Fetch reservations from API with optional filters
-  const fetchReservations = (filterTypeParam, filterTextParam) => {
+  // Advanced filtering state
+  const [filters, setFilters] = useState({
+    status: "",
+    search: "",
+    dateFrom: "",
+    dateTo: "",
+    filterType: "client", // client, barber, service
+  });
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const perPage = 6;
+
+  // Fetch reservations with advanced filtering
+  const fetchReservations = useCallback(async () => {
     setLoading(true);
-    axiosClient
-      .get("/api/admin/reservations", {
-        params: filterTextParam
-          ? { filterType: filterTypeParam, filterText: filterTextParam }
-          : {},
-      })
-      .then((res) => {
-        const formatted = res.data.data.map((r) => ({
-          id: r.id,
-          client: r.user?.name ?? "Client inconnu",
-          barber: r.barber
-            ? `${r.barber.firstname} ${r.barber.lastname}`
-            : "Barbier inconnu",
-          service: r.service,
-          date: new Date(r.reservation_time).toLocaleDateString(),
-          time: new Date(r.reservation_time).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit",
-          }),
-          status: r.status,
-        }));
-        setAppointments(formatted);
-      })
-      .catch((err) => {
-        console.error("Error fetching reservations:", err);
-        setAppointments([]);
-      })
-      .finally(() => setLoading(false));
-  };
+    try {
+      const params: Record<string, string> = {};
 
-  // Debounce API call when filter changes
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const debouncedFetch = useCallback(
-    debounce((type, text) => {
-      fetchReservations(type, text);
-    }, 500),
-    []
+      if (filters.status && filters.status !== "")
+        params.status = filters.status;
+      if (filters.search && filters.search.trim() !== "") {
+        params.filterType = filters.filterType;
+        params.filterText = filters.search;
+      }
+      if (filters.dateFrom && filters.dateFrom !== "")
+        params.dateFrom = filters.dateFrom;
+      if (filters.dateTo && filters.dateTo !== "")
+        params.dateTo = filters.dateTo;
+
+      console.log("Fetching reservations with params:", params);
+
+      const response = await axiosClient.get("/api/admin/reservations", {
+        params,
+      });
+      const apiData: Reservation[] = response.data.data || [];
+      const finalData = filters.status
+        ? apiData.filter((r) =>
+            matchesStatus(r.status as unknown as string, filters.status)
+          )
+        : apiData;
+      console.log(
+        `After status filter (${filters.status || "all"}):`,
+        finalData.length,
+        "of",
+        apiData.length
+      );
+      setReservations(finalData);
+    } catch (error) {
+      console.error("Error fetching reservations:", error);
+      setReservations([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [filters]);
+
+  // Debounced search for text input only
+  const debouncedFetchSearch = useMemo(
+    () =>
+      debounce(() => {
+        console.log("Debounced search triggered");
+        fetchReservations();
+      }, 500),
+    [fetchReservations]
   );
 
   useEffect(() => {
-    if (filterText.trim() === "") {
-      fetchReservations("", "");
+    // If there's search text, use debounced fetch, otherwise fetch immediately
+    if (filters.search.trim() !== "") {
+      debouncedFetchSearch();
     } else {
-      debouncedFetch(filterType, filterText);
+      // For all other filter changes (status, dates) or no search, fetch immediately
+      fetchReservations();
     }
-  }, [filterText, filterType, debouncedFetch]);
+    setCurrentPage(1);
+  }, [filters, fetchReservations, debouncedFetchSearch]);
 
-  const updateStatus = (id, status) => {
-    setAppointments((prev) =>
-      prev.map((appt) => (appt.id === id ? { ...appt, status } : appt))
-    );
+  // Pagination logic
+  const indexOfLast = currentPage * perPage;
+  const indexOfFirst = indexOfLast - perPage;
+  const currentReservations = reservations.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(reservations.length / perPage);
+
+  const updateFilter = (key: string, value: string) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const getInitials = (firstname: string, lastname: string) => {
+    return `${firstname.charAt(0)}${lastname.charAt(0)}`.toUpperCase();
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-6 text-gray-900 dark:text-gray-100 transition-colors duration-300">
-      <h1 className="text-3xl font-bold mb-6">All Rservations</h1>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-6">
+      <div className="max-w-7xl mx-auto space-y-8">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+            All Reservations
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400">
+            Manage and monitor all barbershop appointments
+          </p>
+        </div>
 
-      {/* Filter controls */}
-      <div className="mb-6 flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 max-w-md">
-        <select
-          value={filterType}
-          onChange={(e) => setFilterType(e.target.value)}
-          className="rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="client">Filtrer par client</option>
-          <option value="barber">Filtrer par barbier</option>
-        </select>
+        {/* Advanced Filters */}
+        <Card className="shadow-xl border-0 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Filter className="w-5 h-5" />
+              Advanced Filters
+            </CardTitle>
+            <CardDescription>
+              Filter reservations with multiple criteria
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Status</label>
+                <Select
+                  value={filters.status === "" ? "all" : filters.status}
+                  onValueChange={(value) =>
+                    updateFilter("status", value === "all" ? "" : value)
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="All Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Status</SelectItem>
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="confirmed">Confirmed</SelectItem>
+                    <SelectItem value="done">Done</SelectItem>
+                    <SelectItem value="cancelled">Cancelled</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-        <input
-          type="text"
-          placeholder={`Rechercher par ${filterType === "client" ? "client" : "barbier"}`}
-          value={filterText}
-          onChange={(e) => setFilterText(e.target.value)}
-          className="flex-grow rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">
+                  Search Type
+                </label>
+                <Select
+                  value={filters.filterType}
+                  onValueChange={(value) => updateFilter("filterType", value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="client">By Client</SelectItem>
+                    <SelectItem value="barber">By Barber</SelectItem>
+                    <SelectItem value="service">By Service</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-      {/* Reservations list */}
-      <section className="bg-white dark:bg-gray-800 rounded-xl shadow p-6 mb-10 transition-colors">
-        <h2 className="text-xl font-semibold mb-4">Rendez-vous récents</h2>
-
-        {loading ? (
-          <p className="text-center text-gray-500">Chargement des rendez-vous...</p>
-        ) : appointments.length === 0 ? (
-          <p className="text-center text-gray-500">Aucun rendez-vous trouvé.</p>
-        ) : (
-          <div className="space-y-4">
-            {appointments.map((appt) => (
-              <div
-                key={appt.id}
-                className="flex flex-col sm:flex-row sm:items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-              >
-                <div>
-                  <p className="font-semibold">
-                    {appt.client} avec {appt.barber}
-                  </p>
-                  <p className="text-gray-500 dark:text-gray-400">{appt.service}</p>
-                  <p className="text-sm text-gray-400 dark:text-gray-500">
-                    {appt.date} à {appt.time}
-                  </p>
-                </div>
-                <div className="flex items-center space-x-4 mt-4 sm:mt-0">
-                  <StatusBadge status={appt.status} />
-
+              <div>
+                <label className="text-sm font-medium mb-2 block">Search</label>
+                <div className="relative">
+                  <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder={`Search by ${filters.filterType}...`}
+                    value={filters.search}
+                    onChange={(e) => updateFilter("search", e.target.value)}
+                    className="pl-9"
+                  />
                 </div>
               </div>
-            ))}
-          </div>
-        )}
-      </section>
 
+              <div>
+                <label className="text-sm font-medium mb-2 block">
+                  From Date
+                </label>
+                <Input
+                  type="date"
+                  value={filters.dateFrom}
+                  onChange={(e) => updateFilter("dateFrom", e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium mb-2 block">
+                  To Date
+                </label>
+                <Input
+                  type="date"
+                  value={filters.dateTo}
+                  onChange={(e) => updateFilter("dateTo", e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-2 mt-4">
+              <Button
+                variant="outline"
+                onClick={() =>
+                  setFilters({
+                    status: "",
+                    search: "",
+                    dateFrom: "",
+                    dateTo: "",
+                    filterType: "client",
+                  })
+                }
+              >
+                Clear Filters
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Modern Reservations Display */}
+        <Card className="shadow-xl border-0 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="w-5 h-5" />
+              All Reservations ({reservations.length})
+            </CardTitle>
+            <CardDescription>
+              Monitor and manage all barbershop appointments
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {/* Active Filters Debug (temporary) */}
+            <div className="mb-4 text-xs text-gray-500 dark:text-gray-400">
+              Active filters: status={filters.status || "all"}, type=
+              {filters.filterType}, search={filters.search || ""}, from=
+              {filters.dateFrom || ""}, to={filters.dateTo || ""}
+            </div>
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="text-center">
+                  <Clock className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
+                  <p className="text-gray-600 dark:text-gray-400">
+                    Loading reservations...
+                  </p>
+                </div>
+              </div>
+            ) : currentReservations.length === 0 ? (
+              <div className="text-center py-12">
+                <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-600 dark:text-gray-400 text-lg">
+                  No reservations found
+                </p>
+                <p className="text-gray-500 dark:text-gray-500">
+                  Try adjusting your filters
+                </p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {currentReservations.map((reservation) => (
+                  <Card
+                    key={reservation.id}
+                    className="border-0 shadow-lg bg-white dark:bg-gray-800 hover:shadow-xl transition-all duration-300 overflow-hidden"
+                  >
+                    <CardContent className="p-6">
+                      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                        {/* Left Section - Client Info */}
+                        <div className="flex items-center gap-4 flex-1">
+                          <Avatar className="w-12 h-12 border-2 border-blue-200">
+                            <AvatarImage src="" alt={reservation.user.name} />
+                            <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold">
+                              {reservation.user.name.charAt(0).toUpperCase()}
+                            </AvatarFallback>
+                          </Avatar>
+
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="font-bold text-lg text-gray-900 dark:text-white">
+                                {reservation.user.name}
+                              </h3>
+                              <Badge variant="secondary" className="text-xs">
+                                Client
+                              </Badge>
+                            </div>
+
+                            <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                              <div className="flex items-center gap-1">
+                                <Mail className="w-4 h-4" />
+                                <span>{reservation.user.email}</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <Phone className="w-4 h-4" />
+                                <span>+212 {reservation.user.phone}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Center Section - Barber Info */}
+                        <div className="flex items-center gap-4 flex-1">
+                          <Avatar className="w-12 h-12 border-2 border-green-200">
+                            <AvatarImage
+                              src=""
+                              alt={`${reservation.barber.firstname} ${reservation.barber.lastname}`}
+                            />
+                            <AvatarFallback className="bg-gradient-to-r from-green-500 to-blue-500 text-white font-bold">
+                              {getInitials(
+                                reservation.barber.firstname,
+                                reservation.barber.lastname
+                              )}
+                            </AvatarFallback>
+                          </Avatar>
+
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <h4 className="font-bold text-gray-900 dark:text-white">
+                                {reservation.barber.firstname}{" "}
+                                {reservation.barber.lastname}
+                              </h4>
+                              <Badge variant="secondary" className="text-xs">
+                                Barber
+                              </Badge>
+                            </div>
+
+                            <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                              <div className="flex items-center gap-1">
+                                <Star className="w-4 h-4" />
+                                <span>{reservation.barber.experience}</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <MapPin className="w-4 h-4" />
+                                <span>{reservation.barber.location}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Right Section - Appointment Details */}
+                        <div className="flex flex-col items-end gap-3 min-w-[200px]">
+                          <StatusBadge status={reservation.status} />
+
+                          <div className="text-right">
+                            <div className="flex items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+                              <CalendarIcon className="w-4 h-4" />
+                              <span>
+                                {format(
+                                  new Date(reservation.reservation_time),
+                                  "MMM dd, yyyy"
+                                )}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
+                              <ClockIcon className="w-4 h-4" />
+                              <span>
+                                {format(
+                                  new Date(reservation.reservation_time),
+                                  "HH:mm"
+                                )}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="text-right">
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              Reservation #{reservation.id}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              Created:{" "}
+                              {format(
+                                new Date(reservation.created_at),
+                                "MMM dd"
+                              )}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Service Info */}
+                      {reservation.service && (
+                        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                          <div className="flex items-center gap-2">
+                            <Scissors className="w-4 h-4 text-purple-500" />
+                            <span className="font-medium text-purple-700 dark:text-purple-300">
+                              {reservation.service.name}
+                            </span>
+                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                              - {reservation.service.duration}min
+                            </span>
+                            <span className="font-semibold text-green-600 dark:text-green-400">
+                              ${reservation.service.price}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <Pagination className="mt-8">
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      href="#"
+                      onClick={() =>
+                        setCurrentPage(Math.max(1, currentPage - 1))
+                      }
+                      className={
+                        currentPage === 1
+                          ? "pointer-events-none opacity-50"
+                          : undefined
+                      }
+                    />
+                  </PaginationItem>
+                  {Array.from({ length: totalPages }, (_, i) => (
+                    <PaginationItem key={i + 1}>
+                      <PaginationLink
+                        href="#"
+                        isActive={i + 1 === currentPage}
+                        onClick={() => setCurrentPage(i + 1)}
+                      >
+                        {i + 1}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+                  <PaginationItem>
+                    <PaginationNext
+                      href="#"
+                      onClick={() =>
+                        setCurrentPage(Math.min(totalPages, currentPage + 1))
+                      }
+                      className={
+                        currentPage === totalPages
+                          ? "pointer-events-none opacity-50"
+                          : undefined
+                      }
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
+

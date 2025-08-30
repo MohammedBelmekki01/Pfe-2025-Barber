@@ -173,45 +173,102 @@ const [preview, setPreview] = useState<string | undefined>(undefined);
     }
   };
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      setIsSubmitting(true);
-      const loadingToast = toast.loading("Creating your barber profile...");
-      await UserApi.getCsrfToken();
-      const { status, data } = await BarberApiii.createGeust(values);
-      toast.dismiss(loadingToast);
+  // const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  //   try {
+  //     setIsSubmitting(true);
+  //     const loadingToast = toast.loading("Creating your barber profile...");
+  //     await UserApi.getCsrfToken();
+  //     const { status, data } = await BarberApiii.createGeust(values);
+  //     toast.dismiss(loadingToast);
 
-      if (status === 201) {
-        toast.success("Welcome to our barber community! 🎉", {
-          description: "Your profile has been created successfully.",
-        });
-        form.reset();
-        navigate(ROUTE_LOGIN);
-        setDate(undefined);
-      }
-    } catch (error: unknown) {
-      setIsSubmitting(false);
-      toast.dismiss();
-      if (error && typeof error === "object" && "response" in error) {
-        const errorResponse = error as any;
-        if (errorResponse.response?.data?.errors) {
-          Object.entries(errorResponse.response.data.errors).forEach(
-            ([field, messages]) => {
-              form.setError(field as keyof z.infer<typeof formSchema>, {
-                message: Array.isArray(messages)
-                  ? messages.join(", ")
-                  : (messages as string),
-              });
-            }
-          );
+  //     if (status === 201) {
+  //       toast.success("Welcome to our barber community! 🎉", {
+  //         description: "Your profile has been created successfully.",
+  //       });
+  //       form.reset();
+  //       navigate(ROUTE_LOGIN);
+  //       setDate(undefined);
+  //     }
+  //   } catch (error: unknown) {
+  //     setIsSubmitting(false);
+  //     toast.dismiss();
+  //     if (error && typeof error === "object" && "response" in error) {
+  //       const errorResponse = error as any;
+  //       if (errorResponse.response?.data?.errors) {
+  //         Object.entries(errorResponse.response.data.errors).forEach(
+  //           ([field, messages]) => {
+  //             form.setError(field as keyof z.infer<typeof formSchema>, {
+  //               message: Array.isArray(messages)
+  //                 ? messages.join(", ")
+  //                 : (messages as string),
+  //             });
+  //           }
+  //         );
+  //       } else {
+  //         toast.error("An unexpected error occurred");
+  //       }
+  //     } else {
+  //       toast.error("An unexpected error occurred");
+  //     }
+  //   }
+  // };
+const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  try {
+    setIsSubmitting(true);
+    const loadingToast = toast.loading("Creating your barber profile...");
+
+    await UserApi.getCsrfToken();
+
+    // Créer un FormData
+    const formData = new FormData();
+    Object.entries(values).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        if (key === "image" && value instanceof File) {
+          formData.append("image", value);
         } else {
-          toast.error("An unexpected error occurred");
+          formData.append(key, value as any);
         }
+      }
+    });
+
+    const { status, data } = await BarberApiii.createGeust(formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    toast.dismiss(loadingToast);
+
+    if (status === 201) {
+      toast.success("Welcome to our barber community! 🎉", {
+        description: "Your profile has been created successfully.",
+      });
+      form.reset();
+      navigate(ROUTE_LOGIN);
+      setDate(undefined);
+      setPreview(undefined);
+    }
+  } catch (error: unknown) {
+    setIsSubmitting(false);
+    toast.dismiss();
+    if (error && typeof error === "object" && "response" in error) {
+      const errorResponse = error as any;
+      if (errorResponse.response?.data?.errors) {
+        Object.entries(errorResponse.response.data.errors).forEach(
+          ([field, messages]) => {
+            form.setError(field as keyof z.infer<typeof formSchema>, {
+              message: Array.isArray(messages)
+                ? messages.join(", ")
+                : (messages as string),
+            });
+          }
+        );
       } else {
         toast.error("An unexpected error occurred");
       }
+    } else {
+      toast.error("An unexpected error occurred");
     }
-  };
+  }
+};
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 flex items-center justify-center p-4 sm:p-6">

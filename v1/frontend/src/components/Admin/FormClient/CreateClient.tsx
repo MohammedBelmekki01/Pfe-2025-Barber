@@ -12,7 +12,7 @@ import ClientApi from "@/Services/Api/ClientApi"
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(100),
   email: z.string().email("Please enter a valid email").max(60),
-  address: z.string().min(2, "Address must be at least 2 characters").max(255),
+  addrees: z.string().min(2, "addrees must be at least 2 characters").max(255),
   phone: z.string().length(10, "Phone must be 10 digits"),
   password: z.string().min(6, "Password must be at least 6 characters").max(255),
 })
@@ -23,7 +23,7 @@ function CreateClient() {
     defaultValues: {
       name: "",
       email: "",
-      address: "",
+      addrees: "",
       phone: "",
       password: "",
     },
@@ -89,14 +89,14 @@ function CreateClient() {
             />
           </div>
 
-          {/* Address and Phone */}
+          {/* addrees and Phone */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
-              name="address"
+              name="addrees"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Address</FormLabel>
+                  <FormLabel>addrees</FormLabel>
                   <FormControl>
                     <Input placeholder="123 Main St" {...field} />
                   </FormControl>

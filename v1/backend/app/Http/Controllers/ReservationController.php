@@ -17,7 +17,9 @@ class ReservationController extends Controller
     {
         // Optionally show user reservations
         $user = Auth::user();
-        $reservations = Reservation::where('user_id', $user->id)->with('barber')->get();
+        $reservations = Reservation::where('user_id', $user->id)
+            ->with(['barber', 'service'])
+            ->get();
         return ReservationResource::collection($reservations);
     }
 
@@ -58,7 +60,7 @@ class ReservationController extends Controller
         $user = $request->user();
 
         $reservations = Reservation::where('user_id', $user->id)
-            ->with(['barber','service'])
+            ->with(['barber', 'service'])
             ->orderBy('reservation_time', 'desc')
             ->get();
 
@@ -66,7 +68,7 @@ class ReservationController extends Controller
     }
     public function allReservations(Request $request)
     {
-        $query = Reservation::query()->with(['user', 'barber']);
+        $query = Reservation::query()->with(['user', 'barber','service']);
 
         $filterType = $request->input('filterType');
         $filterText = $request->input('filterText');
@@ -89,24 +91,24 @@ class ReservationController extends Controller
     }
 
     public function updateStatus(Request $request, $id)
-{
-    $request->validate([
-        'status' => 'required|in:pending,confirmed,cancelled,done',
-    ]);
+    {
+        $request->validate([
+            'status' => 'required|in:pending,confirmed,cancelled,done',
+        ]);
 
-    $reservation = Reservation::findOrFail($id);
+        $reservation = Reservation::findOrFail($id);
 
-    // Optional: Make sure the authenticated barber owns the reservation
-    if ($reservation->barber_id !== auth()->id()) {
-        return response()->json(['message' => 'Unauthorized'], 403);
+        // Optional: Make sure the authenticated barber owns the reservation
+        if ($reservation->barber_id !== auth()->id()) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $reservation->status = $request->status;
+        $reservation->save();
+
+        return response()->json([
+            'message' => 'Status updated successfully',
+            'data' => $reservation,
+        ]);
     }
-
-    $reservation->status = $request->status;
-    $reservation->save();
-
-    return response()->json([
-        'message' => 'Status updated successfully',
-        'data' => $reservation,
-    ]);
-}
 }

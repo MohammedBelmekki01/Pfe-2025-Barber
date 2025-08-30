@@ -26,7 +26,7 @@ class Barber extends Authenticatable
         'experience',
         'location',
         'status',
-            'image' // <-- add this
+        'image' // <-- add this
 
     ];
 
