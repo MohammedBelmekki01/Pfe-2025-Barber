@@ -1,13 +1,14 @@
-"use client"
+"use client";
 
-import { useEffect, useState, useMemo } from "react"
+import { useEffect, useState, useMemo } from "react";
 import {
   Calendar,
   Users,
-  DollarSign,
   Star,
+  MessageSquare,
   CheckCircle,
   XCircle,
+  AlertCircle,
   Bell,
   Settings,
   MapPin,
@@ -15,403 +16,767 @@ import {
   Mail,
   Phone,
   Search,
-  Sun,
-  Moon,
-} from "lucide-react"
-import axiosClient from "@/api/axios"
-import { useUsercontext } from "@/context/UserContext"
+  Filter,
+  X,
+  AtSign,
+  CalendarIcon,
+  ClockIcon,
+  Scissors,
+} from "lucide-react";
+import axiosClient from "@/api/axios";
+import { useUsercontext } from "@/context/UserContext";
+import { format } from "date-fns";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Input } from "@/components/ui/input"
-import { useTheme } from "next-themes"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
-// Status badge component using shadcn Badge
-const StatusBadge = ({ status }) => {
-  const config = {
-    pending: { text: "En attente", variant: "warning" },
-    confirmed: { text: "Confirmé", variant: "success" },
-    cancelled: { text: "Annulé", variant: "destructive" },
-    done: { text: "Terminé", variant: "default" },
-  }[status] || { text: status, variant: "outline" }
-
-  return <Badge variant={config.variant}>{config.text}</Badge>
+// Types
+interface BarberUser {
+  id?: number;
+  name: string;
+  firstname?: string;
+  lastname?: string;
+  email?: string;
+  phone?: string;
+  location?: string;
+  profile_photo?: string;
 }
 
-// Stats card component using shadcn Card
-const StatCard = ({ icon: Icon, label, value }) => (
-  <Card className="shadow-md hover:shadow-xl transition-shadow">
-    <CardContent className="flex items-center justify-between pt-6">
-      <div>
-        <p className="text-sm text-muted-foreground">{label}</p>
-        <p className="text-2xl font-bold mt-1">{value}</p>
-      </div>
-      <div className="rounded-full bg-primary/10 p-3">
-        <Icon className="h-6 w-6 text-primary" />
-      </div>
-    </CardContent>
-  </Card>
-)
+interface Client {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+}
+
+interface Service {
+  id: number;
+  name: string;
+  price: number;
+  duration: number;
+}
+
+interface Reservation {
+  id: number;
+  user_id: number;
+  barber_id: number;
+  service_id: number;
+  reservation_time: string;
+  status: "pending" | "confirmed" | "cancelled" | "done";
+  created_at: string;
+  user?: Client;
+  service?: Service;
+}
+
+interface Review {
+  id: number;
+  rating: number;
+  comment: string;
+  created_at: string;
+  user?: Client;
+  service?: Service;
+}
+
+// Status badge component with icons
+const StatusBadge = ({ status }: { status: string }) => {
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "confirmed":
+        return <CheckCircle className="w-4 h-4 text-green-500" />;
+      case "pending":
+        return <AlertCircle className="w-4 h-4 text-yellow-500" />;
+      case "cancelled":
+        return <XCircle className="w-4 h-4 text-red-500" />;
+      case "done":
+        return <CheckCircle className="w-4 h-4 text-blue-500" />;
+      default:
+        return <AlertCircle className="w-4 h-4 text-gray-500" />;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "confirmed":
+        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
+      case "pending":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300";
+      case "cancelled":
+        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
+      case "done":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300";
+      default:
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300";
+    }
+  };
+
+  return (
+    <Badge
+      className={`${getStatusColor(status)} border-0 flex items-center gap-1`}
+    >
+      {getStatusIcon(status)}
+      {status.charAt(0).toUpperCase() + status.slice(1)}
+    </Badge>
+  );
+};
 
 // Helper: Average Rating
-const averageRating = (reviews) => {
-  if (reviews.length === 0) return "0.0"
-  const total = reviews.reduce((sum, r) => sum + r.rating, 0)
-  return (total / reviews.length).toFixed(1)
-}
-
-// Review card component
-const ReviewCard = ({ review }) => (
-  <Card className="hover:shadow-lg transition-shadow">
-    <CardHeader className="pb-2">
-      <div className="flex justify-between items-center">
-        <div className="font-medium">{review.user?.name ?? "Client inconnu"}</div>
-        <div className="flex text-amber-500">
-          {Array(review.rating).fill().map((_, i) => (
-            <Star key={i} className="w-4 h-4" fill="currentColor" />
-          ))}
-        </div>
-      </div>
-      {review.service?.name && (
-        <div className="text-sm text-muted-foreground mt-1">
-          Service : {review.service.name}
-        </div>
-      )}
-    </CardHeader>
-    <CardContent>
-      <p className="text-sm text-muted-foreground">{review.comment}</p>
-    </CardContent>
-    <CardFooter className="pt-0">
-      <p className="text-xs text-muted-foreground">{new Date(review.created_at).toLocaleDateString()}</p>
-    </CardFooter>
-  </Card>
-)
-
-// Theme toggle button
-function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
-  return (
-    <Button
-      variant="ghost"
-      size="icon"
-      aria-label="Toggle theme"
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      className="absolute right-4 top-4"
-    >
-      {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-    </Button>
-  );
-}
+const averageRating = (reviews: Review[]) => {
+  if (reviews.length === 0) return "0.0";
+  const total = reviews.reduce((sum, r) => sum + r.rating, 0);
+  return (total / reviews.length).toFixed(1);
+};
 
 const BarberDashboard = () => {
-  const { user } = useUsercontext()
-  const [reservations, setReservations] = useState([])
-  const [reviews, setReviews] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [currentPage, setCurrentPage] = useState(1)
-  const itemsPerPage = 5 // Nombre d'éléments par page
+  const { user } = useUsercontext() as { user: BarberUser | null };
+  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [statsLoading, setStatsLoading] = useState(true);
 
+  // Advanced filtering state
+  const [searchTerm, setSearchTerm] = useState("");
+  const [nameFilter, setNameFilter] = useState("");
+  const [emailFilter, setEmailFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+
+  // Calculate statistics
+  const stats = useMemo(() => {
+    const totalReservations = reservations.length;
+    const averageNote = averageRating(reviews);
+    const totalReviews = reviews.length;
+    const totalClients = new Set(reservations.map((r) => r.user_id)).size;
+
+    return {
+      reservations: totalReservations,
+      averageNote,
+      reviews: totalReviews,
+      clients: totalClients,
+    };
+  }, [reservations, reviews]);
+
+  // Load reservations & reviews
   useEffect(() => {
     const fetchData = async () => {
       if (!user || !user.id) {
-        setLoading(false)
-        return
+        setLoading(false);
+        setStatsLoading(false);
+        return;
       }
+
       try {
-        setLoading(true)
-        const res1 = await axiosClient.get("/api/barber/reservations")
-        const res2 = await axiosClient.get("/api/barber/reviews")
-        setReservations(res1.data.data)
-        setReviews(res2.data.data)
+        setLoading(true);
+        setStatsLoading(true);
+        // Fetch reservations for the specific barber
+        const res1 = await axiosClient.get("/api/barber/reservations");
+        // Fetch reviews for the specific barber
+        const res2 = await axiosClient.get("/api/barber/reviews");
+        setReservations(res1.data.data || []);
+        setReviews(res2.data.data || []);
       } catch (error) {
-        console.error("Error loading dashboard:", error)
+        console.error("Error loading dashboard:", error);
+        setReservations([]);
+        setReviews([]);
       } finally {
-        setLoading(false)
+        setLoading(false);
+        setStatsLoading(false);
       }
-    }
-    fetchData()
-  }, [user])
+    };
+    fetchData();
+  }, [user]);
 
-  const updateStatus = async (id, newStatus) => {
-    try {
-      await axiosClient.put(`/api/barber/reservations/${id}/status`, { status: newStatus })
-      setReservations((prev) => prev.map((r) => (r.id === id ? { ...r, status: newStatus } : r)))
-    } catch (error) {
-      console.error("Failed to update status", error)
-    }
-  }
-
+  // Advanced filtering logic
   const filteredReservations = useMemo(() => {
-    if (!searchTerm) {
-      return reservations
+    return reservations.filter((reservation) => {
+      const searchTermLower = searchTerm.toLowerCase();
+      const nameFilterLower = nameFilter.toLowerCase();
+      const emailFilterLower = emailFilter.toLowerCase();
+
+      // General search
+      const matchesSearchTerm =
+        !searchTerm ||
+        reservation.user?.name?.toLowerCase().includes(searchTermLower) ||
+        reservation.user?.email?.toLowerCase().includes(searchTermLower) ||
+        reservation.user?.phone?.includes(searchTerm) ||
+        reservation.service?.name?.toLowerCase().includes(searchTermLower);
+
+      // Specific filters
+      const matchesNameFilter =
+        !nameFilter ||
+        reservation.user?.name?.toLowerCase().includes(nameFilterLower);
+
+      const matchesEmailFilter =
+        !emailFilter ||
+        reservation.user?.email?.toLowerCase().includes(emailFilterLower);
+
+      const matchesStatusFilter =
+        statusFilter === "all" || reservation.status === statusFilter;
+
+      return (
+        matchesSearchTerm &&
+        matchesNameFilter &&
+        matchesEmailFilter &&
+        matchesStatusFilter
+      );
+    });
+  }, [reservations, searchTerm, nameFilter, emailFilter, statusFilter]);
+
+  const updateStatus = async (
+    id: number,
+    newStatus: "pending" | "confirmed" | "cancelled" | "done"
+  ) => {
+    try {
+      await axiosClient.put(`/api/barber/reservations/${id}/status`, {
+        status: newStatus,
+      });
+      setReservations((prev) =>
+        prev.map((r) => (r.id === id ? { ...r, status: newStatus } : r))
+      );
+    } catch (error) {
+      console.error("Failed to update status", error);
     }
-    const lowerCaseSearchTerm = searchTerm.toLowerCase()
-    return reservations.filter(
-      (reservation) =>
-        reservation.user?.name?.toLowerCase().includes(lowerCaseSearchTerm) ||
-        reservation.user?.email?.toLowerCase().includes(lowerCaseSearchTerm) ||
-        reservation.user?.phone?.includes(lowerCaseSearchTerm) ||
-        reservation.service?.name?.toLowerCase().includes(lowerCaseSearchTerm)
-    )
-  }, [reservations, searchTerm])
+  };
 
-  // Calcul de la pagination
-  const totalPages = Math.ceil(filteredReservations.length / itemsPerPage)
-  const currentReservations = useMemo(() => {
-    const startIndex = (currentPage - 1) * itemsPerPage
-    const endIndex = startIndex + itemsPerPage
-    return filteredReservations.slice(startIndex, endIndex)
-  }, [filteredReservations, currentPage, itemsPerPage])
-
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber)
-  }
+  // Review card component
+  const ReviewCard = ({ review }: { review: Review }) => (
+    <Card className="border-0 shadow-lg bg-white dark:bg-gray-800 hover:shadow-xl transition-all duration-300">
+      <CardHeader className="pb-2">
+        <div className="flex justify-between items-center">
+          <div className="font-medium">
+            {review.user?.name ?? "Client inconnu"}
+          </div>
+          <div className="flex text-amber-500">
+            {Array(review.rating)
+              .fill(0)
+              .map((_, i) => (
+                <Star key={i} className="w-4 h-4" fill="currentColor" />
+              ))}
+          </div>
+        </div>
+        {review.service?.name && (
+          <div className="text-sm text-muted-foreground mt-1">
+            Service : {review.service.name}
+          </div>
+        )}
+      </CardHeader>
+      <CardContent>
+        <p className="text-sm text-muted-foreground">{review.comment}</p>
+      </CardContent>
+      <div className="px-6 pb-4">
+        <p className="text-xs text-muted-foreground">
+          {new Date(review.created_at).toLocaleDateString()}
+        </p>
+      </div>
+    </Card>
+  );
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p className="text-lg text-muted-foreground">Chargement du tableau de bord...</p>
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
+        <div className="text-center">
+          <Clock className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
+          <p className="text-lg text-gray-600 dark:text-gray-400">
+            Chargement...
+          </p>
+        </div>
       </div>
-    )
+    );
   }
 
   if (!user || !user.id) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-gray-800">
         <p className="text-lg text-destructive">
-          Veuillez vous connecter en tant que barbier pour voir le tableau de bord.
+          Veuillez vous connecter en tant que barbier pour voir le tableau de
+          bord.
         </p>
       </div>
-    )
+    );
   }
 
   return (
-    <div className="container mx-auto py-6 space-y-8 relative">
-      {/* Header */}
-      <Card className="shadow-lg dark:shadow-none mb-6">
-        <CardContent className="flex justify-between items-center py-6">
-          <div className="flex items-center gap-4">
-            <Avatar className="h-16 w-16 border-2 border-primary/10">
-<AvatarImage
-  src={
-    user?.image
-      ? `${import.meta.env.VITE_BACKEND_URL}/storage/${user.image}`
-      : "/badgebarber.jpg"
-  }
-  alt={user?.firstname}
-  
-/>
-              <AvatarFallback>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-6">
+      <div className="max-w-7xl mx-auto space-y-8">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <Avatar className="h-16 w-16 border-4 border-white shadow-xl">
+              <AvatarImage
+                src={user?.profile_photo || "/badgebarber.jpg"}
+                alt={user?.firstname}
+              />
+              <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold text-xl">
                 {user?.firstname?.[0]}
                 {user?.lastname?.[0]}
               </AvatarFallback>
             </Avatar>
-            <div>
-              <h1 className="text-2xl font-bold">
+            <div className="text-left">
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 {user?.firstname} {user?.lastname}
               </h1>
-              <div className="flex items-center text-sm text-muted-foreground">
-                <MapPin className="w-4 h-4 mr-1" />
+              <div className="flex items-center text-gray-600 dark:text-gray-400 mt-1">
+                <MapPin className="w-4 h-4 mr-2" />
                 {user?.location || "Non défini"}
               </div>
-              <div className="flex items-center gap-2 mt-1">
-                <Mail className="w-4 h-4 text-muted-foreground" />
-                <span className="text-xs">{user?.email}</span>
-                <Phone className="w-4 h-4 text-muted-foreground ml-2" />
-                <span className="text-xs">{user?.phone}
-</span>
-              </div>
+            </div>
+            <div className="flex gap-2 ml-auto">
+              <Button variant="outline" size="icon" className="shadow-lg">
+                <Bell className="h-5 w-5" />
+                <span className="sr-only">Notifications</span>
+              </Button>
+              <Button variant="outline" size="icon" className="shadow-lg">
+                <Settings className="h-5 w-5" />
+                <span className="sr-only">Paramètres</span>
+              </Button>
             </div>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="icon">
-              <Bell className="h-5 w-5" />
-              <span className="sr-only">Notifications</span>
-            </Button>
-            <Button variant="outline" size="icon">
-              <Settings className="h-5 w-5" />
-              <span className="sr-only">Paramètres</span>
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+          <p className="text-gray-600 dark:text-gray-400">
+            Gérez vos rendez-vous et consultez vos statistiques
+          </p>
+        </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard icon={Calendar} label="Rdv Total" value={reservations.length} />
-        <StatCard icon={Star} label="Note Moyenne" value={averageRating(reviews)} />
-        <StatCard icon={Users} label="Avis" value={reviews.length} />
-      </div>
-
-      {/* Tabs for Reservations and Reviews */}
-      <Tabs defaultValue="reservations" className="w-full mt-8">
-        <TabsList className="grid w-full max-w-md grid-cols-2 mx-auto mb-4">
-          <TabsTrigger value="reservations">Réservations</TabsTrigger>
-          <TabsTrigger value="reviews">Avis Clients</TabsTrigger>
-        </TabsList>
-
-        {/* Reservations Tab */}
-        <TabsContent value="reservations">
-          <Card>
-            <CardHeader>
-              <CardTitle>Mes Réservations</CardTitle>
-              <CardDescription>Gérez vos rendez-vous et mettez à jour leur statut</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {/* Search Input */}
-              <div className="relative mb-6">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  type="text"
-                  placeholder="Rechercher par client, email, téléphone ou service..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9 pr-4"
-                />
+        {/* Statistics Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 shadow-xl">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-blue-100 text-sm font-medium">
+                    Total Réservations
+                  </p>
+                  <p className="text-3xl font-bold">
+                    {statsLoading ? "..." : stats.reservations}
+                  </p>
+                </div>
+                <Calendar className="w-12 h-12 text-blue-200" />
               </div>
+            </CardContent>
+          </Card>
 
-              {currentReservations.length === 0 && searchTerm !== "" ? (
-                <p className="text-center py-8 text-muted-foreground">
-                  Aucune réservation trouvée pour "{searchTerm}".
-                </p>
-              ) : currentReservations.length === 0 ? (
-                <p className="text-center py-8 text-muted-foreground">Aucune réservation.</p>
-              ) : (
+          <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white border-0 shadow-xl">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-green-100 text-sm font-medium">
+                    Note Moyenne
+                  </p>
+                  <p className="text-3xl font-bold">
+                    {statsLoading ? "..." : stats.averageNote}
+                  </p>
+                </div>
+                <Star className="w-12 h-12 text-green-200" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white border-0 shadow-xl">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-purple-100 text-sm font-medium">
+                    Total Avis
+                  </p>
+                  <p className="text-3xl font-bold">
+                    {statsLoading ? "..." : stats.reviews}
+                  </p>
+                </div>
+                <MessageSquare className="w-12 h-12 text-purple-200" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-r from-orange-500 to-orange-600 text-white border-0 shadow-xl">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-orange-100 text-sm font-medium">
+                    Total Clients
+                  </p>
+                  <p className="text-3xl font-bold">
+                    {statsLoading ? "..." : stats.clients}
+                  </p>
+                </div>
+                <Users className="w-12 h-12 text-orange-200" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Tabs for Reservations and Reviews */}
+        <Tabs defaultValue="reservations" className="w-full">
+          <TabsList className="grid w-full max-w-md grid-cols-2 mx-auto shadow-lg">
+            <TabsTrigger value="reservations">Réservations</TabsTrigger>
+            <TabsTrigger value="reviews">Avis Clients</TabsTrigger>
+          </TabsList>
+
+          {/* Reservations Tab */}
+          <TabsContent value="reservations">
+            <Card className="shadow-xl border-0 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Calendar className="w-5 h-5" />
+                  Mes Réservations ({filteredReservations.length})
+                </CardTitle>
+                <CardDescription>
+                  Gérez vos rendez-vous avec un système de filtrage avancé
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Advanced Filtering System */}
                 <div className="space-y-4">
-                  {currentReservations.map((reservation) => (
-                    <Card key={reservation.id} className="overflow-hidden hover:shadow-lg transition-shadow border border-muted">
-                      <div className="p-4 sm:p-6 flex flex-col sm:flex-row justify-between gap-4">
-                        <div className="space-y-1">
-                          <div className="font-semibold text-primary">
-                            {reservation.service?.name || "Service inconnu"}
-                          </div>
-                          <div className="font-semibold">{reservation.user?.name ?? "Client inconnu"}</div>
-                          <div className="flex items-center text-xs text-muted-foreground">
-                            <Calendar className="mr-1 h-3 w-3" />
-                            {new Date(reservation.reservation_time).toLocaleDateString()}
-                            <Clock className="ml-2 mr-1 h-3 w-3" />
-                            {new Date(reservation.reservation_time).toLocaleTimeString([], {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
-                          </div>
-                          {reservation.user?.email && (
-                            <div className="flex items-center text-xs text-muted-foreground">
-                              <Mail className="mr-1 h-3 w-3" />
-                              {reservation.user.email}
-                            </div>
-                          )}
-                          {reservation.user?.phone && (
-                            <div className="flex items-center text-xs text-muted-foreground">
-                              <Phone className="mr-1 h-3 w-3" />
-                              {reservation.user.phone}
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex flex-col items-end gap-2">
-                          <StatusBadge status={reservation.status} />
-                          {reservation.status === "pending" && (
-                            <div className="flex gap-2 mt-2">
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="text-blue-600 border-blue-200 hover:bg-blue-50 hover:text-blue-700 bg-transparent"
-                                onClick={() => updateStatus(reservation.id, "confirmed")}
-                              >
-                                <CheckCircle className="mr-1 h-4 w-4" />
-                                Confirmer
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="text-green-600 border-green-200 hover:bg-green-50 hover:text-green-700 bg-transparent"
-                                onClick={() => updateStatus(reservation.id, "done")}
-                              >
-                                <CheckCircle className="mr-1 h-4 w-4" />
-                                Terminer
-                              </Button>
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700 bg-transparent"
-                                onClick={() => updateStatus(reservation.id, "cancelled")}
-                              >
-                                <XCircle className="mr-1 h-4 w-4" />
-                                Annuler
-                              </Button>
-                            </div>
-                          )}
-                        </div>
+                  {/* General Search */}
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                    <Input
+                      placeholder="Rechercher dans toutes les réservations..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+
+                  {/* Advanced Filters */}
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    {/* Name Filter */}
+                    <div className="flex-1">
+                      <div className="relative">
+                        <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                        <Input
+                          placeholder="Filtrer par nom client..."
+                          value={nameFilter}
+                          onChange={(e) => setNameFilter(e.target.value)}
+                          className="pl-10"
+                        />
                       </div>
-                    </Card>
-                  ))}
-                </div>
-              )}
+                    </div>
 
-              {/* Pagination Controls */}
-              {totalPages > 1 && (
-                <div className="flex justify-center items-center space-x-2 mt-6">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                  >
-                    Précédent
-                  </Button>
-                  {[...Array(totalPages)].map((_, index) => (
-                    <Button
-                      key={index}
-                      variant={currentPage === index + 1 ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => handlePageChange(index + 1)}
-                    >
-                      {index + 1}
-                    </Button>
-                  ))}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                  >
-                    Suivant
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
+                    {/* Email Filter */}
+                    <div className="flex-1">
+                      <div className="relative">
+                        <AtSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                        <Input
+                          placeholder="Filtrer par email..."
+                          value={emailFilter}
+                          onChange={(e) => setEmailFilter(e.target.value)}
+                          className="pl-10"
+                        />
+                      </div>
+                    </div>
 
-        {/* Reviews Tab */}
-        <TabsContent value="reviews">
-          <Card>
-            <CardHeader>
-              <CardTitle>Avis Clients</CardTitle>
-              <CardDescription>Consultez les avis laissés par vos clients</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {reviews.length === 0 ? (
-                <p className="text-center py-8 text-muted-foreground">Aucun avis pour le moment.</p>
-              ) : (
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {reviews.map((review) => (
-                    <ReviewCard key={review.id} review={review} />
-                  ))}
+                    {/* Status Filter */}
+                    <div className="flex-1 sm:max-w-[200px]">
+                      <Select
+                        value={statusFilter}
+                        onValueChange={setStatusFilter}
+                      >
+                        <SelectTrigger>
+                          <CheckCircle className="h-4 w-4 mr-2" />
+                          <SelectValue placeholder="Statut" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Tous les statuts</SelectItem>
+                          <SelectItem value="pending">En attente</SelectItem>
+                          <SelectItem value="confirmed">Confirmé</SelectItem>
+                          <SelectItem value="cancelled">Annulé</SelectItem>
+                          <SelectItem value="done">Terminé</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Reset Filters Button */}
+                    {(nameFilter || emailFilter || statusFilter !== "all") && (
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => {
+                          setNameFilter("");
+                          setEmailFilter("");
+                          setStatusFilter("all");
+                        }}
+                        className="shrink-0"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+
+                  {/* Results Indicator */}
+                  <div className="flex items-center justify-between text-sm text-muted-foreground">
+                    <span>
+                      {filteredReservations.length} réservation(s) trouvée(s)
+                      {(searchTerm ||
+                        nameFilter ||
+                        emailFilter ||
+                        statusFilter !== "all") &&
+                        ` sur ${reservations.length} au total`}
+                    </span>
+                    {(searchTerm ||
+                      nameFilter ||
+                      emailFilter ||
+                      statusFilter !== "all") && (
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="ghost" size="sm" className="gap-2">
+                            <Filter className="h-4 w-4" />
+                            Filtres actifs
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent align="end" className="w-80">
+                          <div className="space-y-3">
+                            <h4 className="font-medium">Filtres appliqués :</h4>
+                            {searchTerm && (
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm">
+                                  Recherche générale
+                                </span>
+                                <Badge variant="secondary">{searchTerm}</Badge>
+                              </div>
+                            )}
+                            {nameFilter && (
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm">Nom</span>
+                                <Badge variant="secondary">{nameFilter}</Badge>
+                              </div>
+                            )}
+                            {emailFilter && (
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm">Email</span>
+                                <Badge variant="secondary">{emailFilter}</Badge>
+                              </div>
+                            )}
+                            {statusFilter !== "all" && (
+                              <div className="flex items-center justify-between">
+                                <span className="text-sm">Statut</span>
+                                <StatusBadge status={statusFilter} />
+                              </div>
+                            )}
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                    )}
+                  </div>
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+
+                {/* Reservations Display */}
+                {filteredReservations.length === 0 && searchTerm !== "" ? (
+                  <div className="text-center py-12">
+                    <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-600 dark:text-gray-400 text-lg">
+                      Aucune réservation trouvée pour "{searchTerm}"
+                    </p>
+                    <p className="text-gray-500 dark:text-gray-500">
+                      Essayez d'ajuster vos filtres
+                    </p>
+                  </div>
+                ) : filteredReservations.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-600 dark:text-gray-400 text-lg">
+                      Aucune réservation
+                    </p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {filteredReservations.map((reservation) => (
+                      <Card
+                        key={reservation.id}
+                        className="border-0 shadow-lg bg-white dark:bg-gray-800 hover:shadow-xl transition-all duration-300 overflow-hidden"
+                      >
+                        <CardContent className="p-6">
+                          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                            {/* Client Info */}
+                            <div className="flex items-center gap-4 flex-1">
+                              <Avatar className="w-12 h-12 border-2 border-blue-200">
+                                <AvatarImage
+                                  src=""
+                                  alt={reservation.user?.name}
+                                />
+                                <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold">
+                                  {reservation.user?.name
+                                    ?.charAt(0)
+                                    .toUpperCase()}
+                                </AvatarFallback>
+                              </Avatar>
+
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <h3 className="font-bold text-lg text-gray-900 dark:text-white">
+                                    {reservation.user?.name ?? "Client inconnu"}
+                                  </h3>
+                                  <Badge
+                                    variant="secondary"
+                                    className="text-xs"
+                                  >
+                                    Client
+                                  </Badge>
+                                </div>
+
+                                <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                                  {reservation.user?.email && (
+                                    <div className="flex items-center gap-1">
+                                      <Mail className="w-4 h-4" />
+                                      <span>{reservation.user.email}</span>
+                                    </div>
+                                  )}
+                                  {reservation.user?.phone && (
+                                    <div className="flex items-center gap-1">
+                                      <Phone className="w-4 h-4" />
+                                      <span>{reservation.user.phone}</span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Appointment Details */}
+                            <div className="flex flex-col items-end gap-3 min-w-[200px]">
+                              <StatusBadge status={reservation.status} />
+
+                              <div className="text-right">
+                                <div className="flex items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  <CalendarIcon className="w-4 h-4" />
+                                  <span>
+                                    {format(
+                                      new Date(reservation.reservation_time),
+                                      "MMM dd, yyyy"
+                                    )}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
+                                  <ClockIcon className="w-4 h-4" />
+                                  <span>
+                                    {format(
+                                      new Date(reservation.reservation_time),
+                                      "HH:mm"
+                                    )}
+                                  </span>
+                                </div>
+                              </div>
+
+                              {reservation.status === "pending" && (
+                                <div className="flex gap-2 mt-2">
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="text-blue-600 border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                                    onClick={() =>
+                                      updateStatus(reservation.id, "confirmed")
+                                    }
+                                  >
+                                    <CheckCircle className="mr-1 h-4 w-4" />
+                                    Confirmer
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="text-green-600 border-green-200 hover:bg-green-50 hover:text-green-700"
+                                    onClick={() =>
+                                      updateStatus(reservation.id, "done")
+                                    }
+                                  >
+                                    <CheckCircle className="mr-1 h-4 w-4" />
+                                    Terminer
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
+                                    onClick={() =>
+                                      updateStatus(reservation.id, "cancelled")
+                                    }
+                                  >
+                                    <XCircle className="mr-1 h-4 w-4" />
+                                    Annuler
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Service Info */}
+                          {reservation.service && (
+                            <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                              <div className="flex items-center gap-2">
+                                <Scissors className="w-4 h-4 text-purple-500" />
+                                <span className="font-medium text-purple-700 dark:text-purple-300">
+                                  {reservation.service.name}
+                                </span>
+                                <span className="text-sm text-gray-600 dark:text-gray-400">
+                                  - {reservation.service.duration}min
+                                </span>
+                                <span className="font-semibold text-green-600 dark:text-green-400">
+                                  {reservation.service.price} MAD
+                                </span>
+                              </div>
+                            </div>
+                          )}
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Reviews Tab */}
+          <TabsContent value="reviews">
+            <Card className="shadow-xl border-0 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Star className="w-5 h-5" />
+                  Avis Clients ({reviews.length})
+                </CardTitle>
+                <CardDescription>
+                  Consultez les avis laissés par vos clients
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {reviews.length === 0 ? (
+                  <div className="text-center py-12">
+                    <Star className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                    <p className="text-gray-600 dark:text-gray-400 text-lg">
+                      Aucun avis pour le moment
+                    </p>
+                    <p className="text-gray-500 dark:text-gray-500">
+                      Les avis de vos clients apparaîtront ici
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {reviews.map((review) => (
+                      <ReviewCard key={review.id} review={review} />
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default BarberDashboard
-
-
+export default BarberDashboard;

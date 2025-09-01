@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   Mail,
@@ -12,35 +12,41 @@ import {
   CircleDot,
   DollarSign,
   Clock,
-} from "lucide-react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { Badge } from "@/components/ui/badge"
-import { format } from "date-fns"
-import BarberReviewsAdmin from "@/components/UIcomponents/BarberReviewsAdmin"
+} from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { format } from "date-fns";
+import BarberReviewsAdmin from "@/components/UIcomponents/BarberReviewsAdmin";
 
 // Define the Barber type
 export type Barber = {
-  id: number
-  firstname: string
-  lastname: string
-  date_of_birth: string
-  gender: "m" | "f"
-  address: string
-  phone: string
-  email: string
-  bio: string
-  experience: string
-  location: string
-  email_verified_at: string | null
-  formatted_updated_at?: string
-  created_at?: string
-  updated_at?: string
-  deleted_at?: string | null
-}
+  id: number;
+  firstname: string;
+  lastname: string;
+  date_of_birth: string;
+  gender: "m" | "f";
+  address: string;
+  phone: string;
+  email: string;
+  bio: string;
+  experience: string;
+  location: string;
+  email_verified_at: string | null;
+  formatted_updated_at?: string;
+  created_at?: string;
+  updated_at?: string;
+  deleted_at?: string | null;
+};
 
 interface BarberDetailsProps {
-  barber: Barber
+  barber: Barber;
 }
 
 export default function BarberDetails({ barber }: BarberDetailsProps) {
@@ -49,7 +55,7 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
       <div className="flex items-center justify-center p-8 text-gray-500 dark:text-gray-400">
         No barber data available.
       </div>
-    )
+    );
   }
 
   return (
@@ -96,7 +102,9 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
                 <CalendarDays className="w-5 h-5" />
                 <div>
                   <p className="text-sm font-medium">Date of Birth</p>
-                  <p className="text-base">{format(new Date(barber.date_of_birth), "PPP")}</p>
+                  <p className="text-base">
+                    {format(new Date(barber.date_of_birth), "PPP")}
+                  </p>
                 </div>
               </div>
               {/* Gender */}
@@ -104,7 +112,9 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
                 <CircleDot className="w-5 h-5" />
                 <div>
                   <p className="text-sm font-medium">Gender</p>
-                  <p className="text-base">{barber.gender === "m" ? "Male" : "Female"}</p>
+                  <p className="text-base">
+                    {barber.gender === "m" ? "Male" : "Female"}
+                  </p>
                 </div>
               </div>
               {/* Address */}
@@ -121,7 +131,8 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
           {/* Professional Info */}
           <div className="space-y-4">
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-              <Award className="w-5 h-5 text-emerald-500" /> Professional Details
+              <Award className="w-5 h-5 text-emerald-500" /> Professional
+              Details
             </h3>
             <Separator />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -154,7 +165,8 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
           {/* Other Info */}
           <div className="space-y-4">
             <h3 className="text-xl font-semibold flex items-center gap-2">
-              <CircleDot className="w-5 h-5 text-emerald-500" /> Other Information
+              <CircleDot className="w-5 h-5 text-emerald-500" /> Other
+              Information
             </h3>
             <Separator />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -164,7 +176,9 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
                   <p className="text-sm font-medium">Last Updated</p>
                   <p className="text-base">
                     {barber.formatted_updated_at ||
-                      (barber.updated_at ? format(new Date(barber.updated_at), "PPP") : "N/A")}
+                      (barber.updated_at
+                        ? format(new Date(barber.updated_at), "PPP")
+                        : "N/A")}
                   </p>
                 </div>
               </div>
@@ -186,65 +200,115 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
           </div>
         </CardContent>
       </Card>
-            {barber.services && barber.services.length > 0 && (
-              <Card className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Scissors className="w-5 h-5 text-emerald-500" />
-                    Services Offered
-                  </CardTitle>
-                  <CardDescription>Professional services available</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {barber.services.map((service) => (
-                      <Card
-                        key={service.id}
-                        className="relative overflow-hidden hover:shadow-lg transition-shadow duration-300"
-                      >
-                        {service.popular && (
-                          <Badge className="absolute top-2 right-2 bg-orange-500 text-white">Popular</Badge>
-                        )}
+      {barber.services && barber.services.length > 0 && (
+        <Card className="w-full max-w-4xl bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 shadow-2xl">
+          <CardHeader className="text-center pb-6">
+            <CardTitle className="text-2xl font-bold text-gray-900 dark:text-white flex items-center justify-center gap-3">
+              <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg">
+                <Scissors className="w-6 h-6 text-white" />
+              </div>
+              Services Offered
+            </CardTitle>
+            <CardDescription className="text-gray-600 dark:text-gray-400 text-lg">
+              Professional services available for booking
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              {barber.services.map((service) => (
+                <div
+                  key={service.id}
+                  className="group relative bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl overflow-hidden border border-gray-200/50 dark:border-gray-700/50 hover:border-purple-300 dark:hover:border-purple-600 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]"
+                >
+                  {/* Popular Badge */}
+                  {service.popular && (
+                    <div className="absolute top-4 right-4 z-10">
+                      <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg border-0 px-3 py-1">
+                        ⭐ Popular
+                      </Badge>
+                    </div>
+                  )}
 
-                        {service.image && (
-                          <div className="h-32 overflow-hidden">
-                            <img
-                                                              src={`${import.meta.env.VITE_BACKEND_URL}/storage/${service.image}` || 'placholder.png'}
+                  {/* Service Image */}
+                  {service.image && (
+                    <div className="relative h-48 overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800">
+                      <img
+                        src={
+                          service.image
+                            ? `${import.meta.env.VITE_BACKEND_URL}/storage/${
+                                service.image
+                              }`
+                            : "placeholder.png"
+                        }
+                        alt={service.name}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    </div>
+                  )}
 
-                              alt={service.name}
-                              className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                            />
-                          </div>
-                        )}
+                  {/* Service Content */}
+                  <div className="p-6 space-y-4">
+                    <div className="space-y-2">
+                      <h4 className="font-bold text-xl text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
+                        {service.name}
+                      </h4>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed line-clamp-3">
+                        {service.description}
+                      </p>
+                    </div>
 
-                        <CardContent className="p-4">
-                          <h4 className="font-semibold text-lg mb-2">{service.name}</h4>
-                          <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">{service.description}</p>
+                    {/* Service Details */}
+                    <div className="flex items-center justify-between pt-4 border-t border-gray-200/50 dark:border-gray-700/50">
+                      <div className="flex items-center gap-2">
+                        <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center shadow-md">
+                          <DollarSign className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                            Price
+                          </p>
+                          <p className="font-bold text-lg text-emerald-600 dark:text-emerald-400">
+                            {service.price} MAD
+                          </p>
+                        </div>
+                      </div>
 
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                              <div className="flex items-center gap-1">
-                                <DollarSign className="w-4 h-4 text-emerald-500" />
-                                <span className="font-semibold text-emerald-600">{service.price} MAD</span>
-                              </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full flex items-center justify-center shadow-md">
+                          <Clock className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                          <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">
+                            Duration
+                          </p>
+                          <p className="font-semibold text-blue-600 dark:text-blue-400">
+                            {service.duration}min
+                          </p>
+                        </div>
+                      </div>
+                    </div>
 
-                              <div className="flex items-center gap-1">
-                                <Clock className="w-4 h-4 text-blue-500" />
-                                <span className="text-sm text-gray-600">{service.duration}min</span>
-                              </div>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
+                    {/* Action Button */}
+                    <div className="pt-4">
+                      <button className="w-full bg-gradient-to-r from-purple-600 via-purple-600 to-pink-600 hover:from-purple-700 hover:via-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 border-0">
+                        Book Service
+                      </button>
+                    </div>
                   </div>
-                </CardContent>
-              </Card>
-            )}
+
+                  {/* Hover Effect Overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-2xl" />
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
       {/* ✅ Add Barber Reviews Component Here */}
-      <div className="w-full max-w-3xl">
+      <div className="pt-5 w-full max-w-4xl">
         <BarberReviewsAdmin barberId={barber.id} />
       </div>
     </div>
-  )
+  );
 }

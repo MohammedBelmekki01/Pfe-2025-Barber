@@ -53,6 +53,7 @@ import {
 
 import AdminBarberList from "../data-table/bareber/AdminBarberList";
 import AdminClientList from "../data-table/client/AdminClientList";
+import { Link } from "react-router-dom";
 
 interface User {
   id: number;
@@ -493,9 +494,11 @@ export default function AdminDashboard() {
 
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
-                              <h3 className="font-bold text-lg text-gray-900 dark:text-white">
-                                {reservation.user.name}
-                              </h3>
+                              <Link to={`/admin/client-details?id=${reservation.user.id}`} className="text-emerald-600 hover:underline ">
+                                <h3 className="font-bold text-lg text-gray-900 dark:text-white hover:text-emerald-600">
+                                  {reservation.user.name}
+                                </h3>
+                              </Link>
                               <Badge variant="secondary" className="text-xs">
                                 Client
                               </Badge>
@@ -531,10 +534,16 @@ export default function AdminDashboard() {
 
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
-                              <h4 className="font-bold text-gray-900 dark:text-white">
-                                {reservation.barber.firstname}{" "}
-                                {reservation.barber.lastname}
-                              </h4>
+                              <Link
+                                to={`/admin/barber-details?id=${reservation.barber.id}`}
+                                className="text-emerald-600 hover:underline "
+                              >
+                                <h4 className="font-bold text-gray-900 hover:text-emerald-600 dark:text-white">
+                                  {reservation.barber.firstname}{" "}
+                                  {reservation.barber.lastname}
+                                </h4>
+                              </Link>
+
                               <Badge variant="secondary" className="text-xs">
                                 Barber
                               </Badge>

@@ -212,7 +212,7 @@ function Profile() {
                       <div>
                         <p className="text-sm text-gray-500">Date of Birth</p>
                         <p className="font-medium">
-                          {format(new Date(barber.date_of_birth), "MMMM dd, yyyy")}
+                          {/* {format(new Date(barber.date_of_birth), "MMMM dd, yyyy")} */}
                         </p>
                       </div>
                     </div>

@@ -37,6 +37,12 @@ class ReviewController extends Controller
         }));
     }
 
+    public function allReview(){
+        $reviews = Review::with(['user', 'service'])->limit(8)->get();
+        return response()->json(["data" => $reviews]);
+
+    }
+
     public function store(StoreReviewRequest $request, Barber $barber)
     {
         $data = $request->validated();
