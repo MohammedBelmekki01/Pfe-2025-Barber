@@ -7,6 +7,8 @@ use App\Models\Reservation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+use App\Models\Service;
 
 class ReservationController extends Controller
 {
@@ -25,21 +27,87 @@ class ReservationController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'barber_id' => 'required|exists:barbers,id',
-            'reservation_time' => 'required|date|after:now',
-            'service_id' => 'required|exists:services,id',
-        ]);
+        try {
+            // Validate request
+            $validated = $request->validate([
+                'barber_id' => 'required|exists:barbers,id',
+                'service_id' => 'required|exists:services,id',
+                'reservation_time' => [
+                    'required',
+                    'date',
+                    'after:now',
+                    function ($attribute, $value, $fail) {
+                        // Check if reservation is being made during business hours (e.g., 9 AM to 8 PM)
+                        $time = Carbon::parse($value);
+                        if ($time->hour < 9 || $time->hour >= 20) {
+                            $fail('Reservations can only be made between 9 AM and 8 PM.');
+                        }
+                    },
+                ]
+            ]);
 
-        $reservation = Reservation::create([
-            'user_id' => Auth::id(),
-            'barber_id' => $request->barber_id,
-            'reservation_time' => $request->reservation_time,
-            'service_id' => $request->service_id,
-            'status' => 'pending',
-        ]);
+            // Get service details
+            $service = Service::findOrFail($validated['service_id']);
+            $startTime = Carbon::parse($validated['reservation_time']);
+            $endTime = $startTime->copy()->addMinutes($service->duration);
 
-        return new ReservationResource($reservation);
+            // Check for overlapping reservations
+            $overlappingReservations = Reservation::where('barber_id', $validated['barber_id'])
+                ->where('status', '!=', 'cancelled')
+                ->where(function ($query) use ($startTime, $endTime) {
+                    $query->where(function ($q) use ($startTime, $endTime) {
+                        $q->where('reservation_time', '<', $endTime)
+                          ->whereRaw('DATE_ADD(reservation_time, INTERVAL (
+                              SELECT duration FROM services 
+                              WHERE services.id = reservations.service_id
+                          ) MINUTE) > ?', [$startTime]);
+                    });
+                })
+                ->exists();
+
+            if ($overlappingReservations) {
+                return response()->json([
+                    'message' => 'This time slot is already booked. Please choose another time.',
+                    'available_time_range' => [
+                        'start' => $startTime->format('Y-m-d H:i:s'),
+                        'end' => $endTime->format('Y-m-d H:i:s')
+                    ]
+                ], 422);
+            }
+
+            // Check if user already has a pending or confirmed reservation for the same day
+            $existingReservation = Reservation::where('user_id', Auth::id())
+                ->whereDate('reservation_time', $startTime->toDateString())
+                ->whereIn('status', ['pending', 'confirmed'])
+                ->exists();
+
+            if ($existingReservation) {
+                return response()->json([
+                    'message' => 'You already have a reservation for this day.'
+                ], 422);
+            }
+
+            // Create reservation
+            $reservation = Reservation::create([
+                'user_id' => Auth::id(),
+                'barber_id' => $validated['barber_id'],
+                'service_id' => $validated['service_id'],
+                'reservation_time' => $validated['reservation_time'],
+                'status' => 'pending'
+            ]);
+
+            // Load relationships for the resource
+            $reservation->load(['barber', 'service', 'user']);
+
+            return new ReservationResource($reservation);
+
+        } catch (\Exception $e) {
+            \Log::error('Reservation creation failed: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'Failed to create reservation',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function show($id)
@@ -110,5 +178,61 @@ class ReservationController extends Controller
             'message' => 'Status updated successfully',
             'data' => $reservation,
         ]);
+    }
+
+    public function getBarberReservations($barberId)
+    {
+        try {
+            // First verify if barber exists
+            $barberExists = \App\Models\Barber::find($barberId);
+            if (!$barberExists) {
+                return response()->json([
+                    'message' => 'Barber not found'
+                ], 404);
+            }
+
+            $reservations = Reservation::where('barber_id', $barberId)
+                ->where('status', '!=', 'cancelled')
+                ->with(['service', 'user'])
+                ->orderBy('reservation_time', 'asc')
+                ->get();
+
+            // Check if any reservations exist
+            if ($reservations->isEmpty()) {
+                return response()->json([
+                    'data' => [],
+                    'message' => 'No reservations found for this barber'
+                ]);
+            }
+
+            $formattedReservations = $reservations->map(function ($reservation) {
+                try {
+                    return [
+                        'id' => $reservation->id,
+                        'start_time' => $reservation->reservation_time,
+                        'end_time' => Carbon::parse($reservation->reservation_time)
+                            ->addMinutes($reservation->service->duration),
+                        'service_name' => $reservation->service->name ?? 'N/A',
+                        'duration' => $reservation->service->duration ?? 0,
+                        'status' => $reservation->status
+                    ];
+                } catch (\Exception $e) {
+                    \Log::error('Error formatting reservation: ' . $e->getMessage());
+                    return null;
+                }
+            })->filter();
+
+            return response()->json([
+                'data' => $formattedReservations,
+                'barber_id' => $barberId
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error in getBarberReservations: ' . $e->getMessage());
+            return response()->json([
+                'message' => 'An error occurred while fetching reservations',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

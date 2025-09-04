@@ -48,7 +48,9 @@ Route::middleware(['auth:sanctum', 'ability:client'])->prefix('client')->group(s
   Route::get('/reservations', [ReservationController::class, 'userReservations']);
   Route::get('/services', [ServiceController::class, 'index']);
       Route::get('/barbers/{barber}/services', [ServiceController::class, 'index']);
+  Route::get('/barbers/{barberId}/schedule', [ReservationController::class, 'getBarberReservations']);
 });
+  Route::get('/barbers/{barberId}/schedule', [ReservationController::class, 'getBarberReservations']);
 
 Route::get('/allreview', [ReviewController::class, 'allReview']);
 Route::middleware(['auth:sanctum', 'ability:admin'])->prefix('admin')->group(static function () {

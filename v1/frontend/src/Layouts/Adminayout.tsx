@@ -38,7 +38,7 @@ export default function AdminDashboardLayout() {
   }
 
   return <>
-    <NavbarAdmin />
+    {/* <NavbarAdmin /> */}
     {/* Sidebar Layout */}
     <SidebarProvider defaultOpen={false}>
       <AppSideidebarAdmin user={user} />
@@ -60,7 +60,7 @@ export default function AdminDashboardLayout() {
         </main>
 
         {/* Footer */}
-        <Footer />
+        {/* <Footer /> */}
       </SidebarInset>
     </SidebarProvider>
   </>

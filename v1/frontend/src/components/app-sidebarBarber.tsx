@@ -61,7 +61,11 @@ const items = [
     url: "/barber/services",
     icon: Scissors,
   },
-
+  {
+    title: "Profile",
+    url: "/barber/profile",
+    icon: Scissors,
+  },
 ]
 
 

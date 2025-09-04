@@ -1,5 +1,6 @@
 "use client";
 
+
 import {
   Mail,
   Phone,
@@ -35,6 +36,7 @@ import {
 import { format, differenceInYears } from "date-fns";
 import BarberReviews from "@/components/UIcomponents/BarberReviews";
 import ReservationForm from "../ForReservationClient/ReservationForm";
+import BarberScheduleDisplay from "./BarberSchedule";
 
 // Define the Service type
 export type Service = {
@@ -423,7 +425,9 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
             </Card>
           </div>
         </div>
-
+      <div className="mt-6">
+        <BarberScheduleDisplay barberId={barber.id} />
+      </div>
         {/* Reviews Section */}
         <Card className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl">
           <CardHeader>

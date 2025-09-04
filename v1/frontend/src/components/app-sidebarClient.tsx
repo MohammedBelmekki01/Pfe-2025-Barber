@@ -57,6 +57,11 @@ const items = [
     url: "/client/reservations",
     icon: Scissors,
   },
+    {
+    title: "Profile",
+    url: "/client/profile",
+    icon: Users,
+  },
 ]
 
 

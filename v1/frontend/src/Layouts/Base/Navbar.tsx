@@ -1,57 +1,84 @@
-
-
 import * as React from "react"
-
 import { Menu } from "lucide-react"
-
-
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Link } from "react-router-dom"
-
+import { Link, useLocation } from "react-router-dom"
 import { ModeToggle } from "@/components/ui/mode-toggle"
 
 const navigation = [
-  { name: "Home", to: "/" },
-  { name: "About", to: "/about" },
-  { name: "Services", to: "/services" },
-  { name: "Contact", to: "/contact" },
+  { name: "Home", to: "/#hero" },
+  { name: "Services", to: "/#services" },
+  { name: "Our Team", to: "/#team" },
+  { name: "Gallery", to: "/#gallery" },
+  { name: "Testimonials", to: "/#testimonials" },
+  { name: "Contact", to: "/#contact" },
 ]
 
 export function Navbar() {
   const [isOpen, setIsOpen] = React.useState(false)
+  const location = useLocation()
+
+  // Handle smooth scrolling
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, to: string) => {
+    e.preventDefault()
+
+    // If we're not on the homepage, navigate there first
+    if (location.pathname !== "/") {
+      window.location.href = to
+      return
+    }
+
+    // Extract the section ID from the href
+    const sectionId = to.replace("/#", "")
+    const element = document.getElementById(sectionId)
+
+    if (element) {
+      element.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      })
+      setIsOpen(false) // Close mobile menu after clicking
+    }
+  }
 
   return (
-    <nav className="ml-5 border-b  top-0">
+    <nav className="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg border-b">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <div className="">
-                <div className="">
-                  <h1>Barber Shop</h1>
-                </div>
-             
+          <div className="flex-shrink-0">
+            <Link to="/" className="flex items-center">
+              <span className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
+                Barber Shop
+              </span>
+            </Link>
           </div>
 
           {/* Desktop Navigation */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-4">
               {navigation.map((item) => (
-                <Link
+                <a
                   key={item.name}
-                  to={item.to}
-                  className=" hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  href={item.to}
+                  onClick={(e) => handleClick(e, item.to)}
+                  className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 >
                   {item.name}
-                </Link>
+                </a>
               ))}
             </div>
           </div>
 
           {/* Desktop CTA Button */}
-          <div className="hidden md:block space-x-2">
-            <Button className="mr-2">Get Started</Button>
-            {/* <DropDown  /> */}
+          <div className="hidden md:flex items-center space-x-4">
+            <Button
+              
+              variant="default"
+              className="bg-gradient-to-r from-emerald-600 to-blue-600 text-white hover:from-emerald-700 hover:to-blue-700"
+            >
+              <Link to="/login">Login</Link>
+            </Button>
             <ModeToggle />
           </div>
 
@@ -67,18 +94,20 @@ export function Navbar() {
               <SheetContent side="right" className="w-[300px] sm:w-[400px]">
                 <div className="flex flex-col space-y-4 mt-4">
                   {navigation.map((item) => (
-                    <Link
+                    <a
                       key={item.name}
-                      to={item.to}
-                      className="text-white hover:text-gray-900 px-3 py-2 rounded-md text-base font-medium transition-colors"
-                      onClick={() => setIsOpen(false)}
+                      href={item.to}
+                      onClick={(e) => handleClick(e, item.to)}
+                      className="text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 px-3 py-2 rounded-md text-base font-medium transition-colors"
                     >
                       {item.name}
-                    </Link>
+                    </a>
                   ))}
                   <div className="pt-4 mx-2">
-                    <Button className="w-full">
-                      <Link to={'/login'}>Login</Link>
+                    <Button
+                      className="w-full bg-gradient-to-r from-emerald-600 to-blue-600 text-white hover:from-emerald-700 hover:to-blue-700"
+                    >
+                      Book Now
                     </Button>
                   </div>
                 </div>

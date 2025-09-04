@@ -14,7 +14,6 @@ import {
   Phone,
   MapPin,
   Star,
-  User,
   CheckCircle,
   AlertCircle,
   XCircle,
@@ -240,11 +239,40 @@ export default function AdminDashboard() {
     setCurrentPage(1);
   }, [filters, fetchReservations, debouncedFetch]);
 
+  // Responsive advanced filter logic
+  const filteredReservations = useMemo(() => {
+    return reservations.filter((reservation) => {
+      // Status filter
+      if (filters.status && reservation.status !== filters.status) return false;
+
+      // Date filters
+      if (filters.dateFrom && reservation.reservation_time < filters.dateFrom)
+        return false;
+      if (filters.dateTo && reservation.reservation_time > filters.dateTo)
+        return false;
+
+      // Search filter by type
+      if (filters.search.trim()) {
+        const search = filters.search.toLowerCase();
+        if (filters.filterType === "client") {
+          if (!reservation.user?.name?.toLowerCase().includes(search)) return false;
+        } else if (filters.filterType === "barber") {
+          const barberName = `${reservation.barber?.firstname ?? ""} ${reservation.barber?.lastname ?? ""}`.toLowerCase();
+          if (!barberName.includes(search)) return false;
+        } else if (filters.filterType === "service") {
+          if (!reservation.service?.name?.toLowerCase().includes(search)) return false;
+        }
+      }
+
+      return true;
+    });
+  }, [reservations, filters]);
+
   // Pagination logic
   const indexOfLast = currentPage * perPage;
   const indexOfFirst = indexOfLast - perPage;
-  const currentReservations = reservations.slice(indexOfFirst, indexOfLast);
-  const totalPages = Math.ceil(reservations.length / perPage);
+  const currentReservations = filteredReservations.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.max(1, Math.ceil(filteredReservations.length / perPage));
 
   const updateFilter = (key: string, value: string) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
@@ -255,11 +283,11 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 p-2 sm:p-4 lg:p-6">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
             Admin Dashboard
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
@@ -268,67 +296,67 @@ export default function AdminDashboard() {
         </div>
 
         {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 shadow-xl">
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-blue-100 text-sm font-medium">
+                  <p className="text-blue-100 text-xs sm:text-sm font-medium">
                     Total Clients
                   </p>
-                  <p className="text-3xl font-bold">
+                  <p className="text-2xl sm:text-3xl font-bold">
                     {statsLoading ? "..." : stats.clients}
                   </p>
                 </div>
-                <Users className="w-12 h-12 text-blue-200" />
+                <Users className="w-8 h-8 sm:w-12 sm:h-12 text-blue-200" />
               </div>
             </CardContent>
           </Card>
 
           <Card className="bg-gradient-to-r from-green-500 to-green-600 text-white border-0 shadow-xl">
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-green-100 text-sm font-medium">
+                  <p className="text-green-100 text-xs sm:text-sm font-medium">
                     Total Barbers
                   </p>
-                  <p className="text-3xl font-bold">
+                  <p className="text-2xl sm:text-3xl font-bold">
                     {statsLoading ? "..." : stats.barbers}
                   </p>
                 </div>
-                <Scissors className="w-12 h-12 text-green-200" />
+                <Scissors className="w-8 h-8 sm:w-12 sm:h-12 text-green-200" />
               </div>
             </CardContent>
           </Card>
 
           <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white border-0 shadow-xl">
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-purple-100 text-sm font-medium">
+                  <p className="text-purple-100 text-xs sm:text-sm font-medium">
                     Total Services
                   </p>
-                  <p className="text-3xl font-bold">
+                  <p className="text-2xl sm:text-3xl font-bold">
                     {statsLoading ? "..." : stats.services}
                   </p>
                 </div>
-                <BookOpen className="w-12 h-12 text-purple-200" />
+                <BookOpen className="w-8 h-8 sm:w-12 sm:h-12 text-purple-200" />
               </div>
             </CardContent>
           </Card>
 
           <Card className="bg-gradient-to-r from-orange-500 to-orange-600 text-white border-0 shadow-xl">
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-orange-100 text-sm font-medium">
+                  <p className="text-orange-100 text-xs sm:text-sm font-medium">
                     Total Reservations
                   </p>
-                  <p className="text-3xl font-bold">
+                  <p className="text-2xl sm:text-3xl font-bold">
                     {statsLoading ? "..." : stats.reservations}
                   </p>
                 </div>
-                <Calendar className="w-12 h-12 text-orange-200" />
+                <Calendar className="w-8 h-8 sm:w-12 sm:h-12 text-orange-200" />
               </div>
             </CardContent>
           </Card>
@@ -346,7 +374,7 @@ export default function AdminDashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
               <div>
                 <label className="text-sm font-medium mb-2 block">Status</label>
                 <Select
@@ -423,7 +451,7 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            <div className="flex gap-2 mt-4">
+            <div className="flex flex-wrap gap-2 mt-4">
               <Button
                 variant="outline"
                 onClick={() =>
@@ -447,7 +475,7 @@ export default function AdminDashboard() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Calendar className="w-5 h-5" />
-              Recent Reservations ({reservations.length})
+              Recent Reservations ({filteredReservations.length})
             </CardTitle>
             <CardDescription>
               Manage and monitor all appointments
@@ -480,12 +508,12 @@ export default function AdminDashboard() {
                     key={reservation.id}
                     className="border-0 shadow-lg bg-white dark:bg-gray-800 hover:shadow-xl transition-all duration-300 overflow-hidden"
                   >
-                    <CardContent className="p-6">
+                    <CardContent className="p-4 sm:p-6">
                       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                         {/* Left Section - Client & Barber Info */}
                         <div className="flex items-center gap-4 flex-1">
                           {/* Client Avatar */}
-                          <Avatar className="w-12 h-12 border-2 border-blue-200">
+                          <Avatar className="w-10 h-10 sm:w-12 sm:h-12 border-2 border-blue-200">
                             <AvatarImage src="" alt={reservation.user.name} />
                             <AvatarFallback className="bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold">
                               {reservation.user.name.charAt(0).toUpperCase()}
@@ -495,7 +523,7 @@ export default function AdminDashboard() {
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
                               <Link to={`/admin/client-details?id=${reservation.user.id}`} className="text-emerald-600 hover:underline ">
-                                <h3 className="font-bold text-lg text-gray-900 dark:text-white hover:text-emerald-600">
+                                <h3 className="font-bold text-base sm:text-lg text-gray-900 dark:text-white hover:text-emerald-600">
                                   {reservation.user.name}
                                 </h3>
                               </Link>
@@ -504,7 +532,7 @@ export default function AdminDashboard() {
                               </Badge>
                             </div>
 
-                            <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-4 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                               <div className="flex items-center gap-1">
                                 <Mail className="w-4 h-4" />
                                 <span>{reservation.user.email}</span>
@@ -519,7 +547,7 @@ export default function AdminDashboard() {
 
                         {/* Center Section - Barber Info */}
                         <div className="flex items-center gap-4 flex-1">
-                          <Avatar className="w-12 h-12 border-2 border-green-200">
+                          <Avatar className="w-10 h-10 sm:w-12 sm:h-12 border-2 border-green-200">
                             <AvatarImage
                               src=""
                               alt={`${reservation.barber.firstname} ${reservation.barber.lastname}`}
@@ -538,7 +566,7 @@ export default function AdminDashboard() {
                                 to={`/admin/barber-details?id=${reservation.barber.id}`}
                                 className="text-emerald-600 hover:underline "
                               >
-                                <h4 className="font-bold text-gray-900 hover:text-emerald-600 dark:text-white">
+                                <h4 className="font-bold text-base sm:text-lg text-gray-900 hover:text-emerald-600 dark:text-white">
                                   {reservation.barber.firstname}{" "}
                                   {reservation.barber.lastname}
                                 </h4>
@@ -549,7 +577,7 @@ export default function AdminDashboard() {
                               </Badge>
                             </div>
 
-                            <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+                            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-4 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                               <div className="flex items-center gap-1">
                                 <Star className="w-4 h-4" />
                                 <span>{reservation.barber.experience}</span>
@@ -563,11 +591,11 @@ export default function AdminDashboard() {
                         </div>
 
                         {/* Right Section - Appointment Details */}
-                        <div className="flex flex-col items-end gap-3 min-w-[200px]">
+                        <div className="flex flex-col items-end gap-3 min-w-[160px]">
                           <StatusBadge status={reservation.status} />
 
                           <div className="text-right">
-                            <div className="flex items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+                            <div className="flex items-center gap-1 text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
                               <CalendarIcon className="w-4 h-4" />
                               <span>
                                 {format(
@@ -576,7 +604,7 @@ export default function AdminDashboard() {
                                 )}
                               </span>
                             </div>
-                            <div className="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400">
+                            <div className="flex items-center gap-1 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                               <ClockIcon className="w-4 h-4" />
                               <span>
                                 {format(
@@ -610,7 +638,7 @@ export default function AdminDashboard() {
                             <span className="font-medium text-purple-700 dark:text-purple-300">
                               {reservation.service.name}
                             </span>
-                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                            <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                               - {reservation.service.duration}min
                             </span>
                             <span className="font-semibold text-green-600 dark:text-green-400">

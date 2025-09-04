@@ -44,7 +44,7 @@ public function index(Request $request)
             'image' => 'nullable|image|max:2048',
         ]);
 
-        if ($request->hasFile('image')) {
+        if ($request->hasFile(key: 'image')) {
             $validated['image'] = $request->file('image')->store('services', 'public');
         }
 
@@ -85,14 +85,13 @@ public function index(Request $request)
     {
         $barber = auth('barber')->user();
         $service = Service::where('id', $id)->where('barber_id', $barber->id)->firstOrFail();
-
         if ($service->image) {
             Storage::disk('public')->delete($service->image);
         }
-
         $service->delete();
 
         return response()->json(['message' => 'Service supprimé']);
     }
+    
 }
 

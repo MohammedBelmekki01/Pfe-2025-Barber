@@ -1,125 +1,194 @@
+"use client"
+
+import { Mail, Phone, MapPin, Clock, ExternalLink } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { MapPin, Phone, Clock, Mail, Calendar } from "lucide-react"
+import { motion } from "framer-motion"
+import { cn } from "@/lib/utils"
 
-export function ContactSection() {
-  const locations = [
-    {
-      id: 1,
-      name: "Barber Pro République",
-      address: "123 Avenue de la République, 75011 Paris",
-      phone: "01 23 45 67 89",
-      email: "republique@barberpro.fr",
-      hours: {
-        weekdays: "9h00 - 19h00",
-        saturday: "9h00 - 18h00",
-        sunday: "Fermé",
-      },
-    },
-    {
-      id: 2,
-      name: "Barber Pro Bastille",
-      address: "456 Rue de la Bastille, 75011 Paris",
-      phone: "01 23 45 67 90",
-      email: "bastille@barberpro.fr",
-      hours: {
-        weekdays: "10h00 - 20h00",
-        saturday: "9h00 - 19h00",
-        sunday: "10h00 - 16h00",
-      },
-    },
-  ]
+const contactInfo = {
+  email: "admin@gmail.com",
+  phone: "222222222",
+  address: "123 Barber Street, Your City",
+  hours: {
+    weekdays: "9:00 AM - 8:00 PM",
+    saturday: "9:00 AM - 6:00 PM",
+    sunday: "10:00 AM - 4:00 PM"
+  },
+  mapUrl: "https://www.google.com/maps" 
+}
 
+const contactImages = [
+  {
+    src: "/images/contact/storefront.jpeg",
+    alt: "Barber Shop Storefront",
+    className: "col-span-2 row-span-2"
+  },
+  {
+    src: "/images/contact/interior1.jpeg",
+    alt: "Shop Interior View",
+  },
+  {
+    src: "/images/contact/waiting-area.jpeg",
+    alt: "Waiting Area",
+  },
+  {
+    src: "/images/contact/parking.jpeg",
+    alt: "Parking Area",
+  },
+  {
+    src: "/images/contact/interior2.jpeg",
+    alt: "Second Interior View",
+  },
+]
+
+function ContactSection() {
   return (
-    <section className="py-20 bg-muted/50">
+    <section className="py-16 bg-gradient-to-b from-white to-gray-50 dark:from-gray-900 dark:to-gray-800">
       <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="text-center mb-12">
-          <Badge className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 mb-4">
-            <MapPin className="w-3 h-3 mr-2" />
-            Nous Contacter
-          </Badge>
-          <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">Nos Salons</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Retrouvez-nous dans nos deux salons parisiens. Réservation en ligne ou par téléphone.
+          <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent mb-4">
+            Get in Touch
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+            Have questions or ready to book your appointment? Contact us through any of these channels.
           </p>
         </div>
 
-        {/* Locations */}
-        <div className="grid md:grid-cols-2 gap-8 mb-12">
-          {locations.map((location) => (
-            <Card key={location.id} className="hover:shadow-lg transition-shadow bg-card border">
-              <CardContent className="p-6">
-                <h3 className="text-xl font-semibold text-card-foreground mb-4">{location.name}</h3>
-
-                <div className="space-y-3 mb-6">
-                  <div className="flex items-start gap-3">
-                    <MapPin className="w-5 h-5 text-emerald-600 dark:text-emerald-400 mt-0.5 flex-shrink-0" />
-                    <span className="text-muted-foreground">{location.address}</span>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <Phone className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
-                    <span className="text-muted-foreground">{location.phone}</span>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <Mail className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
-                    <span className="text-muted-foreground">{location.email}</span>
-                  </div>
+        {/* Contact Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+          {/* Email Card */}
+          <Card className="group hover:shadow-lg transition-all duration-300 border-0 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
+            <CardContent className="p-6">
+              <div className="flex flex-col items-center text-center space-y-4">
+                <div className="p-3 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 group-hover:scale-110 transition-transform duration-300">
+                  <Mail className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
                 </div>
-
-                <div className="border-t border-border pt-4 mb-6">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Clock className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                    <span className="font-medium text-card-foreground">Horaires</span>
-                  </div>
-                  <div className="space-y-1 text-sm text-muted-foreground">
-                    <div className="flex justify-between">
-                      <span>Lun - Ven</span>
-                      <span>{location.hours.weekdays}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Samedi</span>
-                      <span>{location.hours.saturday}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span>Dimanche</span>
-                      <span>{location.hours.sunday}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white">
-                  <Calendar className="w-4 h-4 mr-2" />
-                  Réserver dans ce salon
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {/* CTA */}
-        <div className="text-center">
-          <Card className="bg-gradient-to-r from-emerald-600 to-blue-600 dark:from-emerald-700 dark:to-blue-700 text-white max-w-2xl mx-auto border-0">
-            <CardContent className="p-8">
-              <h3 className="text-2xl font-bold mb-4">Prêt pour un nouveau look ?</h3>
-              <p className="mb-6 opacity-90">
-                Réservez dès maintenant votre rendez-vous et découvrez l'excellence de nos services.
-              </p>
-              <Button
-                size="lg"
-                variant="secondary"
-                className="bg-white text-emerald-600 hover:bg-gray-100 dark:bg-gray-100 dark:text-emerald-700 dark:hover:bg-gray-200"
-              >
-                <Calendar className="w-5 h-5 mr-2" />
-                Réserver Maintenant
-              </Button>
+                <h3 className="font-semibold text-gray-900 dark:text-white">Email Us</h3>
+                <a 
+                  href={`mailto:${contactInfo.email}`}
+                  className="text-emerald-600 dark:text-emerald-400 hover:underline"
+                >
+                  {contactInfo.email}
+                </a>
+              </div>
             </CardContent>
           </Card>
+
+          {/* Phone Card */}
+          <Card className="group hover:shadow-lg transition-all duration-300 border-0 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
+            <CardContent className="p-6">
+              <div className="flex flex-col items-center text-center space-y-4">
+                <div className="p-3 rounded-xl bg-blue-100 dark:bg-blue-900/30 group-hover:scale-110 transition-transform duration-300">
+                  <Phone className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                </div>
+                <h3 className="font-semibold text-gray-900 dark:text-white">Call Us</h3>
+                <a 
+                  href={`tel:${contactInfo.phone}`}
+                  className="text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  {contactInfo.phone}
+                </a>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Address Card */}
+          <Card className="group hover:shadow-lg transition-all duration-300 border-0 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
+            <CardContent className="p-6">
+              <div className="flex flex-col items-center text-center space-y-4">
+                <div className="p-3 rounded-xl bg-purple-100 dark:bg-purple-900/30 group-hover:scale-110 transition-transform duration-300">
+                  <MapPin className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                </div>
+                <h3 className="font-semibold text-gray-900 dark:text-white">Visit Us</h3>
+                <p className="text-gray-600 dark:text-gray-400">{contactInfo.address}</p>
+                <a 
+                  href={contactInfo.mapUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-purple-600 dark:text-purple-400 hover:underline inline-flex items-center gap-1"
+                >
+                  View on Map
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Hours Card */}
+          <Card className="group hover:shadow-lg transition-all duration-300 border-0 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm">
+            <CardContent className="p-6">
+              <div className="flex flex-col items-center text-center space-y-4">
+                <div className="p-3 rounded-xl bg-orange-100 dark:bg-orange-900/30 group-hover:scale-110 transition-transform duration-300">
+                  <Clock className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+                </div>
+                <h3 className="font-semibold text-gray-900 dark:text-white">Opening Hours</h3>
+                <div className="text-gray-600 dark:text-gray-400 space-y-1">
+                  <p>Mon-Fri: {contactInfo.hours.weekdays}</p>
+                  <p>Sat: {contactInfo.hours.saturday}</p>
+                  <p>Sun: {contactInfo.hours.sunday}</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Shop Images Gallery */}
+        <div className="mt-16 mb-12">
+          <div className="text-center mb-8">
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+              Visit Our Shop
+            </h3>
+            <p className="text-gray-600 dark:text-gray-400 mt-2">
+              Take a look at our modern and comfortable space
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-4 gap-4 max-w-6xl mx-auto">
+            {contactImages.map((image, index) => (
+              <motion.div
+                key={image.alt}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className={cn(
+                  "relative overflow-hidden rounded-2xl",
+                  image.className
+                )}
+              >
+                <div className="group aspect-square w-full relative overflow-hidden">
+                  <img
+                    src={image.src}
+                    alt={image.alt}
+                    className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <p className="text-white text-center px-4">
+                      {image.alt}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Map Section */}
+        <div className="mt-12 rounded-2xl overflow-hidden shadow-lg h-[400px] max-w-6xl mx-auto">
+          <iframe
+            src="https://www.google.com/maps/embed?pb=..." // Add your Google Maps embed URL here
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            title="Barber Shop Location"
+          />
         </div>
       </div>
     </section>
   )
 }
+
+export default ContactSection

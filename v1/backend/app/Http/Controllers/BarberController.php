@@ -21,8 +21,8 @@ class BarberController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Barber::query();
-
+        $query = Barber::query()->with('services');  // Changed order of query() and with()
+        
         if ($request->has('search')) {
             $search = $request->search;
 

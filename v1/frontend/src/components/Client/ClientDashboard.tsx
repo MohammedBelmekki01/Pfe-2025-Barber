@@ -8,6 +8,9 @@ import {
   MapPin,
   Mail,
   BadgeCheck,
+  Users,
+  Scissors,
+  Clock,
 } from "lucide-react";
 import axiosClient from "@/api/axios";
 import { useUsercontext } from "@/context/UserContext";
@@ -137,6 +140,60 @@ export default function ClientDashboard() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-gray-900 dark:text-gray-100">
+        {/* Statistics Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          {/* Total Reservations Card */}
+          <Card className="bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 shadow-xl">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-blue-100 text-sm font-medium">
+                    Mes Réservations
+                  </p>
+                  <p className="text-3xl font-bold">
+                    {reservations.length}
+                  </p>
+                </div>
+                <Calendar className="w-12 h-12 text-blue-200" />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Upcoming Appointments Card */}
+          <Card className="bg-gradient-to-r from-purple-500 to-purple-600 text-white border-0 shadow-xl">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-purple-100 text-sm font-medium">
+                    Rendez-vous à venir
+                  </p>
+                  <p className="text-3xl font-bold">
+                    {reservations.filter(r => r.status === 'confirmed').length}
+                  </p>
+                </div>
+                <Clock className="w-12 h-12 text-purple-200" />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Available Barbers Card */}
+          <Card className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white border-0 shadow-xl">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-emerald-100 text-sm font-medium">
+                    Barbiers Disponibles
+                  </p>
+                  <p className="text-3xl font-bold">
+                    {barbers.length}
+                  </p>
+                </div>
+                <Users className="w-12 h-12 text-emerald-200" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Quick Action */}
         <div className="mb-8">
           <Card className="bg-gradient-to-r from-blue-600 to-blue-700 text-white">

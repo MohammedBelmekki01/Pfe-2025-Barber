@@ -60,7 +60,7 @@ function BarberLayout() {
   return (
     <>
       {/* Your existing Navbar */}
-      <NavbarBarber />
+      {/* <NavbarBarber /> */}
       {/* Sidebar Layout */}
       <SidebarProvider defaultOpen={false}>
         <AppSideidebarBarber user={user} />
@@ -81,7 +81,7 @@ function BarberLayout() {
           </main>
 
           {/* Footer */}
-          <Footer />
+          {/* <Footer /> */}
         </SidebarInset>
       </SidebarProvider>
     </>

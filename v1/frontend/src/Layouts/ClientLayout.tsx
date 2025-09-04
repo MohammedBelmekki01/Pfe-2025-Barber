@@ -34,7 +34,7 @@ export default function ClientLayout() {
     }
 
     return <>
-                     <NavbarClient />
+                     {/* <NavbarClient /> */}
               {/* Sidebar Layout */}
               <SidebarProvider defaultOpen={false}>
                 <AppSideidebarClient user={user} />
@@ -55,7 +55,7 @@ export default function ClientLayout() {
                     </div>
                   </main>
                   {/* Footer */}
-                  <Footer />
+                  {/* <Footer /> */}
                 </SidebarInset>
               </SidebarProvider>
     </>
