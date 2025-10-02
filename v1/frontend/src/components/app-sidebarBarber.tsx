@@ -172,9 +172,9 @@ export function AppSideidebarBarber({ user, ...props }: AppSidebarProps) {
                   <User2 className="mr-2 h-4 w-4" />
                   <span>Account</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem >
                   <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
+                  <Link to="/barber/settings">Settings</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleLogout} className="text-red-600">
                   <LogOut className="mr-2 h-4 w-4" />

@@ -8,36 +8,36 @@ import { cn } from "@/lib/utils"
 const contactInfo = {
   email: "admin@gmail.com",
   phone: "222222222",
-  address: "123 Barber Street, Your City",
+  address: "123 Barber Street, Votre Ville",
   hours: {
-    weekdays: "9:00 AM - 8:00 PM",
-    saturday: "9:00 AM - 6:00 PM",
-    sunday: "10:00 AM - 4:00 PM"
+    weekdays: "9h00 - 20h00",
+    saturday: "9h00 - 18h00",
+    sunday: "10h00 - 16h00"
   },
-  mapUrl: "https://www.google.com/maps" 
+  mapUrl: "https://www.google.com/maps"
 }
 
 const contactImages = [
   {
     src: "/images/contact/storefront.jpeg",
-    alt: "Barber Shop Storefront",
+    alt: "Façade du salon",
     className: "col-span-2 row-span-2"
   },
   {
     src: "/images/contact/interior1.jpeg",
-    alt: "Shop Interior View",
+    alt: "Vue intérieure du salon",
   },
   {
     src: "/images/contact/waiting-area.jpeg",
-    alt: "Waiting Area",
+    alt: "Espace d'attente",
   },
   {
     src: "/images/contact/parking.jpeg",
-    alt: "Parking Area",
+    alt: "Parking",
   },
   {
     src: "/images/contact/interior2.jpeg",
-    alt: "Second Interior View",
+    alt: "Deuxième vue intérieure",
   },
 ]
 
@@ -48,10 +48,10 @@ function ContactSection() {
         {/* Section Header */}
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent mb-4">
-            Get in Touch
+            Contactez-nous
           </h2>
           <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Have questions or ready to book your appointment? Contact us through any of these channels.
+            Des questions ou envie de prendre rendez-vous ? Contactez-nous via l’un de ces moyens.
           </p>
         </div>
 
@@ -64,8 +64,8 @@ function ContactSection() {
                 <div className="p-3 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 group-hover:scale-110 transition-transform duration-300">
                   <Mail className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
                 </div>
-                <h3 className="font-semibold text-gray-900 dark:text-white">Email Us</h3>
-                <a 
+                <h3 className="font-semibold text-gray-900 dark:text-white">Par Email</h3>
+                <a
                   href={`mailto:${contactInfo.email}`}
                   className="text-emerald-600 dark:text-emerald-400 hover:underline"
                 >
@@ -82,8 +82,8 @@ function ContactSection() {
                 <div className="p-3 rounded-xl bg-blue-100 dark:bg-blue-900/30 group-hover:scale-110 transition-transform duration-300">
                   <Phone className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 </div>
-                <h3 className="font-semibold text-gray-900 dark:text-white">Call Us</h3>
-                <a 
+                <h3 className="font-semibold text-gray-900 dark:text-white">Par Téléphone</h3>
+                <a
                   href={`tel:${contactInfo.phone}`}
                   className="text-blue-600 dark:text-blue-400 hover:underline"
                 >
@@ -100,15 +100,15 @@ function ContactSection() {
                 <div className="p-3 rounded-xl bg-purple-100 dark:bg-purple-900/30 group-hover:scale-110 transition-transform duration-300">
                   <MapPin className="w-6 h-6 text-purple-600 dark:text-purple-400" />
                 </div>
-                <h3 className="font-semibold text-gray-900 dark:text-white">Visit Us</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-white">Nous rendre visite</h3>
                 <p className="text-gray-600 dark:text-gray-400">{contactInfo.address}</p>
-                <a 
+                <a
                   href={contactInfo.mapUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-purple-600 dark:text-purple-400 hover:underline inline-flex items-center gap-1"
                 >
-                  View on Map
+                  Voir sur la carte
                   <ExternalLink className="w-4 h-4" />
                 </a>
               </div>
@@ -122,11 +122,11 @@ function ContactSection() {
                 <div className="p-3 rounded-xl bg-orange-100 dark:bg-orange-900/30 group-hover:scale-110 transition-transform duration-300">
                   <Clock className="w-6 h-6 text-orange-600 dark:text-orange-400" />
                 </div>
-                <h3 className="font-semibold text-gray-900 dark:text-white">Opening Hours</h3>
+                <h3 className="font-semibold text-gray-900 dark:text-white">Horaires d'ouverture</h3>
                 <div className="text-gray-600 dark:text-gray-400 space-y-1">
-                  <p>Mon-Fri: {contactInfo.hours.weekdays}</p>
-                  <p>Sat: {contactInfo.hours.saturday}</p>
-                  <p>Sun: {contactInfo.hours.sunday}</p>
+                  <p>Lun-Ven : {contactInfo.hours.weekdays}</p>
+                  <p>Sam : {contactInfo.hours.saturday}</p>
+                  <p>Dim : {contactInfo.hours.sunday}</p>
                 </div>
               </div>
             </CardContent>
@@ -137,13 +137,13 @@ function ContactSection() {
         <div className="mt-16 mb-12">
           <div className="text-center mb-8">
             <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Visit Our Shop
+              Visitez notre salon
             </h3>
             <p className="text-gray-600 dark:text-gray-400 mt-2">
-              Take a look at our modern and comfortable space
+              Découvrez notre espace moderne et confortable
             </p>
           </div>
-          
+
           <div className="grid grid-cols-4 gap-4 max-w-6xl mx-auto">
             {contactImages.map((image, index) => (
               <motion.div
@@ -176,14 +176,14 @@ function ContactSection() {
         {/* Map Section */}
         <div className="mt-12 rounded-2xl overflow-hidden shadow-lg h-[400px] max-w-6xl mx-auto">
           <iframe
-            src="https://www.google.com/maps/embed?pb=..." // Add your Google Maps embed URL here
+            src="https://www.google.com/maps/embed?pb=..." // Ajoutez ici votre URL Google Maps intégrée
             width="100%"
             height="100%"
             style={{ border: 0 }}
             allowFullScreen
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
-            title="Barber Shop Location"
+            title="Localisation du salon"
           />
         </div>
       </div>

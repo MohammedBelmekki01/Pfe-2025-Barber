@@ -26,9 +26,9 @@ import {
 const StatusBadge = ({ status }: { status: string }) => {
   const config = {
     pending: { text: "En attente", variant: "secondary" as const },
-    confirmed: { text: "Confirmé", variant: "default" as const },
-    cancelled: { text: "Annulé", variant: "destructive" as const },
-    done: { text: "Terminé", variant: "outline" as const },
+    confirmed: { text: "Confirmée", variant: "default" as const },
+    cancelled: { text: "Annulée", variant: "destructive" as const },
+    done: { text: "Terminée", variant: "outline" as const },
   }[status] || { text: status, variant: "outline" as const }
   
   return <Badge variant={config.variant}>{config.text}</Badge>
@@ -190,7 +190,7 @@ export default function UserReservationsList() {
   if (error) {
     return (
       <div className="text-center p-6">
-        <p className="text-red-600">Erreur: {error}</p>
+        <p className="text-red-600">Erreur : {error}</p>
       </div>
     );
   }
@@ -214,7 +214,7 @@ export default function UserReservationsList() {
       {/* Header avec titre et compteur */}
       <div className="flex items-center justify-between">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-          Mes Rendez-vous ({filteredReservations.length}/{reservations.length})
+          Mes rendez-vous ({filteredReservations.length}/{reservations.length})
         </h2>
         
         {hasActiveFilters && (
@@ -304,7 +304,7 @@ export default function UserReservationsList() {
           <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t">
             {selectedBarber !== 'all' && (
               <Badge variant="secondary" className="flex items-center gap-1">
-                Barbier: {uniqueBarbers.find(b => b.id === selectedBarber)?.name}
+                Barbier : {uniqueBarbers.find(b => b.id === selectedBarber)?.name}
                 <X 
                   className="h-3 w-3 cursor-pointer" 
                   onClick={() => setSelectedBarber('all')}
@@ -313,7 +313,7 @@ export default function UserReservationsList() {
             )}
             {selectedStatus !== 'all' && (
               <Badge variant="secondary" className="flex items-center gap-1">
-                Statut: {statusOptions.find(s => s.value === selectedStatus)?.label}
+                Statut : {statusOptions.find(s => s.value === selectedStatus)?.label}
                 <X 
                   className="h-3 w-3 cursor-pointer" 
                   onClick={() => setSelectedStatus('all')}
@@ -322,7 +322,7 @@ export default function UserReservationsList() {
             )}
             {selectedService !== 'all' && (
               <Badge variant="secondary" className="flex items-center gap-1">
-                Service: {uniqueServices.find(s => s.id === selectedService)?.name}
+                Service : {uniqueServices.find(s => s.id === selectedService)?.name}
                 <X 
                   className="h-3 w-3 cursor-pointer" 
                   onClick={() => setSelectedService('all')}
@@ -404,7 +404,7 @@ export default function UserReservationsList() {
                   </span>
                 </div>
 
-                {/* 🔧 FIX: Informations du barbier avec vérifications */}
+                {/* Infos du barbier */}
                 {res.barber ? (
                   <div className="border-t pt-3">
                     <div className="flex items-center gap-3">

@@ -44,7 +44,7 @@ const BarberReviewsAdmin = ({ barberId }: BarberReviewsProps) => {
         setReviews(response.data)
       })
       .catch((err) => {
-        setError(err.response?.data?.message || err.message || "Failed to fetch reviews")
+        setError(err.response?.data?.message || err.message || "Échec du chargement des avis")
       })
       .finally(() => setLoading(false))
   }, [barberId])
@@ -67,10 +67,10 @@ const BarberReviewsAdmin = ({ barberId }: BarberReviewsProps) => {
     const date = new Date(timestamp)
     const now = new Date()
     const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
-    if (diffInSeconds < 60) return "now"
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m`
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h`
-    if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)}d`
+    if (diffInSeconds < 60) return "à l’instant"
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} min`
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} h`
+    if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)} j`
     return date.toLocaleDateString()
   }
 
@@ -93,21 +93,21 @@ const BarberReviewsAdmin = ({ barberId }: BarberReviewsProps) => {
               <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg">
                 <MessageCircle className="w-5 h-5 text-white" />
               </div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Customer Reviews</h1>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Avis clients</h1>
             </div>
             <div className="flex items-center space-x-3">
               <div className="flex items-center space-x-1">{renderStars(Math.round(averageRating))}</div>
               <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 bg-white/50 dark:bg-gray-800/50 px-3 py-1 rounded-full">
-                {averageRating.toFixed(1)} out of 5
+                {averageRating.toFixed(1)} sur 5
               </span>
               <span className="text-sm text-gray-600 dark:text-gray-400">
-                ({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})
+                ({reviews.length} {reviews.length === 1 ? 'avis' : 'avis'})
               </span>
             </div>
           </div>
           <div className="text-center bg-white/50 dark:bg-gray-800/50 rounded-xl p-4 shadow-lg backdrop-blur-sm">
             <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{reviews.length}</div>
-            <div className="text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wide">Total Reviews</div>
+            <div className="text-xs text-gray-600 dark:text-gray-400 uppercase tracking-wide">Total avis</div>
           </div>
         </div>
       </div>
@@ -117,7 +117,7 @@ const BarberReviewsAdmin = ({ barberId }: BarberReviewsProps) => {
         {loading && (
           <div className="p-8 text-center">
             <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-gray-600 dark:text-gray-400">Loading reviews...</p>
+            <p className="text-gray-600 dark:text-gray-400">Chargement des avis...</p>
           </div>
         )}
         
@@ -209,9 +209,9 @@ const BarberReviewsAdmin = ({ barberId }: BarberReviewsProps) => {
               <div className="w-20 h-20 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
                 <MessageCircle className="w-10 h-10 text-purple-500 dark:text-purple-400" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">No reviews yet</h3>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">Aucun avis pour l’instant</h3>
               <p className="text-gray-600 dark:text-gray-400 max-w-md mx-auto">
-                Be the first to share your experience with this barber's services!
+                Soyez le premier à partager votre expérience avec les services de ce barbier !
               </p>
             </div>
           ))}

@@ -1,6 +1,5 @@
 "use client";
 
-
 import {
   Mail,
   Phone,
@@ -85,25 +84,25 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
       <div className="flex items-center justify-center min-h-[400px] text-gray-500 dark:text-gray-400">
         <div className="text-center space-y-2">
           <User className="w-12 h-12 mx-auto opacity-50" />
-          <p className="text-lg font-medium">No barber data available</p>
-          <p className="text-sm">Please try again later</p>
+          <p className="text-lg font-medium">Aucune donnée barbier disponible</p>
+          <p className="text-sm">Veuillez réessayer plus tard</p>
         </div>
       </div>
     );
   }
 
-  // Calculate age from date of birth
+  // Calcul de l'âge
   const age = barber.date_of_birth
     ? differenceInYears(new Date(), new Date(barber.date_of_birth))
     : null;
 
-  // Get initials for avatar fallback
+  // Initiales pour l'avatar
   const initials = `${barber.firstname.charAt(0)}${barber.lastname.charAt(0)}`;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-blue-50/30 dark:from-slate-900 dark:via-emerald-900/10 dark:to-slate-900">
       <div className="container mx-auto px-4 py-8 space-y-8">
-        {/* Header Profile Card */}
+        {/* Carte Profil Header */}
         <Card className="relative overflow-hidden bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl border border-white/20 dark:border-gray-800/50 shadow-2xl">
           {/* Background Pattern */}
           <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 via-blue-500/10 to-purple-500/10" />
@@ -112,7 +111,6 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
             <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
               {/* Avatar */}
               <div className="relative">
-
                 <Avatar className="w-32 h-32 border-4 border-white dark:border-gray-800 shadow-xl">
                   <AvatarImage
                     src={`${import.meta.env.VITE_BACKEND_URL}/storage/${barber?.image}` || "/placeholder.svg"}
@@ -129,17 +127,17 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
                 )}
               </div>
 
-              {/* Basic Info */}
+              {/* Infos de base */}
               <div className="flex-1 text-center md:text-left space-y-4">
                 <div>
                   <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
                     {barber.firstname} {barber.lastname}
                   </h1>
                   <p className="text-xl text-gray-600 dark:text-gray-400 mb-4">
-                    Professional Barber
+                    Barbier professionnel
                   </p>
 
-                  {/* Rating and Reviews */}
+                  {/* Note et avis */}
                   {barber.rating && (
                     <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
                       <div className="flex items-center gap-1">
@@ -158,13 +156,13 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
                       </span>
                       {barber.total_reviews && (
                         <span className="text-gray-500">
-                          ({barber.total_reviews} reviews)
+                          ({barber.total_reviews} avis)
                         </span>
                       )}
                     </div>
                   )}
 
-                  {/* Specialties */}
+                  {/* Spécialités */}
                   {barber.specialties && barber.specialties.length > 0 && (
                     <div className="flex flex-wrap justify-center md:justify-start gap-2">
                       {barber.specialties.map((specialty, index) => (
@@ -181,31 +179,31 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
                 </div>
               </div>
 
-              {/* Quick Contact */}
+              {/* Contact rapide */}
               <div className="flex flex-col gap-3">
                 <Button className="bg-emerald-600 hover:bg-emerald-700 text-white">
                   <Phone className="w-4 h-4 mr-2" />
-                  Call Now
+                  Appeler maintenant
                 </Button>
                 <Button variant="outline">
                   <Mail className="w-4 h-4 mr-2" />
-                  Email
+                  Envoyer un email
                 </Button>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Main Content Grid */}
+        {/* Grille principale */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Personal & Professional Info */}
+          {/* Colonne gauche - Infos personnelles & pro */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Personal Information */}
+            {/* Infos personnelles */}
             <Card className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <User className="w-5 h-5 text-emerald-500" />
-                  Personal Information
+                  Informations personnelles
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -225,7 +223,7 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
                       <Phone className="w-5 h-5 text-gray-500" />
                       <div>
                         <p className="text-sm font-medium text-gray-500">
-                          Phone
+                          Téléphone
                         </p>
                         <p className="text-base font-medium">
                           +212 {barber.phone}
@@ -237,7 +235,7 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
                       <MapPin className="w-5 h-5 text-gray-500" />
                       <div>
                         <p className="text-sm font-medium text-gray-500">
-                          Address
+                          Adresse
                         </p>
                         <p className="text-base font-medium">
                           {barber.address}
@@ -250,9 +248,9 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
                     <div className="flex items-center gap-3">
                       <CalendarDays className="w-5 h-5 text-gray-500" />
                       <div>
-                        <p className="text-sm font-medium text-gray-500">Age</p>
+                        <p className="text-sm font-medium text-gray-500">Âge</p>
                         <p className="text-base font-medium">
-                          {age ? `${age} years old` : "N/A"}
+                          {age ? `${age} ans` : "N/A"}
                         </p>
                       </div>
                     </div>
@@ -261,10 +259,10 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
                       <CircleDot className="w-5 h-5 text-gray-500" />
                       <div>
                         <p className="text-sm font-medium text-gray-500">
-                          Gender
+                          Sexe
                         </p>
                         <p className="text-base font-medium">
-                          {barber.gender === "m" ? "Male" : "Female"}
+                          {barber.gender === "m" ? "Homme" : "Femme"}
                         </p>
                       </div>
                     </div>
@@ -273,7 +271,7 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
                       <MapPin className="w-5 h-5 text-gray-500" />
                       <div>
                         <p className="text-sm font-medium text-gray-500">
-                          Location
+                          Localisation
                         </p>
                         <p className="text-base font-medium">
                           {barber.location}
@@ -285,12 +283,12 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
               </CardContent>
             </Card>
 
-            {/* Professional Information */}
+            {/* Infos professionnelles */}
             <Card className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Award className="w-5 h-5 text-emerald-500" />
-                  Professional Details
+                  Informations professionnelles
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -298,7 +296,7 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
                   <Award className="w-5 h-5 text-gray-500" />
                   <div>
                     <p className="text-sm font-medium text-gray-500">
-                      Experience
+                      Expérience
                     </p>
                     <p className="text-base font-medium">{barber.experience}</p>
                   </div>
@@ -308,7 +306,7 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
                   <div className="flex items-center gap-3">
                     <FileText className="w-5 h-5 text-gray-500" />
                     <p className="text-sm font-medium text-gray-500">
-                      Biography
+                      Biographie
                     </p>
                   </div>
                   <p className="text-base leading-relaxed text-gray-700 dark:text-gray-300 pl-8">
@@ -318,16 +316,16 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
               </CardContent>
             </Card>
 
-            {/* Services Offered */}
+            {/* Services proposés */}
             {barber.services && barber.services.length > 0 && (
               <Card className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Scissors className="w-5 h-5 text-emerald-500" />
-                    Services Offered
+                    Services proposés
                   </CardTitle>
                   <CardDescription>
-                    Professional services available ({barber.services.length}{" "}
+                    Prestations professionnelles disponibles ({barber.services.length}{" "}
                     services)
                   </CardDescription>
                 </CardHeader>
@@ -342,7 +340,7 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
                           <Card className="relative overflow-hidden hover:shadow-lg transition-all duration-300 h-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
                             {service.popular && (
                               <Badge className="absolute top-3 right-3 bg-orange-500 text-white z-10 shadow-lg">
-                                Popular
+                                Populaire
                               </Badge>
                             )}
 
@@ -407,16 +405,16 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
             )}
           </div>
 
-          {/* Right Column - Reservation Form */}
+          {/* Colonne droite - Formulaire de réservation */}
           <div className="space-y-6">
             <Card className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl sticky top-4">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <CalendarDays className="w-5 h-5 text-emerald-500" />
-                  Book Appointment
+                  Prendre rendez-vous
                 </CardTitle>
                 <CardDescription>
-                  Schedule your visit with {barber.firstname}
+                  Réservez votre visite avec {barber.firstname}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -425,31 +423,22 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
             </Card>
           </div>
         </div>
-      <div className="mt-6">
-        <BarberScheduleDisplay barberId={barber.id} />
-      </div>
-        {/* Reviews Section */}
-        <Card className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Star className="w-5 h-5 text-emerald-500" />
-              Customer Reviews
-            </CardTitle>
-            <CardDescription>
-              What our customers say about {barber.firstname}
-            </CardDescription>
-          </CardHeader>
+        <div className="mt-6">
+          <BarberScheduleDisplay barberId={barber.id} />
+        </div>
+        {/* Section Avis */}
+        <Card className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl"> 
           <CardContent>
             <BarberReviews barberId={barber.id} />
           </CardContent>
         </Card>
 
-        {/* Additional Information */}
+        {/* Informations complémentaires */}
         <Card className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <CircleDot className="w-5 h-5 text-emerald-500" />
-              Additional Information
+              Informations complémentaires
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -458,7 +447,7 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
                 <CalendarDays className="w-5 h-5 text-gray-500" />
                 <div>
                   <p className="text-sm font-medium text-gray-500">
-                    Last Updated
+                    Dernière mise à jour
                   </p>
                   <p className="text-base font-medium">
                     {barber.formatted_updated_at ||
@@ -474,10 +463,10 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
                   <CheckCircle className="w-5 h-5 text-emerald-500" />
                   <div>
                     <p className="text-sm font-medium text-gray-500">
-                      Email Status
+                      Statut de l'email
                     </p>
                     <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
-                      Verified
+                      Vérifié
                     </Badge>
                   </div>
                 </div>

@@ -51,7 +51,7 @@ export default function ClientDashboard() {
   const [loadingRes, setLoadingRes] = useState(false);
   const [errorRes, setErrorRes] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const reservationsPerPage = 4;
+  const reservationsPerPage = 2;
 
   // Barbers state
   const [barbers, setBarbers] = useState([]);

@@ -157,7 +157,7 @@ export default function AllServices() {
             Services
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Explore and manage all barbershop services
+            Explorez et gérez tous les services du barbershop
           </p>
         </div>
 
@@ -166,10 +166,10 @@ export default function AllServices() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <FilterIcon className="w-5 h-5" />
-              Advanced Filters
+              Filtres avancés
             </CardTitle>
             <CardDescription>
-              Filter services by name, barber first name, and price range
+              Filtrez les services par nom, prénom du barbier et fourchette de prix
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -177,12 +177,12 @@ export default function AllServices() {
               {/* Service Name */}
               <div>
                 <label className="text-sm font-medium mb-2 block">
-                  Service Name
+                  Nom du service
                 </label>
                 <div className="relative">
                   <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
-                    placeholder="Search by service name..."
+                    placeholder="Rechercher par nom de service..."
                     value={filters.serviceName}
                     onChange={(e) =>
                       updateFilter("serviceName", e.target.value)
@@ -195,10 +195,10 @@ export default function AllServices() {
               {/* Barber First Name */}
               <div>
                 <label className="text-sm font-medium mb-2 block">
-                  Barber First Name
+                  Prénom du barbier
                 </label>
                 <Input
-                  placeholder="e.g., John"
+                  placeholder="ex : Ahmed"
                   value={filters.barberFirst}
                   onChange={(e) => updateFilter("barberFirst", e.target.value)}
                 />
@@ -207,7 +207,7 @@ export default function AllServices() {
               {/* Price Min */}
               <div>
                 <label className="text-sm font-medium mb-2 block">
-                  Price Min (MAD)
+                  Prix min (MAD)
                 </label>
                 <Input
                   type="number"
@@ -221,7 +221,7 @@ export default function AllServices() {
               {/* Price Max */}
               <div>
                 <label className="text-sm font-medium mb-2 block">
-                  Price Max (MAD)
+                  Prix max (MAD)
                 </label>
                 <Input
                   type="number"
@@ -235,9 +235,9 @@ export default function AllServices() {
 
             <div className="flex gap-2 mt-4">
               <Button variant="outline" onClick={clearFilters}>
-                Clear Filters
+                Réinitialiser les filtres
               </Button>
-              <Button onClick={fetchServices}>Refresh</Button>
+              <Button onClick={fetchServices}>Rafraîchir</Button>
             </div>
           </CardContent>
         </Card>
@@ -247,10 +247,10 @@ export default function AllServices() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Scissors className="w-5 h-5" />
-              All Services ({filtered.length})
+              Tous les services ({filtered.length})
             </CardTitle>
             <CardDescription>
-              Browse available services with details and pricing
+              Parcourez les services disponibles avec détails et tarifs
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -259,7 +259,7 @@ export default function AllServices() {
                 <div className="text-center">
                   <Clock className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
                   <p className="text-gray-600 dark:text-gray-400">
-                    Loading services...
+                    Chargement des services...
                   </p>
                 </div>
               </div>
@@ -267,10 +267,10 @@ export default function AllServices() {
               <div className="text-center py-12">
                 <ImageIcon className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                 <p className="text-gray-600 dark:text-gray-400 text-lg">
-                  No services found
+                  Aucun service trouvé
                 </p>
                 <p className="text-gray-500 dark:text-gray-500">
-                  Try adjusting your filters
+                  Essayez d&apos;ajuster vos filtres
                 </p>
               </div>
             ) : (
@@ -349,10 +349,10 @@ export default function AllServices() {
                           </div>
                           {service.created_at && (
                             <p className="text-xs text-gray-500 dark:text-gray-400">
-                              Added{" "}
+                              Ajouté le{" "}
                               {format(
                                 new Date(service.created_at),
-                                "MMM dd, yyyy"
+                                "dd MMM yyyy"
                               )}
                             </p>
                           )}

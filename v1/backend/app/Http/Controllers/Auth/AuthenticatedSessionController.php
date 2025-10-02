@@ -39,7 +39,7 @@ class AuthenticatedSessionController extends Controller
         }
 
         $request->session()->regenerate();
-
+        
         return response()->json([
             'user' => $user,
             'token' => $user->createToken('api', [$user->getRoleAttribute()])->plainTextToken,
@@ -66,7 +66,7 @@ class AuthenticatedSessionController extends Controller
         Auth::guard('web')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
+        // $request->user()->currentAccessToken()->delete();
         return response()->json(['message' => 'Logged out successfully']);
     }
 }

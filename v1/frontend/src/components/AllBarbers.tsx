@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Loader2, Star, MapPin, Phone, Mail } from "lucide-react"
+import { Loader2, Star, MapPin, Phone, Mail, Filter } from "lucide-react"
 import { Link } from "react-router-dom"
 import {
     Pagination,
@@ -40,6 +40,7 @@ export default function AdminBarbersList() {
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [searchTerm, setSearchTerm] = useState("")
+    const [serviceFilter, setServiceFilter] = useState("all")
     const [currentPage, setCurrentPage] = useState(1)
     const barbersPerPage = 8
 
@@ -55,7 +56,7 @@ export default function AdminBarbersList() {
                     setError(null)
                 })
                 .catch((err) => {
-                    setError(err.response?.data?.message || err.message || "Failed to fetch barbers")
+                    setError(err.response?.data?.message || err.message || "Échec du chargement des barbiers")
                 })
                 .finally(() => setLoading(false))
         }, 400) // debounce delay
@@ -63,11 +64,36 @@ export default function AdminBarbersList() {
         return () => clearTimeout(delayDebounce)
     }, [searchTerm])
 
+    // Liste unique des services pour le filtre
+    const allServices = useMemo(() => {
+        const servicesSet = new Set<string>();
+        barbers.forEach(barber => {
+            barber.services?.forEach(service => servicesSet.add(service.name));
+        });
+        return Array.from(servicesSet);
+    }, [barbers]);
+
+    // Filtrage des barbiers selon le service sélectionné et la recherche
+    const filteredBarbers = useMemo(() => {
+        return barbers.filter(barber =>
+            (serviceFilter === "all" ||
+                (barber.services && barber.services.some(s => s.name === serviceFilter)))
+            &&
+            (
+                !searchTerm ||
+                barber.firstname.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                barber.lastname.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                barber.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                (barber.location && barber.location.toLowerCase().includes(searchTerm.toLowerCase()))
+            )
+        );
+    }, [barbers, serviceFilter, searchTerm]);
+
     // Pagination logic
     const indexOfLastBarber = currentPage * barbersPerPage
     const indexOfFirstBarber = indexOfLastBarber - barbersPerPage
-    const currentBarbers = barbers.slice(indexOfFirstBarber, indexOfLastBarber)
-    const totalPages = Math.ceil(barbers.length / barbersPerPage)
+    const currentBarbers = filteredBarbers.slice(indexOfFirstBarber, indexOfLastBarber)
+    const totalPages = Math.ceil(filteredBarbers.length / barbersPerPage)
 
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
 
@@ -76,10 +102,10 @@ export default function AdminBarbersList() {
             {/* Header */}
             <div className="text-center space-y-2">
                 <h1 className="text-4xl font-bold bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
-                    Our Professional Barbers
+                    Nos barbiers professionnels
                 </h1>
                 <p className="text-gray-600 dark:text-gray-400 text-lg">
-                    Meet our talented team of experienced barbers
+                    Découvrez notre équipe talentueuse de barbiers expérimentés
                 </p>
             </div>
 
@@ -87,7 +113,7 @@ export default function AdminBarbersList() {
             <div className="max-w-md mx-auto">
                 <Input
                     type="text"
-                    placeholder="Search by name, email, or location..."
+                    placeholder="Rechercher par nom, email ou localisation..."
                     value={searchTerm}
                     onChange={(e) => {
                         setSearchTerm(e.target.value)
@@ -95,6 +121,45 @@ export default function AdminBarbersList() {
                     }}
                     className="w-full border-0 bg-gray-100 dark:bg-gray-800 rounded-2xl focus:ring-2 focus:ring-emerald-500 transition-all duration-300"
                 />
+            </div>
+
+            {/* Service Filter */}
+            <div className="w-full flex flex-col items-center mt-4">
+                <div className="flex items-center gap-2 mb-2">
+                    <Filter className="w-5 h-5 text-emerald-500" />
+                    <span className="font-semibold text-gray-700 dark:text-gray-200">Filtrer par service :</span>
+                </div>
+                <div className="flex flex-wrap gap-2 justify-center overflow-x-auto pb-2">
+                    <button
+                        onClick={() => {
+                            setServiceFilter("all");
+                            setCurrentPage(1);
+                        }}
+                        className={`px-4 py-2 rounded-full border transition-all font-medium ${
+                            serviceFilter === "all"
+                                ? "bg-gradient-to-r from-emerald-500 to-blue-500 text-white shadow"
+                                : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-emerald-100 dark:hover:bg-emerald-900"
+                        }`}
+                    >
+                        Tous les services
+                    </button>
+                    {allServices.map(service => (
+                        <button
+                            key={service}
+                            onClick={() => {
+                                setServiceFilter(service);
+                                setCurrentPage(1);
+                            }}
+                            className={`px-4 py-2 rounded-full border transition-all font-medium ${
+                                serviceFilter === service
+                                    ? "bg-gradient-to-r from-emerald-500 to-blue-500 text-white shadow"
+                                    : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-emerald-100 dark:hover:bg-emerald-900"
+                            }`}
+                        >
+                            {service}
+                        </button>
+                    ))}
+                </div>
             </div>
 
             {loading && (
@@ -105,21 +170,21 @@ export default function AdminBarbersList() {
 
             {error && (
                 <div className="text-center text-red-600 py-10">
-                    <p>Error: {error}</p>
+                    <p>Erreur : {error}</p>
                 </div>
             )}
 
-            {!loading && !error && barbers.length === 0 && (
+            {!loading && !error && filteredBarbers.length === 0 && (
                 <div className="text-center text-gray-500 py-10 dark:text-gray-400">
                     <div className="w-24 h-24 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
                         <Star className="w-12 h-12 text-gray-400" />
                     </div>
-                    <h3 className="text-xl font-semibold mb-2">No barbers found</h3>
-                    <p>Try adjusting your search criteria</p>
+                    <h3 className="text-xl font-semibold mb-2">Aucun barbier trouvé</h3>
+                    <p>Essayez d&apos;ajuster vos critères de recherche</p>
                 </div>
             )}
 
-            {!loading && !error && barbers.length > 0 && (
+            {!loading && !error && filteredBarbers.length > 0 && (
                 <>
                     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                         {currentBarbers.map((barber) => (
@@ -127,15 +192,14 @@ export default function AdminBarbersList() {
                                 <CardHeader className="p-6 text-center">
                                     <div className="relative mx-auto mb-4">
                                         <Avatar className="w-20 h-20 ring-4 ring-emerald-200 dark:ring-emerald-800 shadow-lg group-hover:ring-emerald-300 transition-all duration-300">
-                                            {barber.image ? (
+                                            {barber.avatar ? (
                                                 <AvatarImage
                                                     src={
-                                                        barber?.image
-                                                            ? `${import.meta.env.VITE_BACKEND_URL}/storage/${barber?.image}`
+                                                        barber?.avatar
+                                                            ? `${import.meta.env.VITE_BACKEND_URL}/storage/${barber?.avatar}`
                                                             : "/badgebarber.jpg"
                                                     }
                                                     alt={barber?.firstname}
-
                                                 />
                                             ) : (
                                                 <AvatarFallback className="bg-gradient-to-r from-emerald-500 to-blue-500 text-white font-bold text-lg">
@@ -211,7 +275,7 @@ export default function AdminBarbersList() {
                                             to={`/client/barber-details?id=${barber.id}`}
                                             className="block w-full text-center"
                                         >
-                                            View Details
+                                            Voir le profil
                                         </Link>
                                     </Button>
                                 </CardContent>
@@ -249,7 +313,7 @@ export default function AdminBarbersList() {
                     {/* Stats */}
                     <div className="mt-8 text-center">
                         <p className="text-gray-600 dark:text-gray-400">
-                            Showing <span className="font-semibold text-emerald-600">{barbers.length}</span> professional barbers
+                            Affichage de <span className="font-semibold text-emerald-600">{filteredBarbers.length}</span> barbiers professionnels
                         </p>
                     </div>
                 </>

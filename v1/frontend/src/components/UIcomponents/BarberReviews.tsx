@@ -21,6 +21,13 @@ import {
   Scissors,
 } from "lucide-react";
 import { useUsercontext } from "@/context/UserContext";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface Review {
   id: number;
@@ -138,10 +145,10 @@ const BarberReviews: React.FC<BarberReviewsProps> = ({ barberId }) => {
       (now.getTime() - date.getTime()) / (1000 * 60 * 60)
     );
 
-    if (diffInHours < 1) return "Just now";
-    if (diffInHours < 24) return `${diffInHours}h ago`;
-    if (diffInHours < 168) return `${Math.floor(diffInHours / 24)}d ago`;
-    return `${Math.floor(diffInHours / 168)}w ago`;
+    if (diffInHours < 1) return "À l’instant";
+    if (diffInHours < 24) return `il y a ${diffInHours}h`;
+    if (diffInHours < 168) return `il y a ${Math.floor(diffInHours / 24)}j`;
+    return `il y a ${Math.floor(diffInHours / 168)} sem.`;
   };
 
   const getInitials = (name: string) => {
@@ -153,12 +160,12 @@ const BarberReviews: React.FC<BarberReviewsProps> = ({ barberId }) => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 rounded-3xl p-6">
+    <div className="max-full mx-auto space-y-6 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800 rounded-3xl p-6">
       {/* Header with Stats */}
       <div className="flex items-center justify-between mb-8">
         <div>
           <h2 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-blue-600 bg-clip-text text-transparent">
-            Customer Reviews
+            Avis clients
           </h2>
           <div className="flex items-center gap-4 mt-2">
             <div className="flex items-center gap-1">
@@ -167,7 +174,7 @@ const BarberReviews: React.FC<BarberReviewsProps> = ({ barberId }) => {
             </div>
             <div className="flex items-center gap-1 text-gray-600 dark:text-gray-400">
               <TrendingUp className="w-4 h-4" />
-              <span className="text-sm">{reviews.length} reviews</span>
+              <span className="text-sm">{reviews.length} avis</span>
             </div>
           </div>
         </div>
@@ -176,7 +183,7 @@ const BarberReviews: React.FC<BarberReviewsProps> = ({ barberId }) => {
           className="bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white rounded-full px-6 py-3 font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
         >
           <Sparkles className="w-4 h-4 mr-2" />
-          Write Review
+          Laisser un avis
         </Button>
       </div>
 
@@ -191,37 +198,40 @@ const BarberReviews: React.FC<BarberReviewsProps> = ({ barberId }) => {
                 </div>
                 <div>
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                    Share Your Experience
+                    Partagez votre expérience
                   </h3>
                   <p className="text-gray-600 dark:text-gray-400">
-                    Let others know how it went!
+                    Faites savoir aux autres comment s’est passée votre visite !
                   </p>
                 </div>
               </div>
 
-              {/* Service Selection */}
+              {/* Service Selection - Utilise Select Shadcn */}
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                   Service
                 </label>
-                <select
-                  value={selectedServiceId}
-                  onChange={(e) => setSelectedServiceId(Number(e.target.value))}
-                  className="w-full p-4 border-0 bg-gray-100 dark:bg-gray-700 rounded-2xl focus:ring-2 focus:ring-emerald-500 transition-all duration-300"
+                <Select
+                  value={selectedServiceId ? String(selectedServiceId) : ""}
+                  onValueChange={(val) => setSelectedServiceId(Number(val))}
                 >
-                  <option value="">Choose the service you experienced</option>
-                  {services.map((service) => (
-                    <option key={service.id} value={service.id}>
-                      {service.name}
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger className="w-full bg-gray-100 dark:bg-gray-700 rounded-2xl border-0 focus:ring-2 focus:ring-emerald-500">
+                    <SelectValue placeholder="Choisissez le service concerné" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {services.map((service) => (
+                      <SelectItem key={service.id} value={String(service.id)}>
+                        {service.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Rating */}
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  Rating
+                  Note
                 </label>
                 <div className="flex items-center gap-2">
                   {[1, 2, 3, 4, 5].map((star) => (
@@ -248,10 +258,10 @@ const BarberReviews: React.FC<BarberReviewsProps> = ({ barberId }) => {
               {/* Comment */}
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  Your Review
+                  Votre avis
                 </label>
                 <Textarea
-                  placeholder="Tell us about your experience... What did you love? Any suggestions?"
+                  placeholder="Racontez-nous votre expérience... Qu’avez-vous aimé ? Des suggestions ?"
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                   className="min-h-[120px] border-0 bg-gray-100 dark:bg-gray-700 rounded-2xl resize-none focus:ring-2 focus:ring-emerald-500 transition-all duration-300"
@@ -265,7 +275,7 @@ const BarberReviews: React.FC<BarberReviewsProps> = ({ barberId }) => {
                 className="w-full bg-gradient-to-r from-emerald-500 to-blue-500 hover:from-emerald-600 hover:to-blue-600 text-white rounded-2xl py-4 font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
               >
                 <Send className="w-5 h-5 mr-2" />
-                Share Your Review
+                Partager mon avis
               </Button>
             </div>
           </CardContent>
@@ -288,10 +298,10 @@ const BarberReviews: React.FC<BarberReviewsProps> = ({ barberId }) => {
               <MessageCircle className="w-12 h-12 text-gray-400" />
             </div>
             <h3 className="text-xl font-semibold text-gray-600 dark:text-gray-400 mb-2">
-              No reviews yet
+              Aucun avis pour l’instant
             </h3>
             <p className="text-gray-500 dark:text-gray-500">
-              Be the first to share your experience!
+              Soyez le premier à partager votre expérience !
             </p>
           </div>
         ) : (
@@ -306,7 +316,7 @@ const BarberReviews: React.FC<BarberReviewsProps> = ({ barberId }) => {
                   <Avatar className="w-14 h-14 border-2 border-white shadow-lg">
                     <AvatarImage src={review.avatar} />
                     <AvatarFallback className="bg-gradient-to-r from-emerald-500 to-blue-500 text-white font-bold">
-                      {getInitials(review.customerName || user?.firstname || "User")}
+                      {getInitials(review.customerName || user?.firstname || "Utilisateur")}
                     </AvatarFallback>
                   </Avatar>
 
@@ -368,14 +378,14 @@ const BarberReviews: React.FC<BarberReviewsProps> = ({ barberId }) => {
                       <button className="flex items-center gap-2 group/share hover:scale-105 transition-all duration-200">
                         <Share2 className="w-5 h-5 text-gray-400 group-hover/share:text-emerald-500 transition-colors duration-200" />
                         <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                          Share
+                          Partager
                         </span>
                       </button>
 
                       <button className="flex items-center gap-2 group/thumbs hover:scale-105 transition-all duration-200">
                         <ThumbsUp className="w-5 h-5 text-gray-400 group-hover/thumbs:text-blue-500 transition-colors duration-200" />
                         <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                          Helpful
+                          Utile
                         </span>
                       </button>
                     </div>

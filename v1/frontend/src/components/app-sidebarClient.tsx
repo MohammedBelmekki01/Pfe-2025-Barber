@@ -161,7 +161,7 @@ export function AppSideidebarClient({ user, ...props }: AppSidebarProps) {
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
+                  <Link to="/client/settings">Settings</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleLogout} className="text-red-600">
                   <LogOut className="mr-2 h-4 w-4" />

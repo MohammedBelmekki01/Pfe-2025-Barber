@@ -29,17 +29,16 @@ export default function ReservationForm({ barberId }: ReservationFormProps) {
   const [serviceId, setServiceId] = useState("");
   const [reservationDate, setReservationDate] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  // Fetch services for this barber
+  // Récupérer les services pour ce barbier
   useEffect(() => {
     const fetchServices = async () => {
       try {
         const res = await axiosClient.get(`/api/barbers/${barberId}/services`);
-        setServices(res.data.data); // Assuming data is an array of services
+        setServices(res.data.data); // Supposé que data est un tableau de services
         console.log(res.data.data);
       } catch (err: any) {
-        setError("Failed to load services");
+        toast.error("Échec du chargement des services");
       }
     };
 
@@ -47,15 +46,13 @@ export default function ReservationForm({ barberId }: ReservationFormProps) {
   }, [barberId]);
 
   const handleSubmit = async () => {
-    setError(null);
-
     if (!serviceId || !reservationDate.trim()) {
-      setError("Please select a service and date/time");
+      toast.error("Veuillez sélectionner un service et une date/heure");
       return;
     }
 
     if (!user?.id) {
-      setError("User not authenticated");
+      toast.error("Utilisateur non authentifié");
       return;
     }
 
@@ -71,12 +68,12 @@ export default function ReservationForm({ barberId }: ReservationFormProps) {
       await axiosClient.post("/api/client/reservations", payload);
       setServiceId("");
       setReservationDate("");
-      toast.success("Reservation created successfully");
+      toast.success("Réservation créée avec succès");
     } catch (err: any) {
-      setError(
+      toast.error(
         err.response?.data?.message ||
           err.message ||
-          "Failed to create reservation"
+          "Échec de la création de la réservation"
       );
     } finally {
       setLoading(false);
@@ -86,20 +83,20 @@ export default function ReservationForm({ barberId }: ReservationFormProps) {
   return (
     <div className="p-4 max-w-md mx-auto bg-white dark:bg-gray-900 shadow rounded-lg space-y-4 border border-gray-200 dark:border-gray-800">
       <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-        Make a Reservation
+        Prendre un rendez-vous
       </h2>
 
       <Input
         type="datetime-local"
         value={reservationDate}
         onChange={(e) => setReservationDate(e.target.value)}
-        placeholder="Select date and time"
+        placeholder="Sélectionnez la date et l'heure"
         className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-700"
       />
 
       <Select value={serviceId} onValueChange={setServiceId}>
         <SelectTrigger className="w-full bg-white dark:bg-gray-800 text-gray-900 dark:text-white border-gray-300 dark:border-gray-700">
-          <SelectValue placeholder="Select a service" />
+          <SelectValue placeholder="Sélectionnez un service" />
         </SelectTrigger>
         <SelectContent>
           {services.map((service) => (
@@ -115,12 +112,8 @@ export default function ReservationForm({ barberId }: ReservationFormProps) {
         disabled={loading || !serviceId || !reservationDate}
         className="w-full"
       >
-        {loading ? "Submitting..." : "Reserve"}
+        {loading ? "Envoi en cours..." : "Réserver"}
       </Button>
-
-      {error && (
-        <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>
-      )}
     </div>
   );
 }

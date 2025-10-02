@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Award, Clock, MapPin } from "lucide-react";
+import { Link } from "react-router-dom"; // Ajoutez cet import en haut du fichier
 
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -178,106 +179,81 @@ export function BarberCarousel() {
                   key={barberData.barber.id}
                   className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
                 >
-                  <Card className="h-full hover:shadow-xl transition-all duration-300 group border-0 shadow-lg bg-white dark:bg-gray-800">
-                    <CardContent className="p-6 h-full flex flex-col">
-                      {/* Barber Info */}
-                      <div className="text-center mb-6">
-                        <div className="w-20 h-20 rounded-full mx-auto mb-4 bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-300">
-                          <span className="text-xl font-bold text-white">
-                            {barberData.barber.firstname.charAt(0)}
-                            {barberData.barber.lastname.charAt(0)}
-                          </span>
-                        </div>
-                        <h3 className="text-xl font-bold text-foreground mb-1 group-hover:text-emerald-600 transition-colors">
-                          {barberData.barber.firstname}{" "}
-                          {barberData.barber.lastname}
-                        </h3>
-                        <p className="text-emerald-600 dark:text-emerald-400 text-sm font-medium mb-3">
-                          Barbier Professionnel
-                        </p>
-
-                        <div className="flex justify-center items-center gap-4 text-sm text-muted-foreground mb-3">
-                          <div className="flex items-center gap-1">
+                  <Link
+                    to={`/admin/barber-details?id=${barberData.barber.id}`}
+                    className="block h-full group focus:outline-none"
+                    tabIndex={0}
+                  >
+                    <Card className="h-full hover:shadow-xl transition-all duration-300 group border-0 shadow-lg bg-white dark:bg-gray-800 cursor-pointer">
+                      <CardContent className="p-6 h-full flex flex-col">
+                        {/* Barber Info */}
+                        <div className="flex flex-col items-center mb-6">
+                          <div className="w-20 h-20 rounded-full mx-auto mb-3 bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform duration-300">
+                            <span className="text-2xl font-bold text-white">
+                              {barberData.barber.firstname.charAt(0)}
+                              {barberData.barber.lastname.charAt(0)}
+                            </span>
+                          </div>
+                          <h3 className="text-lg font-bold text-foreground mb-1 group-hover:text-emerald-600 transition-colors">
+                            {barberData.barber.firstname} {barberData.barber.lastname}
+                          </h3>
+                          <p className="text-emerald-600 dark:text-emerald-400 text-xs font-medium mb-2">
+                            Barbier Professionnel
+                          </p>
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
                             <Award className="w-4 h-4 text-emerald-600" />
                             <span className="truncate max-w-20">
                               {barberData.barber.experience}
                             </span>
-                          </div>
-                          <div className="flex items-center gap-1">
+                            <span>•</span>
                             <MapPin className="w-4 h-4 text-emerald-600" />
                             <span className="truncate max-w-20">
                               {barberData.barber.location}
                             </span>
                           </div>
+                          {barberData.barber.bio && (
+                            <p className="text-xs text-muted-foreground italic line-clamp-2 text-center">
+                              "{barberData.barber.bio}"
+                            </p>
+                          )}
                         </div>
 
-                        {barberData.barber.bio && (
-                          <p className="text-sm text-muted-foreground italic line-clamp-2">
-                            "{barberData.barber.bio}"
-                          </p>
-                        )}
-                      </div>
-
-                      {/* Services */}
-                      <div className="flex-1 space-y-4">
-                        <div className="flex items-center justify-center">
-                          <div className="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 text-sm font-medium">
+                        {/* Services */}
+                        <div className="flex-1 flex flex-col items-center">
+                          <div className="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 text-xs font-medium mb-2">
                             Services ({barberData.services.length})
+                          </div>
+                          <div className="flex flex-wrap gap-2 justify-center">
+                            {barberData.services.slice(0, 3).map((service) => (
+                              <span
+                                key={service.id}
+                                className="bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-200 px-3 py-1 rounded-full text-xs font-semibold"
+                              >
+                                {service.name}
+                              </span>
+                            ))}
+                            {barberData.services.length > 3 && (
+                              <span className="text-xs text-muted-foreground">
+                                +{barberData.services.length - 3} autres
+                              </span>
+                            )}
                           </div>
                         </div>
 
-                        <div className="space-y-3 max-h-48 overflow-y-auto">
-                          {barberData.services.slice(0, 3).map((service) => (
-                            <div
-                              key={service.id}
-                              className="bg-gray-50 dark:bg-gray-700/50 border border-gray-200 dark:border-gray-600 rounded-lg p-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                            >
-                              <div className="flex justify-between items-start mb-2">
-                                <h5 className="font-medium text-foreground text-sm">
-                                  {service.name}
-                                </h5>
-                                <span className="bg-emerald-500 text-white text-xs px-2 py-1 rounded font-medium">
-                                  {service.price} MAD
-                                </span>
-                              </div>
-
-                              <p className="text-xs text-muted-foreground mb-2 line-clamp-1">
-                                {service.description}
-                              </p>
-
-                              <div className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
-                                <Clock className="w-3 h-3" />
-                                <span className="text-xs">
-                                  {service.duration} min
-                                </span>
-                              </div>
-                            </div>
-                          ))}
-                          {barberData.services.length > 3 && (
-                            <div className="text-center text-xs text-muted-foreground">
-                              +{barberData.services.length - 3} autres services
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Contact Info */}
-                      <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
-                        <div className="space-y-2 text-xs text-muted-foreground">
+                        {/* Contact Info */}
+                        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600 text-xs text-muted-foreground flex flex-col items-center gap-1">
                           <div className="flex items-center gap-2">
                             <span>📧</span>
-                            <span className="truncate">
-                              {barberData.barber.email}
-                            </span>
+                            <span className="truncate">{barberData.barber.email}</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <span>📞</span>
                             <span>{barberData.barber.phone}</span>
                           </div>
                         </div>
-                      </div>
-                    </CardContent>
-                  </Card>
+                      </CardContent>
+                    </Card>
+                  </Link>
                 </CarouselItem>
               ))}
             </CarouselContent>

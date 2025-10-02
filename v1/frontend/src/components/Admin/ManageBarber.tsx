@@ -23,10 +23,10 @@ export default function ManageBarber() {
             </div>
             <div>
               <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
-                Barber Management
+                Gestion des barbiers
               </h1>
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Manage your barbers and add new professionals to the team
+                Gérez vos barbiers et ajoutez de nouveaux professionnels à l'équipe
               </p>
             </div>
           </div>
@@ -44,16 +44,16 @@ export default function ManageBarber() {
                     className="flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 border-transparent data-[state=active]:border-emerald-500 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 bg-transparent shadow-none"
                   >
                     <Scissors className="w-4 h-4" />
-                    <span className="hidden sm:inline">Barber List</span>
-                    <span className="sm:hidden">Barbers</span>
+                    <span className="hidden sm:inline">Liste des barbiers</span>
+                    <span className="sm:hidden">Barbiers</span>
                   </TabsTrigger>
                   <TabsTrigger
                     value="add_barber"
                     className="flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 border-transparent data-[state=active]:border-emerald-500 data-[state=active]:text-emerald-600 dark:data-[state=active]:text-emerald-400 bg-transparent shadow-none"
                   >
                     <UserPlus className="w-4 h-4" />
-                    <span className="hidden sm:inline">Add Barber</span>
-                    <span className="sm:hidden">Add</span>
+                    <span className="hidden sm:inline">Ajouter un barbier</span>
+                    <span className="sm:hidden">Ajouter</span>
                   </TabsTrigger>
                 </TabsList>
               </div>
@@ -64,10 +64,10 @@ export default function ManageBarber() {
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div>
                       <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                        All Barbers
+                        Tous les barbiers
                       </h2>
                       <p className="text-sm text-gray-600 dark:text-gray-400">
-                        View and manage all registered barbers
+                        Voir et gérer tous les barbiers enregistrés
                       </p>
                     </div>
                   </div>
@@ -87,13 +87,13 @@ export default function ManageBarber() {
                     <Card className="bg-gradient-to-r from-emerald-50 to-blue-50 dark:from-emerald-900/20 dark:to-blue-900/20 border-emerald-200 dark:border-emerald-800">
                       <CardHeader className="pb-3">
                         <CardTitle className="text-lg text-gray-900 dark:text-white">
-                          Team Performance
+                          Performance de l'équipe
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
                         <p className="text-sm text-gray-600 dark:text-gray-300">
-                          Monitor your barber team performance and client
-                          satisfaction ratings.
+                          Surveillez la performance de votre équipe de barbiers et
+                          les avis des clients.
                         </p>
                       </CardContent>
                     </Card>
@@ -101,13 +101,13 @@ export default function ManageBarber() {
                     <Card className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border-blue-200 dark:border-blue-800">
                       <CardHeader className="pb-3">
                         <CardTitle className="text-lg text-gray-900 dark:text-white">
-                          Scheduling
+                          Planification
                         </CardTitle>
                       </CardHeader>
                       <CardContent>
                         <p className="text-sm text-gray-600 dark:text-gray-300">
-                          Manage barber schedules and availability for optimal
-                          service delivery.
+                          Gérez les plannings et disponibilités des barbiers pour un
+                          service optimal.
                         </p>
                       </CardContent>
                     </Card>
@@ -121,10 +121,10 @@ export default function ManageBarber() {
                   <div className="space-y-4 mb-6">
                     <div>
                       <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
-                        Add New Barber
+                        Ajouter un nouveau barbier
                       </h2>
                       <p className="text-sm text-gray-600 dark:text-gray-400">
-                        Register a new barber professional to your team
+                        Enregistrez un nouveau professionnel barbier dans votre équipe
                       </p>
                     </div>
                     <Separator className="bg-gray-200 dark:bg-gray-700" />

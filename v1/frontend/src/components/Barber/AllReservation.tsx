@@ -13,6 +13,9 @@ import {
   Users,
   AtSign,
   CheckCircle,
+  XCircle,
+  AlertCircle,
+  Calendar as CalendarIcon,
 } from "lucide-react";
 import {
   Card,
@@ -92,6 +95,104 @@ const StatusBadge = ({ status }: { status: string }) => {
   return <Badge variant={statusConfig.variant}>{statusConfig.text}</Badge>;
 };
 
+// Status steps for the stepper
+const STATUS_STEPS = [
+  {
+    key: "pending",
+    label: "En attente",
+    icon: <AlertCircle className="w-5 h-5" />,
+    color: "from-gray-900 to-yellow-400",
+  },
+  {
+    key: "confirmed",
+    label: "Confirmé",
+    icon: <CheckCircle className="w-5 h-5" />,
+    color: "from-gray-900 to-green-400",
+  },
+  {
+    key: "done",
+    label: "Terminé",
+    icon: <CalendarIcon className="w-5 h-5" />,
+    color: "from-gray-900 to-blue-400",
+  },
+  {
+    key: "cancelled",
+    label: "Annulé",
+    icon: <XCircle className="w-5 h-5" />,
+    color: "from-gray-900 to-red-400",
+  },
+];
+
+// Stepper component
+const StatusStepper = ({
+  status,
+  onStepClick,
+  disabled,
+}: {
+  status: "pending" | "confirmed" | "cancelled" | "done";
+  onStepClick?: (newStatus: "pending" | "confirmed" | "cancelled" | "done") => void;
+  disabled?: boolean;
+}) => {
+  const activeIdx = STATUS_STEPS.findIndex((s) => s.key === status);
+
+  return (
+    <div className="flex items-center gap-2 w-full justify-center py-2">
+      {STATUS_STEPS.filter(
+        (step) =>
+          step.key !== "cancelled" || status === "cancelled"
+      ).map((step, idx, arr) => {
+        const isActive = status === step.key;
+        const isCompleted = activeIdx > idx;
+        return (
+          <div key={step.key} className="flex items-center flex-1">
+            <button
+              disabled={
+                disabled ||
+                isActive ||
+                (step.key === "cancelled" && status !== "pending")
+              }
+              onClick={() => onStepClick && onStepClick(step.key as any)}
+              className={`
+                rounded-full p-2 shadow-lg
+                bg-gradient-to-br ${step.color}
+                ${isActive ? "ring-4 ring-yellow-300 scale-110" : ""}
+                ${isCompleted ? "opacity-70" : ""}
+                text-white transition-all
+                focus:outline-none
+                ${
+                  disabled ||
+                  isActive ||
+                  (step.key === "cancelled" && status !== "pending")
+                    ? "cursor-not-allowed opacity-60"
+                    : "hover:scale-105"
+                }
+              `}
+              title={step.label}
+              type="button"
+            >
+              {step.icon}
+            </button>
+            <span
+              className={`ml-2 text-xs font-semibold ${
+                isActive
+                  ? "text-yellow-400"
+                  : isCompleted
+                  ? "text-gray-400"
+                  : "text-gray-300"
+              }`}
+            >
+              {step.label}
+            </span>
+            {idx < arr.length - 1 && (
+              <div className="flex-1 h-1 mx-2 bg-gradient-to-r from-gray-700 to-gray-300 rounded" />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
 const AllReservation = () => {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
@@ -117,6 +218,23 @@ const AllReservation = () => {
 
     fetchClientReservations();
   }, []);
+
+  // Add this function for status update
+  const updateStatus = async (
+    id: number,
+    newStatus: "pending" | "confirmed" | "cancelled" | "done"
+  ) => {
+    try {
+      await axiosClient.put(`/api/barber/reservations/${id}/status`, {
+        status: newStatus,
+      });
+      setReservations((prev) =>
+        prev.map((r) => (r.id === id ? { ...r, status: newStatus } : r))
+      );
+    } catch (err) {
+      setError("Impossible de mettre à jour le statut.");
+    }
+  };
 
   const filteredReservations = useMemo(() => {
     return reservations.filter((reservation) => {
@@ -336,72 +454,108 @@ const AllReservation = () => {
               {filteredReservations.map((reservation) => (
                 <Card
                   key={reservation.id}
-                  className="overflow-hidden border-border hover:bg-accent/50 transition-colors"
+                  className="overflow-hidden border-0 shadow-lg bg-white dark:bg-gray-900 hover:shadow-xl transition-all duration-300"
                 >
-                  <div className="p-4 sm:p-6 flex flex-col sm:flex-row justify-between gap-4 items-start sm:items-center">
-                    <div className="space-y-1">
+                  <CardContent className="p-6 flex flex-col md:flex-row md:items-center gap-6">
+                    {/* Left: Client & Barber Info */}
+                    <div className="flex-1 flex flex-col gap-2">
                       {/* Service */}
-                      {reservation.service?.name || "Service inconnu"}
-
-                      {/* Date */}
-                      <div className="flex items-center text-sm text-muted-foreground">
-                        <Calendar className="mr-1 h-4 w-4" />
-                        {new Date(
-                          reservation.reservation_time
-                        ).toLocaleDateString()}
+                      <div className="flex items-center gap-2 text-lg font-semibold text-blue-700 dark:text-blue-300">
+                        <CalendarIcon className="w-5 h-5" />
+                        {reservation.service?.name || "Service inconnu"}
+                        <span className="ml-2 text-sm font-normal text-gray-500 dark:text-gray-400">
+                          {reservation.service?.price ? `${reservation.service.price} MAD` : ""}
+                        </span>
                       </div>
-
-                      {/* Heure */}
-                      <div className="flex items-center text-xs text-muted-foreground">
-                        <Clock className="mr-1 h-3 w-3" />
-                        {new Date(
-                          reservation.reservation_time
-                        ).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
+                      {/* Date & Time */}
+                      <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="w-4 h-4" />
+                          {new Date(reservation.reservation_time).toLocaleDateString()}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Clock className="w-4 h-4" />
+                          {new Date(reservation.reservation_time).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </div>
                       </div>
-
-                      {/* Barbier */}
-                      {reservation.barber && (
-                        <>
-                          <div className="text-sm text-muted-foreground mt-1">
-                            Avec:{" "}
-                            <span className="font-medium">
-                              {reservation.barber.firstname}{" "}
-                              {reservation.barber.lastname || ""}
-                            </span>
-                          </div>
-                          {reservation.barber.email && (
-                            <div className="flex items-center text-xs text-muted-foreground">
-                              <Mail className="mr-1 h-3 w-3" />
-                              {reservation.barber.email}
-                            </div>
-                          )}
-                          {reservation.barber.phone && (
-                            <div className="flex items-center text-xs text-muted-foreground">
-                              <Phone className="mr-1 h-3 w-3" />
-                              {reservation.barber.phone}
-                            </div>
-                          )}
-                        </>
-                      )}
-
                       {/* Client */}
                       {reservation.user && (
-                        <div className="text-sm text-muted-foreground mt-1">
-                          Client:{" "}
-                          <span className="font-medium">
-                            {reservation.user.name}
+                        <div className="flex items-center gap-2 mt-2">
+                          <Users className="w-4 h-4 text-purple-500" />
+                          <span className="font-medium">{reservation.user.name}</span>
+                          <span className="text-xs text-gray-400">
+                            {reservation.user.email}
                           </span>
+                        </div>
+                      )}
+                      {/* Barber */}
+                      {reservation.barber && (
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-gray-500">Barbier:</span>
+                          <span className="font-medium">
+                            {reservation.barber.firstname} {reservation.barber.lastname}
+                          </span>
+                          <Mail className="w-4 h-4 text-gray-400" />
+                          <span className="text-xs text-gray-400">{reservation.barber.email}</span>
+                          <Phone className="w-4 h-4 text-gray-400" />
+                          <span className="text-xs text-gray-400">{reservation.barber.phone}</span>
                         </div>
                       )}
                     </div>
 
-                    <div className="flex flex-col items-end gap-2">
-                      <StatusBadge status={reservation.status} />
+                    {/* Right: Status Stepper & Actions */}
+                    <div className="flex flex-col items-end gap-2 min-w-[220px]">
+                      <StatusStepper
+                        status={reservation.status}
+                        onStepClick={async (newStatus) => {
+                          if (newStatus !== reservation.status) {
+                            await updateStatus(reservation.id, newStatus);
+                          }
+                        }}
+                        disabled={
+                          reservation.status === "done" ||
+                          reservation.status === "cancelled"
+                        }
+                      />
+
+                      {/* Modern Confirm/Cancel Buttons */}
+                      {reservation.status !== "done" &&
+                        reservation.status !== "cancelled" && (
+                          <div className="flex gap-2 mt-2">
+                            {reservation.status === "pending" && (
+                              <Button
+                                className="bg-gradient-to-r from-green-400 to-green-600 text-white font-bold rounded-full shadow-md hover:scale-105 hover:brightness-110 transition"
+                                onClick={() => updateStatus(reservation.id, "confirmed")}
+                              >
+                                <CheckCircle className="mr-1 h-4 w-4" />
+                                Confirmer
+                              </Button>
+                            )}
+                            {reservation.status === "confirmed" && (
+                              <Button
+                                className="bg-gradient-to-r from-blue-400 to-blue-600 text-white font-bold rounded-full shadow-md hover:scale-105 hover:brightness-110 transition"
+                                onClick={() => updateStatus(reservation.id, "done")}
+                              >
+                                <CalendarIcon className="mr-1 h-4 w-4" />
+                                Terminer
+                              </Button>
+                            )}
+                            {reservation.status === "pending" && (
+                              <Button
+                                className="bg-gradient-to-r from-red-400 to-red-600 text-white font-bold rounded-full shadow-md hover:scale-105 hover:brightness-110 transition"
+                                onClick={() => updateStatus(reservation.id, "cancelled")}
+                              >
+                                <XCircle className="mr-1 h-4 w-4" />
+                                Annuler
+                              </Button>
+                            )}
+                          </div>
+                        )}
                     </div>
-                  </div>
+                  </CardContent>
                 </Card>
               ))}
             </div>
@@ -413,3 +567,177 @@ const AllReservation = () => {
 };
 
 export default AllReservation;
+
+
+// "use client";
+
+// import { useEffect, useState, useMemo } from "react";
+// import axiosClient from "@/api/axios";
+// import {
+//   Clock,
+//   Calendar,
+//   Mail,
+//   Phone,
+//   Search,
+//   Filter,
+//   X,
+//   Users,
+//   AtSign,
+//   CheckCircle,
+//   XCircle,
+//   AlertCircle,
+//   Calendar as CalendarIcon,
+// } from "lucide-react";
+// import {
+//   Card,
+//   CardContent,
+//   CardDescription,
+//   CardHeader,
+//   CardTitle,
+// } from "@/components/ui/card";
+// import { Badge } from "@/components/ui/badge";
+// import { Input } from "@/components/ui/input";
+// import { Button } from "@/components/ui/button";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "@/components/ui/select";
+// import {
+//   Popover,
+//   PopoverContent,
+//   PopoverTrigger,
+// } from "@/components/ui/popover";
+
+// // Types
+// interface Barber {
+//   id: number;
+//   firstname: string;
+//   lastname: string;
+//   email: string;
+//   phone: string;
+// }
+
+// interface User {
+//   id: number;
+//   name: string;
+//   email: string;
+// }
+
+// interface Service {
+//   id: number;
+//   name: string;
+//   price: number;
+// }
+
+// interface Reservation {
+//   id: number;
+//   barber_id: number;
+//   user_id: number;
+//   service_id: number;
+//   reservation_time: string;
+//   status: "pending" | "confirmed" | "cancelled" | "done";
+//   barber?: Barber;
+//   user?: User;
+//   service?: Service;
+// }
+
+// // Badge de statut
+// const StatusBadge = ({ status }: { status: string }) => {
+//   const config: Record<
+//     string,
+//     {
+//       text: string;
+//       variant: "warning" | "success" | "destructive" | "default" | "outline";
+//     }
+//   > = {
+//     pending: { text: "En attente", variant: "warning" },
+//     confirmed: { text: "Confirmé", variant: "success" },
+//     cancelled: { text: "Annulé", variant: "destructive" },
+//     done: { text: "Terminé", variant: "default" },
+//   };
+
+//   const statusConfig = config[status] || {
+//     text: status,
+//     variant: "outline" as const,
+//   };
+//   return <Badge variant={statusConfig.variant}>{statusConfig.text}</Badge>;
+// };
+
+// // Status steps for the stepper
+// const STATUS_STEPS = [
+//   {
+//     key: "pending",
+//     label: "En attente",
+//     icon: <AlertCircle className="w-5 h-5" />,
+//     color: "from-gray-900 to-yellow-400",
+//   },
+//   {
+//     key: "confirmed",
+//     label: "Confirmé",
+//     icon: <CheckCircle className="w-5 h-5" />,
+//     color: "from-gray-900 to-green-400",
+//   },
+//   {
+//     key: "done",
+//     label: "Terminé",
+//     icon: <CalendarIcon className="w-5 h-5" />,
+//     color: "from-gray-900 to-blue-400",
+//   },
+//   {
+//     key: "cancelled",
+//     label: "Annulé",
+//     icon: <XCircle className="w-5 h-5" />,
+//     color: "from-gray-900 to-red-400",
+//   },
+// ];
+
+// // Stepper component
+// const StatusStepper = ({
+//   status,
+//   onStepClick,
+//   disabled,
+// }: {
+//   status: "pending" | "confirmed" | "cancelled" | "done";
+//   onStepClick?: (newStatus: "pending" | "confirmed" | "cancelled" | "done") => void;
+//   disabled?: boolean;
+// }) => {
+//   const activeIdx = STATUS_STEPS.findIndex((s) => s.key === status);
+
+//   return (
+//     <div className="flex items-center gap-2 w-full justify-center py-2">
+//       {STATUS_STEPS.filter(
+//         (step) =>
+//           step.key !== "cancelled" || status === "cancelled"
+//       ).map((step, idx, arr) => {
+//         const isActive = status === step.key;
+//         const isCompleted = activeIdx > idx;
+//         return (
+//           <div key={step.key} className="flex items-center flex-1">
+//             <button
+//               disabled={
+//                 disabled ||
+//                 isActive ||
+//                 (step.key === "cancelled" && status !== "pending")
+//               }
+//               onClick={() => onStepClick && onStepClick(step.key as any)}
+//               className={`
+//                 rounded-full p-2 shadow-lg
+//                 bg-gradient-to-br ${step.color}
+//                 ${isActive ? "ring-4 ring-yellow-300 scale-110" : ""}
+//                 ${isCompleted ? "opacity-70" : ""}
+//                 text-white transition-all
+//                 focus:outline-none
+//                 ${
+//                   disabled ||
+//                   isActive ||
+//                   (step.key === "cancelled" && status !== "pending")
+//                     ? "cursor-not-allowed opacity-60"
+//                     : "hover:scale-105"
+//                 }
+//               `}
+//               title={step.label}
+//               type="button"
+//             >

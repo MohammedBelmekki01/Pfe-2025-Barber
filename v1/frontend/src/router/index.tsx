@@ -31,6 +31,7 @@ import SendWelcomeEmail from "@/TestSendEmail";
 import Profile from "@/components/Barber/Profile/Profile";
 import ClientProfile from "@/components/Client/profile/ClientProfile";
 import ClientProfileWithTabs from "@/components/Client/profile/ClientProfileWithTabs";
+import Settings from "@/Pages/Settings";
 
 export const ROUTE_LOGIN = '/login'
 export const BARBER_DASHBOARD_ROUTE = '/barber/dashboard'
@@ -49,6 +50,9 @@ export const BARBER_ALL = '/client/barbers'
 export const ALL_RESERVATION = '/barber/reservations'
 export const ALL_CLIENT_RESERVATION = '/barber/clients'
 export const ALL_SERVICE_BARBER = '/barber/services'
+export const BARBER_SETTINGS = '/barber/settings'
+export const ADMIN_SETTINGS = '/admin/settings'
+export const CLIENT_SETTINGS = '/client/settings'
 export const TestEMAIL = '/barber/testemail'
 export const BARBER_PROFILE = '/barber/profile'
 export const ALL_RESERVATION_BARBERS_ADMIN = '/admin/reservations'
@@ -115,7 +119,13 @@ export const router = createBrowserRouter([
                                     {
                 path : BARBER_PROFILE,
                 element : <Profile />
-            }
+            },
+                                                {
+                path : BARBER_SETTINGS,
+                element : <Settings />
+            },
+            
+
         ]
     },
     {
@@ -173,6 +183,10 @@ export const router = createBrowserRouter([
                 path: ALL_SERVICES_BARBERFOR_Admin,
                 element: <AllServices />
             },
+                                                            {
+                path : ADMIN_SETTINGS,
+                element : <Settings />
+            },
         ]
     },
     {
@@ -207,6 +221,10 @@ export const router = createBrowserRouter([
                 path: CLIENT_PROFILE,
                 element: <ClientProfileWithTabs />
 
+            },
+                                                            {
+                path : CLIENT_SETTINGS,
+                element : <Settings />
             },
         ]
     }

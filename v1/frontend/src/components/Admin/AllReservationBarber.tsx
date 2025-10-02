@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
@@ -284,10 +283,10 @@ export default function AllReservationBarber() {
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
-            All Reservations
+            Toutes les réservations
           </h1>
           <p className="text-gray-600 dark:text-gray-400">
-            Manage and monitor all barbershop appointments
+            Gérez et surveillez tous les rendez-vous du barbershop
           </p>
         </div>
 
@@ -296,16 +295,16 @@ export default function AllReservationBarber() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Filter className="w-5 h-5" />
-              Advanced Filters
+              Filtres avancés
             </CardTitle>
             <CardDescription>
-              Filter reservations with multiple criteria
+              Filtrez les réservations selon plusieurs critères
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
               <div>
-                <label className="text-sm font-medium mb-2 block">Status</label>
+                <label className="text-sm font-medium mb-2 block">Statut</label>
                 <Select
                   value={filters.status === "" ? "all" : filters.status}
                   onValueChange={(value) =>
@@ -313,21 +312,21 @@ export default function AllReservationBarber() {
                   }
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="All Status" />
+                    <SelectValue placeholder="Tous les statuts" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Status</SelectItem>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="confirmed">Confirmed</SelectItem>
-                    <SelectItem value="done">Done</SelectItem>
-                    <SelectItem value="cancelled">Cancelled</SelectItem>
+                    <SelectItem value="all">Tous les statuts</SelectItem>
+                    <SelectItem value="pending">En attente</SelectItem>
+                    <SelectItem value="confirmed">Confirmée</SelectItem>
+                    <SelectItem value="done">Terminée</SelectItem>
+                    <SelectItem value="cancelled">Annulée</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div>
                 <label className="text-sm font-medium mb-2 block">
-                  Search Type
+                  Type de recherche
                 </label>
                 <Select
                   value={filters.filterType}
@@ -337,19 +336,24 @@ export default function AllReservationBarber() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="client">By Client</SelectItem>
-                    <SelectItem value="barber">By Barber</SelectItem>
-                    <SelectItem value="service">By Service</SelectItem>
+                    <SelectItem value="client">Par client</SelectItem>
+                    <SelectItem value="barber">Par barbier</SelectItem>
+                    <SelectItem value="service">Par service</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               <div>
-                <label className="text-sm font-medium mb-2 block">Search</label>
+                <label className="text-sm font-medium mb-2 block">Recherche</label>
                 <div className="relative">
                   <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input
-                    placeholder={`Search by ${filters.filterType}...`}
+                    placeholder={`Recherche par ${filters.filterType === "client"
+                      ? "client"
+                      : filters.filterType === "barber"
+                        ? "barbier"
+                        : "service"
+                    }...`}
                     value={filters.search}
                     onChange={(e) => updateFilter("search", e.target.value)}
                     className="pl-9"
@@ -359,7 +363,7 @@ export default function AllReservationBarber() {
 
               <div>
                 <label className="text-sm font-medium mb-2 block">
-                  From Date
+                  Date de début
                 </label>
                 <Input
                   type="date"
@@ -370,7 +374,7 @@ export default function AllReservationBarber() {
 
               <div>
                 <label className="text-sm font-medium mb-2 block">
-                  To Date
+                  Date de fin
                 </label>
                 <Input
                   type="date"
@@ -393,7 +397,7 @@ export default function AllReservationBarber() {
                   })
                 }
               >
-                Clear Filters
+                Réinitialiser les filtres
               </Button>
             </div>
           </CardContent>
@@ -404,25 +408,25 @@ export default function AllReservationBarber() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Calendar className="w-5 h-5" />
-              All Reservations ({reservations.length})
+              Toutes les réservations ({reservations.length})
             </CardTitle>
             <CardDescription>
-              Monitor and manage all barbershop appointments
+              Surveillez et gérez tous les rendez-vous du barbershop
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {/* Active Filters Debug (temporary) */}
+            {/* Active Filters Debug (peut être retiré) */}
             <div className="mb-4 text-xs text-gray-500 dark:text-gray-400">
-              Active filters: status={filters.status || "all"}, type=
-              {filters.filterType}, search={filters.search || ""}, from=
-              {filters.dateFrom || ""}, to={filters.dateTo || ""}
+              Filtres actifs : statut={filters.status || "tous"}, type=
+              {filters.filterType}, recherche={filters.search || ""}, du=
+              {filters.dateFrom || ""}, au={filters.dateTo || ""}
             </div>
             {loading ? (
               <div className="flex items-center justify-center py-12">
                 <div className="text-center">
                   <Clock className="w-12 h-12 animate-spin text-blue-600 mx-auto mb-4" />
                   <p className="text-gray-600 dark:text-gray-400">
-                    Loading reservations...
+                    Chargement des réservations...
                   </p>
                 </div>
               </div>
@@ -430,10 +434,10 @@ export default function AllReservationBarber() {
               <div className="text-center py-12">
                 <Calendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
                 <p className="text-gray-600 dark:text-gray-400 text-lg">
-                  No reservations found
+                  Aucune réservation trouvée
                 </p>
                 <p className="text-gray-500 dark:text-gray-500">
-                  Try adjusting your filters
+                  Essayez d&apos;ajuster vos filtres
                 </p>
               </div>
             ) : (
@@ -499,7 +503,7 @@ export default function AllReservationBarber() {
                                 {reservation.barber.lastname}
                               </h4>
                               <Badge variant="secondary" className="text-xs">
-                                Barber
+                                Barbier
                               </Badge>
                             </div>
 
@@ -526,7 +530,7 @@ export default function AllReservationBarber() {
                               <span>
                                 {format(
                                   new Date(reservation.reservation_time),
-                                  "MMM dd, yyyy"
+                                  "dd MMM yyyy"
                                 )}
                               </span>
                             </div>
@@ -543,13 +547,13 @@ export default function AllReservationBarber() {
 
                           <div className="text-right">
                             <p className="text-xs text-gray-500 dark:text-gray-400">
-                              Reservation #{reservation.id}
+                              Réservation #{reservation.id}
                             </p>
                             <p className="text-xs text-gray-500 dark:text-gray-400">
-                              Created:{" "}
+                              Créée le :{" "}
                               {format(
                                 new Date(reservation.created_at),
-                                "MMM dd"
+                                "dd MMM"
                               )}
                             </p>
                           </div>
@@ -568,7 +572,7 @@ export default function AllReservationBarber() {
                               - {reservation.service.duration}min
                             </span>
                             <span className="font-semibold text-green-600 dark:text-green-400">
-                              ${reservation.service.price}
+                              {reservation.service.price} MAD
                             </span>
                           </div>
                         </div>

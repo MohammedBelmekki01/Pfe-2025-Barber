@@ -43,6 +43,7 @@ export type Barber = {
   created_at?: string;
   updated_at?: string;
   deleted_at?: string | null;
+  services?: any[]; // Ajoutez ceci si nécessaire pour les services
 };
 
 interface BarberDetailsProps {
@@ -53,7 +54,7 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
   if (!barber) {
     return (
       <div className="flex items-center justify-center p-8 text-gray-500 dark:text-gray-400">
-        No barber data available.
+        Aucune donnée barbier disponible.
       </div>
     );
   }
@@ -69,15 +70,15 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
             {barber.firstname} {barber.lastname}
           </CardTitle>
           <CardDescription className="text-gray-600 dark:text-gray-400 text-lg">
-            Professional Barber Profile
+            Profil professionnel du barbier
           </CardDescription>
         </CardHeader>
 
         <CardContent className="space-y-8 p-4 sm:p-6">
-          {/* Personal Info */}
+          {/* Infos personnelles */}
           <div className="space-y-4">
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-              <User className="w-5 h-5 text-emerald-500" /> Personal Details
+              <User className="w-5 h-5 text-emerald-500" /> Informations personnelles
             </h3>
             <Separator />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -89,64 +90,63 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
                   <p className="text-base">{barber.email}</p>
                 </div>
               </div>
-              {/* Phone */}
+              {/* Téléphone */}
               <div className="flex items-center gap-3">
                 <Phone className="w-5 h-5" />
                 <div>
-                  <p className="text-sm font-medium">Phone</p>
+                  <p className="text-sm font-medium">Téléphone</p>
                   <p className="text-base">+212 {barber.phone}</p>
                 </div>
               </div>
-              {/* DOB */}
+              {/* Date de naissance */}
               <div className="flex items-center gap-3">
                 <CalendarDays className="w-5 h-5" />
                 <div>
-                  <p className="text-sm font-medium">Date of Birth</p>
+                  <p className="text-sm font-medium">Date de naissance</p>
                   <p className="text-base">
                     {format(new Date(barber.date_of_birth), "PPP")}
                   </p>
                 </div>
               </div>
-              {/* Gender */}
+              {/* Sexe */}
               <div className="flex items-center gap-3">
                 <CircleDot className="w-5 h-5" />
                 <div>
-                  <p className="text-sm font-medium">Gender</p>
+                  <p className="text-sm font-medium">Sexe</p>
                   <p className="text-base">
-                    {barber.gender === "m" ? "Male" : "Female"}
+                    {barber.gender === "m" ? "Homme" : "Femme"}
                   </p>
                 </div>
               </div>
-              {/* Address */}
+              {/* Adresse */}
               <div className="flex items-center gap-3 col-span-1 md:col-span-2">
                 <MapPin className="w-5 h-5" />
                 <div>
-                  <p className="text-sm font-medium">Address</p>
+                  <p className="text-sm font-medium">Adresse</p>
                   <p className="text-base">{barber.address}</p>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Professional Info */}
+          {/* Infos professionnelles */}
           <div className="space-y-4">
             <h3 className="text-xl font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-              <Award className="w-5 h-5 text-emerald-500" /> Professional
-              Details
+              <Award className="w-5 h-5 text-emerald-500" /> Informations professionnelles
             </h3>
             <Separator />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex items-center gap-3">
                 <Award className="w-5 h-5" />
                 <div>
-                  <p className="text-sm font-medium">Experience</p>
+                  <p className="text-sm font-medium">Expérience</p>
                   <p className="text-base">{barber.experience}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
                 <MapPin className="w-5 h-5" />
                 <div>
-                  <p className="text-sm font-medium">Location</p>
+                  <p className="text-sm font-medium">Localisation</p>
                   <p className="text-base">{barber.location}</p>
                 </div>
               </div>
@@ -156,24 +156,23 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
             <div className="space-y-2">
               <div className="flex items-center gap-3">
                 <FileText className="w-5 h-5" />
-                <p className="text-sm font-medium">Bio</p>
+                <p className="text-sm font-medium">Biographie</p>
               </div>
               <p className="text-base leading-relaxed">{barber.bio}</p>
             </div>
           </div>
 
-          {/* Other Info */}
+          {/* Autres infos */}
           <div className="space-y-4">
             <h3 className="text-xl font-semibold flex items-center gap-2">
-              <CircleDot className="w-5 h-5 text-emerald-500" /> Other
-              Information
+              <CircleDot className="w-5 h-5 text-emerald-500" /> Informations complémentaires
             </h3>
             <Separator />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex items-center gap-3">
                 <CalendarDays className="w-5 h-5" />
                 <div>
-                  <p className="text-sm font-medium">Last Updated</p>
+                  <p className="text-sm font-medium">Dernière mise à jour</p>
                   <p className="text-base">
                     {barber.formatted_updated_at ||
                       (barber.updated_at
@@ -186,12 +185,12 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
                 <div className="flex items-center gap-3">
                   <Mail className="w-5 h-5" />
                   <div>
-                    <p className="text-sm font-medium">Email Verified</p>
+                    <p className="text-sm font-medium">Email vérifié</p>
                     <Badge
                       variant="secondary"
                       className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300"
                     >
-                      Verified
+                      Vérifié
                     </Badge>
                   </div>
                 </div>
@@ -207,10 +206,10 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
               <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg">
                 <Scissors className="w-6 h-6 text-white" />
               </div>
-              Services Offered
+              Services proposés
             </CardTitle>
             <CardDescription className="text-gray-600 dark:text-gray-400 text-lg">
-              Professional services available for booking
+              Prestations professionnelles disponibles à la réservation
             </CardDescription>
           </CardHeader>
           <CardContent className="p-6">
@@ -220,16 +219,16 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
                   key={service.id}
                   className="group relative bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl overflow-hidden border border-gray-200/50 dark:border-gray-700/50 hover:border-purple-300 dark:hover:border-purple-600 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]"
                 >
-                  {/* Popular Badge */}
+                  {/* Badge Populaire */}
                   {service.popular && (
                     <div className="absolute top-4 right-4 z-10">
                       <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white shadow-lg border-0 px-3 py-1">
-                        ⭐ Popular
+                        ⭐ Populaire
                       </Badge>
                     </div>
                   )}
 
-                  {/* Service Image */}
+                  {/* Image du service */}
                   {service.image && (
                     <div className="relative h-48 overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800">
                       <img
@@ -247,7 +246,7 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
                     </div>
                   )}
 
-                  {/* Service Content */}
+                  {/* Contenu du service */}
                   <div className="p-6 space-y-4">
                     <div className="space-y-2">
                       <h4 className="font-bold text-xl text-gray-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300">
@@ -258,7 +257,7 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
                       </p>
                     </div>
 
-                    {/* Service Details */}
+                    {/* Détails du service */}
                     <div className="flex items-center justify-between pt-4 border-t border-gray-200/50 dark:border-gray-700/50">
                       <div className="flex items-center gap-2">
                         <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full flex items-center justify-center shadow-md">
@@ -266,7 +265,7 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
                         </div>
                         <div>
                           <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                            Price
+                            Prix
                           </p>
                           <p className="font-bold text-lg text-emerald-600 dark:text-emerald-400">
                             {service.price} MAD
@@ -280,7 +279,7 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
                         </div>
                         <div>
                           <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wide">
-                            Duration
+                            Durée
                           </p>
                           <p className="font-semibold text-blue-600 dark:text-blue-400">
                             {service.duration}min
@@ -289,15 +288,15 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
                       </div>
                     </div>
 
-                    {/* Action Button */}
+                    {/* Bouton d'action */}
                     <div className="pt-4">
                       <button className="w-full bg-gradient-to-r from-purple-600 via-purple-600 to-pink-600 hover:from-purple-700 hover:via-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-6 rounded-xl shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 border-0">
-                        Book Service
+                        Réserver ce service
                       </button>
                     </div>
                   </div>
 
-                  {/* Hover Effect Overlay */}
+                  {/* Effet hover */}
                   <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-2xl" />
                 </div>
               ))}
@@ -305,7 +304,7 @@ export default function BarberDetails({ barber }: BarberDetailsProps) {
           </CardContent>
         </Card>
       )}
-      {/* ✅ Add Barber Reviews Component Here */}
+      {/* Avis clients */}
       <div className="pt-5 w-full max-w-4xl">
         <BarberReviewsAdmin barberId={barber.id} />
       </div>

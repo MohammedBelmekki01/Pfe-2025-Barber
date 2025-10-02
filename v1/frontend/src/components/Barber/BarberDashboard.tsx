@@ -51,6 +51,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { ModeToggle } from "../ui/mode-toggle";
 
 // Types
 interface BarberUser {
@@ -99,45 +100,101 @@ interface Review {
   service?: Service;
 }
 
-// Status badge component with icons
-const StatusBadge = ({ status }: { status: string }) => {
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "confirmed":
-        return <CheckCircle className="w-4 h-4 text-green-500" />;
-      case "pending":
-        return <AlertCircle className="w-4 h-4 text-yellow-500" />;
-      case "cancelled":
-        return <XCircle className="w-4 h-4 text-red-500" />;
-      case "done":
-        return <CheckCircle className="w-4 h-4 text-blue-500" />;
-      default:
-        return <AlertCircle className="w-4 h-4 text-gray-500" />;
-    }
-  };
+// Status steps for the stepper
+const STATUS_STEPS = [
+  {
+    key: "pending",
+    label: "En attente",
+    icon: <AlertCircle className="w-5 h-5" />,
+    color: "from-gray-900 to-yellow-400",
+  },
+  {
+    key: "confirmed",
+    label: "Confirmé",
+    icon: <CheckCircle className="w-5 h-5" />,
+    color: "from-gray-900 to-green-400",
+  },
+  {
+    key: "done",
+    label: "Terminé",
+    icon: <Calendar className="w-5 h-5" />,
+    color: "from-gray-900 to-blue-400",
+  },
+  {
+    key: "cancelled",
+    label: "Annulé",
+    icon: <XCircle className="w-5 h-5" />,
+    color: "from-gray-900 to-red-400",
+  },
+];
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "confirmed":
-        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
-      case "pending":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300";
-      case "cancelled":
-        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
-      case "done":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300";
-      default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-300";
-    }
-  };
+// Stepper component
+const StatusStepper = ({
+  status,
+  onStepClick,
+  disabled,
+}: {
+  status: "pending" | "confirmed" | "cancelled" | "done";
+  onStepClick?: (newStatus: "pending" | "confirmed" | "cancelled" | "done") => void;
+  disabled?: boolean;
+}) => {
+  const activeIdx = STATUS_STEPS.findIndex((s) => s.key === status);
 
   return (
-    <Badge
-      className={`${getStatusColor(status)} border-0 flex items-center gap-1`}
-    >
-      {getStatusIcon(status)}
-      {status.charAt(0).toUpperCase() + status.slice(1)}
-    </Badge>
+    <div className="flex items-center gap-2 w-full justify-center py-2">
+      {STATUS_STEPS.filter(
+        (step) =>
+          step.key !== "cancelled" || status === "cancelled"
+      ).map((step, idx, arr) => {
+        const isActive = status === step.key;
+        const isCompleted = activeIdx > idx;
+        return (
+          <div key={step.key} className="flex items-center flex-1">
+            <button
+              disabled={
+                disabled ||
+                isActive ||
+                (step.key === "cancelled" && status !== "pending")
+              }
+              onClick={() => onStepClick && onStepClick(step.key as any)}
+              className={`
+                rounded-full p-2 shadow-lg
+                bg-gradient-to-br ${step.color}
+                ${isActive ? "ring-4 ring-yellow-300 scale-110" : ""}
+                ${isCompleted ? "opacity-70" : ""}
+                text-white transition-all
+                focus:outline-none
+                ${
+                  disabled ||
+                  isActive ||
+                  (step.key === "cancelled" && status !== "pending")
+                    ? "cursor-not-allowed opacity-60"
+                    : "hover:scale-105"
+                }
+              `}
+              title={step.label}
+              type="button"
+            >
+              {step.icon}
+            </button>
+            <span
+              className={`ml-2 text-xs font-semibold ${
+                isActive
+                  ? "text-yellow-400"
+                  : isCompleted
+                  ? "text-gray-400"
+                  : "text-gray-300"
+              }`}
+            >
+              {step.label}
+            </span>
+            {idx < arr.length - 1 && (
+              <div className="flex-1 h-1 mx-2 bg-gradient-to-r from-gray-700 to-gray-300 rounded" />
+            )}
+          </div>
+        );
+      })}
+    </div>
   );
 };
 
@@ -346,8 +403,7 @@ const BarberDashboard = () => {
                 <span className="sr-only">Notifications</span>
               </Button>
               <Button variant="outline" size="icon" className="shadow-lg">
-                <Settings className="h-5 w-5" />
-                <span className="sr-only">Paramètres</span>
+                <ModeToggle />
               </Button>
             </div>
           </div>
@@ -568,7 +624,7 @@ const BarberDashboard = () => {
                             {statusFilter !== "all" && (
                               <div className="flex items-center justify-between">
                                 <span className="text-sm">Statut</span>
-                                <StatusBadge status={statusFilter} />
+                                <Badge variant="secondary">{statusFilter}</Badge>
                               </div>
                             )}
                           </div>
@@ -650,8 +706,17 @@ const BarberDashboard = () => {
                             </div>
 
                             {/* Appointment Details */}
-                            <div className="flex flex-col items-end gap-3 min-w-[200px]">
-                              <StatusBadge status={reservation.status} />
+                            <div className="flex flex-col items-end gap-3 min-w-[220px]">
+                              {/* Stepper */}
+                              <StatusStepper
+                                status={reservation.status}
+                                onStepClick={async (newStatus) => {
+                                  if (newStatus !== reservation.status) {
+                                    await updateStatus(reservation.id, newStatus);
+                                  }
+                                }}
+                                disabled={reservation.status === "done" || reservation.status === "cancelled"}
+                              />
 
                               <div className="text-right">
                                 <div className="flex items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -674,43 +739,45 @@ const BarberDashboard = () => {
                                 </div>
                               </div>
 
-                              {reservation.status === "pending" && (
-                                <div className="flex gap-2 mt-2">
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="text-blue-600 border-blue-200 hover:bg-blue-50 hover:text-blue-700"
-                                    onClick={() =>
-                                      updateStatus(reservation.id, "confirmed")
-                                    }
-                                  >
-                                    <CheckCircle className="mr-1 h-4 w-4" />
-                                    Confirmer
-                                  </Button>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="text-green-600 border-green-200 hover:bg-green-50 hover:text-green-700"
-                                    onClick={() =>
-                                      updateStatus(reservation.id, "done")
-                                    }
-                                  >
-                                    <CheckCircle className="mr-1 h-4 w-4" />
-                                    Terminer
-                                  </Button>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700"
-                                    onClick={() =>
-                                      updateStatus(reservation.id, "cancelled")
-                                    }
-                                  >
-                                    <XCircle className="mr-1 h-4 w-4" />
-                                    Annuler
-                                  </Button>
-                                </div>
-                              )}
+                              {/* Modern Confirm/Cancel Buttons */}
+                              {reservation.status !== "done" &&
+                                reservation.status !== "cancelled" && (
+                                  <div className="flex gap-2 mt-2">
+                                    {reservation.status === "pending" && (
+                                      <Button
+                                        className="bg-gradient-to-r from-green-400 to-green-600 text-white font-bold rounded-full shadow-md hover:scale-105 hover:brightness-110 transition"
+                                        onClick={() =>
+                                          updateStatus(reservation.id, "confirmed")
+                                        }
+                                      >
+                                        <CheckCircle className="mr-1 h-4 w-4" />
+                                        Confirmer
+                                      </Button>
+                                    )}
+                                    {reservation.status === "confirmed" && (
+                                      <Button
+                                        className="bg-gradient-to-r from-blue-400 to-blue-600 text-white font-bold rounded-full shadow-md hover:scale-105 hover:brightness-110 transition"
+                                        onClick={() =>
+                                          updateStatus(reservation.id, "done")
+                                        }
+                                      >
+                                        <Calendar className="mr-1 h-4 w-4" />
+                                        Terminer
+                                      </Button>
+                                    )}
+                                    {reservation.status === "pending" && (
+                                      <Button
+                                        className="bg-gradient-to-r from-red-400 to-red-600 text-white font-bold rounded-full shadow-md hover:scale-105 hover:brightness-110 transition"
+                                        onClick={() =>
+                                          updateStatus(reservation.id, "cancelled")
+                                        }
+                                      >
+                                        <XCircle className="mr-1 h-4 w-4" />
+                                        Annuler
+                                      </Button>
+                                    )}
+                                  </div>
+                                )}
                             </div>
                           </div>
 

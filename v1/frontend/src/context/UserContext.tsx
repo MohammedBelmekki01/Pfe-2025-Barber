@@ -1,4 +1,5 @@
 // UserContext.tsx
+import axiosClient from "@/api/axios";
 import { UserApi } from "@/Services/Api/Barber/UserApi";
 import type { User, UserContextType } from "@/types/type";
 import { createContext, useContext, useState } from "react";
@@ -29,9 +30,17 @@ const [authenticated, _setAuthenticated] = useState<boolean>(() => {
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
-    setUser(null);
-    setAuthenticated(false); 
+    try {
+      axiosClient.post('/logout').then(() => {
+        // Successfully logged out from server
+      });
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      localStorage.removeItem("token");
+      setUser(null);
+      setAuthenticated(false);
+    }
   };
 
 const setAuthenticated = (isAuthenticated: boolean) => {

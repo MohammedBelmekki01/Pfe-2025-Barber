@@ -67,11 +67,7 @@ const items = [
     icon: Clock,
   },
 
-  {
-    title: "Reviews",
-    url: "/admin/reviews",
-    icon: Home,
-  },
+
 ]
 
 // Quick actions menu
@@ -179,7 +175,7 @@ export function AppSideidebarAdmin({ user, ...props }: AppSidebarProps) {
                 </DropdownMenuItem>
                 <DropdownMenuItem>
                   <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
+                  <Link to="/admin/settings">Settings</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={handleLogout} className="text-red-600">
                   <LogOut className="mr-2 h-4 w-4" />

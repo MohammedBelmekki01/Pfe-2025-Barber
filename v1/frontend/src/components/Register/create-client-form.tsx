@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { toast } from "sonner"
 import { User, Mail, Phone, MapPin, Lock, UserPlus, ChevronRight, ArrowLeft, Sparkles } from "lucide-react"
+import emailjs from "@emailjs/browser" // Ajout de l'import EmailJS
 
 import { Button } from "@/components/ui/button"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
@@ -94,14 +95,35 @@ function CreateClientRegister() {
   const onSubmit = async (values: FormValues) => {
     try {
       setIsSubmitting(true)
-      const loadingToast = toast.loading("Creating your account...")
+      const loadingToast = toast.loading("Création de votre compte...")
       await UserApi.getCsrfToken()
       const { status, data } = await ClientApi.createForRegister(values)
       toast.dismiss(loadingToast)
 
       if (status === 201) {
-        toast.success("Welcome! 🎉", {
-          description: "Your account has been created successfully.",
+        // Envoi de l'email via EmailJS
+        emailjs.send(
+          "service_rltuuw5", // Remplacez par votre Service ID EmailJS
+          "template_xfmim7j", // Remplacez par votre Template ID EmailJS
+          {
+            name: values.name,
+            email: values.email,
+            addrees: values.addrees,
+            phone: values.phone,
+            // Ajoutez d'autres variables selon votre template EmailJS
+          },
+          "QwlOI3Iw4LFURPxVj" // Remplacez par votre Public Key EmailJS
+        ).then(
+          () => {
+            toast.success("Email de bienvenue envoyé !")
+          },
+          (error) => {
+            toast.error("Erreur lors de l'envoi de l'email")
+          }
+        )
+
+        toast.success("Bienvenue ! 🎉", {
+          description: "Votre compte a été créé avec succès.",
         })
         form.reset()
         navigation(ROUTE_LOGIN)
@@ -116,7 +138,7 @@ function CreateClientRegister() {
           })
         })
       } else {
-        toast.error("An unexpected error occurred")
+        toast.error("Une erreur inattendue est survenue")
       }
     } finally {
       setIsSubmitting(false)
