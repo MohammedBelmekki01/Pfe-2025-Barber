@@ -97,7 +97,7 @@ After creating the repository, GitHub will show you commands. Use these:
 
 ```powershell
 # Add remote repository
-git remote add origin https://github.com/Mohcinelahfari/Pfe-2025-Barber.git
+git remote add origin https://github.com/MohammedBelmekki01/Pfe-2025-Barber.git
 
 # Verify remote was added
 git remote -v
@@ -106,7 +106,7 @@ git remote -v
 Or if you're using SSH:
 
 ```powershell
-git remote add origin git@github.com:Mohcinelahfari/Pfe-2025-Barber.git
+git remote add origin git@github.com:MohammedBelmekki01/Pfe-2025-Barber.git
 ```
 
 ### Step 7: Push to GitHub
@@ -130,7 +130,7 @@ git push -u origin main
 
 ### Step 8: Verify Upload
 
-1. Go to your GitHub repository: `https://github.com/Mohcinelahfari/Pfe-2025-Barber`
+1. Go to your GitHub repository: `https://github.com/MohammedBelmekki01/Pfe-2025-Barber`
 2. Verify all files are there
 3. Check that README.md displays properly
 4. Ensure no sensitive files (.env) were uploaded

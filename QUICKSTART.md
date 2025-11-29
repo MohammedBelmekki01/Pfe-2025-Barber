@@ -28,7 +28,7 @@ mysql --version
 ### 1️⃣ Clone the Repository (1 min)
 
 ```powershell
-git clone https://github.com/Mohcinelahfari/Pfe-2025-Barber.git
+git clone https://github.com/MohammedBelmekki01/Pfe-2025-Barber.git
 cd Pfe-2025-Barber
 ```
 
@@ -150,7 +150,7 @@ cd frontend; npm install; npm run dev
 
 ## 🆘 Still Having Issues?
 
-1. Check the [Issues](https://github.com/Mohcinelahfari/Pfe-2025-Barber/issues) page
+1. Check the [Issues](https://github.com/MohammedBelmekki01/Pfe-2025-Barber/issues) page
 2. Read the full [README.md](README.md)
 3. Verify all prerequisites are installed
 4. Check Laravel logs: `backend/storage/logs/laravel.log`

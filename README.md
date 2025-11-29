@@ -146,7 +146,7 @@ Before you begin, ensure you have the following installed:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/Mohcinelahfari/Pfe-2025-Barber.git
+git clone https://github.com/MohammedBelmekki01/Pfe-2025-Barber.git
 cd Pfe-2025-Barber
 ```
 
@@ -341,10 +341,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👨‍💻 Author
 
-**Mohcine Lahfari**
+**Mohammed Belmekki**
 
-- GitHub: [@Mohcinelahfari](https://github.com/Mohcinelahfari)
-- Repository: [Pfe-2025-Barber](https://github.com/Mohcinelahfari/Pfe-2025-Barber)
+- GitHub: [@MohammedBelmekki01](https://github.com/MohammedBelmekki01)
+- Repository: [Pfe-2025-Barber](https://github.com/MohammedBelmekki01/Pfe-2025-Barber)
 
 ## 🙏 Acknowledgments
 
@@ -359,7 +359,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 For any questions or inquiries about this project, please reach out through:
 
-- GitHub Issues: [Create an issue](https://github.com/Mohcinelahfari/Pfe-2025-Barber/issues)
+- GitHub Issues: [Create an issue](https://github.com/MohammedBelmekki01/Pfe-2025-Barber/issues)
 - Email: [Your Email Address]
 
 ---
