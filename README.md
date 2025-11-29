@@ -29,6 +29,7 @@ This Barbershop Management System is a comprehensive solution designed to stream
 ## ✨ Features
 
 ### Backend (Laravel 12)
+
 - 🔐 **Authentication System** - Secure user authentication using Laravel Sanctum
 - 👤 **User Management** - Role-based access control for administrators and staff
 - 📅 **Appointment Management** - Schedule and manage customer appointments
@@ -39,6 +40,7 @@ This Barbershop Management System is a comprehensive solution designed to stream
 - 🚀 **Performance Optimized** - Efficient database queries and caching
 
 ### Frontend (React + TypeScript)
+
 - 🎨 **Modern UI/UX** - Responsive design with Tailwind CSS
 - ⚡ **Fast Performance** - Built with Vite for optimal loading times
 - 🧩 **Component Library** - Reusable components with Radix UI
@@ -51,6 +53,7 @@ This Barbershop Management System is a comprehensive solution designed to stream
 ## 🛠️ Tech Stack
 
 ### Backend
+
 - **Framework:** Laravel 12.x
 - **Language:** PHP 8.2+
 - **Authentication:** Laravel Sanctum
@@ -60,6 +63,7 @@ This Barbershop Management System is a comprehensive solution designed to stream
 - **Package Manager:** Composer
 
 ### Frontend
+
 - **Framework:** React 19.x
 - **Language:** TypeScript 5.8
 - **Build Tool:** Vite 6.x
@@ -217,7 +221,7 @@ Update the API base URL in your frontend configuration:
 
 ```typescript
 // frontend/src/api/axios.ts or similar
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = "http://localhost:8000/api";
 ```
 
 ## 🏃 Running the Application
@@ -225,6 +229,7 @@ const API_BASE_URL = 'http://localhost:8000/api';
 ### Option 1: Run Separately
 
 **Terminal 1 - Backend:**
+
 ```bash
 cd backend
 php artisan serve
@@ -232,6 +237,7 @@ php artisan serve
 ```
 
 **Terminal 2 - Frontend:**
+
 ```bash
 cd frontend
 npm run dev
@@ -247,6 +253,7 @@ composer dev
 ```
 
 Then in another terminal:
+
 ```bash
 cd frontend
 npm run dev
@@ -256,15 +263,16 @@ npm run dev
 
 ### Authentication Endpoints
 
-| Method | Endpoint | Description | Auth Required |
-|--------|----------|-------------|---------------|
-| POST | `/api/login` | User login | No |
-| POST | `/api/logout` | User logout | Yes |
-| GET | `/api/user` | Get authenticated user | Yes |
+| Method | Endpoint      | Description            | Auth Required |
+| ------ | ------------- | ---------------------- | ------------- |
+| POST   | `/api/login`  | User login             | No            |
+| POST   | `/api/logout` | User logout            | Yes           |
+| GET    | `/api/user`   | Get authenticated user | Yes           |
 
 ### Request Examples
 
 **Login:**
+
 ```bash
 curl -X POST http://localhost:8000/api/login \
   -H "Content-Type: application/json" \
@@ -275,6 +283,7 @@ curl -X POST http://localhost:8000/api/login \
 ```
 
 **Get Authenticated User:**
+
 ```bash
 curl -X GET http://localhost:8000/api/user \
   -H "Authorization: Bearer YOUR_TOKEN_HERE"

@@ -60,6 +60,7 @@ VITE_APP_NAME=Barbershop Manager
 #### Backend Deployment
 
 1. **Install Requirements:**
+
 ```bash
 # Update system
 sudo apt update && sudo apt upgrade -y
@@ -76,6 +77,7 @@ sudo apt install nginx
 ```
 
 2. **Deploy Laravel:**
+
 ```bash
 # Clone repository
 git clone https://github.com/Mohcinelahfari/Pfe-2025-Barber.git
@@ -105,6 +107,7 @@ sudo chmod -R 775 storage bootstrap/cache
 ```
 
 3. **Configure Nginx:**
+
 ```nginx
 server {
     listen 80;
@@ -142,6 +145,7 @@ server {
 #### Frontend Deployment
 
 1. **Build the Frontend:**
+
 ```bash
 cd frontend
 npm install
@@ -149,12 +153,14 @@ npm run build
 ```
 
 2. **Deploy to Web Server:**
+
 ```bash
 # Copy build files to web server
 sudo cp -r dist/* /var/www/html/barbershop/
 ```
 
 3. **Configure Nginx for Frontend:**
+
 ```nginx
 server {
     listen 80;
@@ -181,7 +187,7 @@ server {
 Create a `docker-compose.yml` in the root:
 
 ```yaml
-version: '3.8'
+version: "3.8"
 
 services:
   backend:
@@ -216,6 +222,7 @@ volumes:
 ```
 
 Then run:
+
 ```bash
 docker-compose up -d
 ```
@@ -223,12 +230,14 @@ docker-compose up -d
 ### Option 4: Using Vercel (Frontend) + Railway (Backend)
 
 **Frontend on Vercel:**
+
 ```bash
 cd frontend
 vercel --prod
 ```
 
 **Backend on Railway:**
+
 1. Go to [Railway.app](https://railway.app)
 2. Create new project
 3. Connect GitHub repository
@@ -241,6 +250,7 @@ vercel --prod
 ### Backend Security
 
 1. **SSL Certificate:**
+
 ```bash
 # Using Certbot
 sudo apt install certbot python3-certbot-nginx
@@ -248,6 +258,7 @@ sudo certbot --nginx -d api.your-domain.com
 ```
 
 2. **Environment Security:**
+
 - Never commit `.env` files
 - Use strong database passwords
 - Rotate API keys regularly
@@ -255,6 +266,7 @@ sudo certbot --nginx -d api.your-domain.com
 - Use rate limiting
 
 3. **Laravel Security:**
+
 ```bash
 # Clear config cache
 php artisan config:clear
@@ -269,12 +281,14 @@ composer update --with-all-dependencies
 ### Frontend Security
 
 1. **API Security:**
+
 - Always use HTTPS
 - Implement CORS properly
 - Store tokens securely (httpOnly cookies)
 - Validate all user inputs
 
 2. **Build Security:**
+
 - Remove console.log statements
 - Minify and obfuscate code
 - Use environment variables for sensitive data
@@ -298,6 +312,7 @@ sudo apt install supervisor
 ### Frontend
 
 1. **Optimize Build:**
+
 ```bash
 # Analyze bundle size
 npm run build -- --stats
@@ -308,6 +323,7 @@ npm run build -- --stats
 ```
 
 2. **CDN Setup:**
+
 - Use Cloudflare for CDN
 - Enable caching
 - Minify assets
@@ -323,7 +339,7 @@ name: Deploy
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 jobs:
   deploy-backend:
@@ -361,11 +377,13 @@ jobs:
 ### Common Issues
 
 1. **500 Error:**
+
    - Check storage permissions
    - Clear cache
    - Check error logs
 
 2. **Database Connection Error:**
+
    - Verify credentials
    - Check firewall rules
    - Ensure database server is running
@@ -378,6 +396,7 @@ jobs:
 ## 📞 Support
 
 For deployment issues:
+
 - Check Laravel logs: `storage/logs/laravel.log`
 - Check Nginx logs: `/var/log/nginx/error.log`
 - Contact: [Your Support Email]

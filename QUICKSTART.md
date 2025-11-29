@@ -8,7 +8,7 @@ Run these commands to verify you have everything:
 
 ```powershell
 # Check Node.js
-node --version  # Should be v18+ 
+node --version  # Should be v18+
 
 # Check npm
 npm --version
@@ -80,12 +80,14 @@ Visit: http://localhost:3000
 ### Backend Issues
 
 **Problem:** `composer: command not found`
+
 ```powershell
 # Install Composer
 # Download from: https://getcomposer.org/download/
 ```
 
 **Problem:** `php artisan migrate` fails
+
 ```powershell
 # Use SQLite instead
 # In .env, set: DB_CONNECTION=sqlite
@@ -95,6 +97,7 @@ php artisan migrate
 ```
 
 **Problem:** Port 8000 already in use
+
 ```powershell
 # Use different port
 php artisan serve --port=8001
@@ -103,17 +106,20 @@ php artisan serve --port=8001
 ### Frontend Issues
 
 **Problem:** `npm: command not found`
+
 ```powershell
 # Install Node.js from: https://nodejs.org/
 ```
 
 **Problem:** Port 3000 already in use
+
 ```powershell
 # Vite will automatically suggest another port
 # Or specify: npm run dev -- --port 3001
 ```
 
 **Problem:** API connection errors
+
 ```powershell
 # Update API URL in frontend
 # Edit: src/api/axios.ts or similar
@@ -132,11 +138,13 @@ Password: password
 ## 🔥 One-Command Setup (Advanced)
 
 ### For Backend:
+
 ```powershell
 cd backend; composer install; cp .env.example .env; php artisan key:generate; php artisan migrate; php artisan serve
 ```
 
 ### For Frontend:
+
 ```powershell
 cd frontend; npm install; npm run dev
 ```

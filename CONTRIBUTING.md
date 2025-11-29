@@ -7,6 +7,7 @@ Thank you for your interest in contributing to this project! This is a Final Yea
 ### Reporting Bugs
 
 If you find a bug, please create an issue with:
+
 - A clear title and description
 - Steps to reproduce the issue
 - Expected vs actual behavior
@@ -16,6 +17,7 @@ If you find a bug, please create an issue with:
 ### Suggesting Enhancements
 
 Enhancement suggestions are welcome! Please provide:
+
 - A clear description of the feature
 - Why this feature would be useful
 - Example use cases
@@ -35,12 +37,14 @@ Enhancement suggestions are welcome! Please provide:
 ### Coding Standards
 
 **Backend (Laravel/PHP):**
+
 - Follow PSR-12 coding standards
 - Use meaningful variable and function names
 - Comment complex logic
 - Write PHPUnit tests for new features
 
 **Frontend (React/TypeScript):**
+
 - Use TypeScript for type safety
 - Follow React best practices
 - Use functional components with hooks
@@ -50,6 +54,7 @@ Enhancement suggestions are welcome! Please provide:
 ### Commit Message Guidelines
 
 Use clear and meaningful commit messages:
+
 - `feat: add appointment booking feature`
 - `fix: resolve login authentication issue`
 - `docs: update API documentation`
@@ -60,6 +65,7 @@ Use clear and meaningful commit messages:
 ## 📝 Code Review Process
 
 All submissions require review. We'll review your pull request and:
+
 - Provide constructive feedback
 - Request changes if needed
 - Merge approved changes

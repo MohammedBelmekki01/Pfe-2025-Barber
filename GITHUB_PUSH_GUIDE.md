@@ -37,6 +37,7 @@ git status
 ```
 
 **Important files that should NOT appear in git status:**
+
 - `backend/.env`
 - `frontend/.env`
 - `backend/vendor/`
@@ -251,6 +252,7 @@ After pushing, you can see your project stats on GitHub:
 ### 1. Add Topics
 
 On GitHub, add topics to your repository:
+
 - `laravel`
 - `react`
 - `typescript`
@@ -262,6 +264,7 @@ On GitHub, add topics to your repository:
 ### 2. Add Repository Description
 
 Set a clear description:
+
 ```
 🏆 Barbershop Management System - Full-stack application built with Laravel 12 & React TypeScript for PFE 2025
 ```
@@ -273,6 +276,7 @@ If deployed, add your website URL to the repository.
 ### 4. Enable GitHub Pages (Optional)
 
 For documentation hosting:
+
 ```powershell
 # Create gh-pages branch
 git checkout -b gh-pages
@@ -286,6 +290,7 @@ git push -u origin gh-pages
 **Problem:** Can't push to GitHub
 
 **Solution:**
+
 ```powershell
 # Use Personal Access Token (PAT)
 # 1. Go to GitHub → Settings → Developer settings → Personal access tokens
@@ -294,6 +299,7 @@ git push -u origin gh-pages
 ```
 
 Or setup SSH:
+
 ```powershell
 # Generate SSH key
 ssh-keygen -t ed25519 -C "your_email@example.com"
@@ -310,6 +316,7 @@ Get-Content ~/.ssh/id_ed25519.pub | clip
 **Problem:** Files too large to push
 
 **Solution:**
+
 ```powershell
 # Find large files
 Get-ChildItem -Recurse | Where-Object {$_.Length -gt 50MB} | Select-Object FullName, Length
@@ -323,6 +330,7 @@ git rm --cached path/to/large/file
 **Problem:** Conflicts when pulling
 
 **Solution:**
+
 ```powershell
 # Pull latest changes
 git pull
@@ -356,6 +364,7 @@ Before submitting your PFE:
 ## 🎓 For Your PFE Defense
 
 Prepare to show:
+
 1. GitHub repository with clean commit history
 2. README with clear documentation
 3. Running application (live demo)
