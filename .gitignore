@@ -1,0 +1,179 @@
+# ========================================
+# General
+# ========================================
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.temp
+.env.local
+.env.*.local
+
+# ========================================
+# IDEs and Editors
+# ========================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+*.sublime-project
+
+# ========================================
+# Backend (Laravel)
+# ========================================
+backend/vendor/
+backend/node_modules/
+backend/.env
+backend/.env.backup
+backend/.phpunit.result.cache
+backend/Homestead.json
+backend/Homestead.yaml
+backend/npm-debug.log
+backend/yarn-error.log
+backend/.phpstorm.meta.php
+backend/_ide_helper.php
+backend/_ide_helper_models.php
+backend/.phpunit.cache
+
+# Laravel Storage
+backend/storage/*.key
+backend/storage/app/*
+!backend/storage/app/.gitignore
+!backend/storage/app/public/
+backend/storage/framework/cache/*
+!backend/storage/framework/cache/.gitignore
+backend/storage/framework/sessions/*
+!backend/storage/framework/sessions/.gitignore
+backend/storage/framework/testing/*
+!backend/storage/framework/testing/.gitignore
+backend/storage/framework/views/*
+!backend/storage/framework/views/.gitignore
+backend/storage/logs/*
+!backend/storage/logs/.gitignore
+
+# Laravel Public
+backend/public/hot
+backend/public/storage
+backend/public/build
+
+# ========================================
+# Frontend (React + Vite)
+# ========================================
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/.env
+frontend/.env.production
+frontend/.env.development
+frontend/coverage/
+frontend/.vite/
+
+# Frontend Build
+frontend/build/
+frontend/.cache/
+frontend/*.local
+
+# Frontend Logs
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+frontend/lerna-debug.log*
+
+# Frontend Testing
+frontend/.vitest/
+frontend/__snapshots__/
+
+# ========================================
+# Version Archives (if not needed)
+# ========================================
+# Uncomment if you don't want to track v1 and v2
+# v1/
+# v2/
+
+# ========================================
+# v1 Backend
+# ========================================
+v1/backend/vendor/
+v1/backend/node_modules/
+v1/backend/.env
+v1/backend/.env.backup
+v1/backend/.phpunit.result.cache
+v1/backend/storage/*.key
+v1/backend/storage/app/*
+!v1/backend/storage/app/.gitignore
+v1/backend/storage/framework/cache/*
+!v1/backend/storage/framework/cache/.gitignore
+v1/backend/storage/framework/sessions/*
+!v1/backend/storage/framework/sessions/.gitignore
+v1/backend/storage/framework/views/*
+!v1/backend/storage/framework/views/.gitignore
+v1/backend/storage/logs/*
+!v1/backend/storage/logs/.gitignore
+v1/backend/public/hot
+v1/backend/public/storage
+
+# ========================================
+# v1 Frontend
+# ========================================
+v1/frontend/node_modules/
+v1/frontend/dist/
+v1/frontend/.env
+v1/frontend/coverage/
+
+# ========================================
+# v2 Backend
+# ========================================
+v2/backend/vendor/
+v2/backend/node_modules/
+v2/backend/.env
+v2/backend/.env.backup
+v2/backend/.phpunit.result.cache
+v2/backend/storage/*.key
+v2/backend/storage/app/*
+!v2/backend/storage/app/.gitignore
+v2/backend/storage/framework/cache/*
+!v2/backend/storage/framework/cache/.gitignore
+v2/backend/storage/framework/sessions/*
+!v2/backend/storage/framework/sessions/.gitignore
+v2/backend/storage/framework/views/*
+!v2/backend/storage/framework/views/.gitignore
+v2/backend/storage/logs/*
+!v2/backend/storage/logs/.gitignore
+v2/backend/public/hot
+v2/backend/public/storage
+
+# ========================================
+# v2 Frontend
+# ========================================
+v2/frontend/node_modules/
+v2/frontend/dist/
+v2/frontend/.env
+v2/frontend/coverage/
+
+# ========================================
+# OS Generated Files
+# ========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# ========================================
+# Package Manager Locks (Optional)
+# ========================================
+# Uncomment if you want to ignore lock files
+# backend/composer.lock
+# frontend/package-lock.json
+# frontend/yarn.lock
+# frontend/pnpm-lock.yaml
