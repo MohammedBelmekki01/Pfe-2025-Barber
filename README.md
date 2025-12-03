@@ -1,5 +1,8 @@
 # 💈 Barbershop Management System
 
+Projet PFE développé par Mohammed Belmekki et Mohsine Lahfari , enjoy : 
+
+
 A modern, full-stack barbershop management application built with Laravel 12 and React TypeScript. This project is developed as a Final Year Project (PFE) demonstrating enterprise-level architecture and best practices.
 
 ## 📋 Table of Contents
