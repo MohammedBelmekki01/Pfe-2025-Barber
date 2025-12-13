@@ -7,7 +7,7 @@ export const UserStateContext = createContext<UserContextType>({
   user: null,
   setUser: () => {},
   logout: () => {},
-  login: async (_email: string, _password: string) => {},
+  login: async () => {},
   authenticated : false,
   setAuthenticated : () =>  {}
 });
@@ -18,11 +18,11 @@ const [authenticated, _setAuthenticated] = useState<boolean>(() => {
   const stored = window.localStorage.getItem('AUTHENTICATED');
   return stored === 'true'; // localStorage stores strings
 });
-  const login = async (email: string, password: string): Promise<any> => {
+  const login = async (email: string, password: string): Promise<unknown> => {
     try {
       await BarberApi.getCsrfToken();
       return await BarberApi.login(email, password);
-    } catch (error) {
+    } catch {
       return false;
     }
   };

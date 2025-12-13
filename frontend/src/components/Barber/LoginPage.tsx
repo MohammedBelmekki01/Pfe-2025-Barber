@@ -55,10 +55,10 @@ export default function LoginPage() {
 
 const onSubmit = async (values: z.infer<typeof formSchema>) => {
   try {
-    const response = await login(values.email, values.password);
+    const response = await login(values.email, values.password) as { status?: number; data?: { access_token?: string; message?: string } };
 
     if (response && (response.status === 200 || response.status === 204)) {
-      localStorage.setItem("token", response.data.access_token);
+      localStorage.setItem("token", response.data?.access_token || "");
       setAuthenticated(true);
       setTimeout(() => {
         navigate(BARBER_DASHBOARD_ROUTE);
@@ -69,7 +69,8 @@ const onSubmit = async (values: z.infer<typeof formSchema>) => {
       message: response?.data?.message ?? "Invalid credentials",
     });
     }
-  } catch ({ response }: any) {
+  } catch (error: unknown) {
+    const response = (error as { response?: { data?: { message?: string } } }).response;
     console.log(response)
     
   }

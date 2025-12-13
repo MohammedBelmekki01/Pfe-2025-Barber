@@ -8,7 +8,7 @@ export interface UserContextType {
   user: User | null;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
   logout: () => void;
-  login: (email: string, password: string) => Promise<any>;
+  login: (email: string, password: string) => Promise<unknown>;
   authenticated: boolean;
   setAuthenticated: (isAuthenticated: boolean) => void;
 }
