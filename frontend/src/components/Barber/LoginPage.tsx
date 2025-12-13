@@ -1,6 +1,4 @@
-
 import { useNavigate } from 'react-router-dom';
-
 import { BARBER_DASHBOARD_ROUTE } from '@/router';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -19,9 +17,17 @@ import { Loader2 } from 'lucide-react';
 import { useUsercontext } from '@/context/UserContext';
 import type { LoginResponse } from '@/types/type';
 
-// Type guard for LoginResponse
+// Type guard for LoginResponse with runtime validation
 function isLoginResponse(response: LoginResponse | false): response is LoginResponse {
-  return response !== false && typeof response === 'object' && 'status' in response && 'data' in response;
+  if (response === false || typeof response !== 'object') return false;
+  
+  return 'status' in response && 
+         typeof response.status === 'number' &&
+         'data' in response && 
+         typeof response.data === 'object' &&
+         response.data !== null &&
+         'access_token' in response.data &&
+         typeof response.data.access_token === 'string';
 }
 
 // Type guard for API errors

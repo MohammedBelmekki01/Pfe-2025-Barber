@@ -21,7 +21,18 @@ const [authenticated, _setAuthenticated] = useState<boolean>(() => {
   const login = async (email: string, password: string): Promise<LoginResponse | false> => {
     try {
       await BarberApi.getCsrfToken();
-      return await BarberApi.login(email, password) as LoginResponse;
+      const response = await BarberApi.login(email, password);
+      
+      // Validate response structure
+      if (response && typeof response === 'object' && 
+          'status' in response && 'data' in response &&
+          typeof response.data === 'object' && response.data !== null &&
+          'access_token' in response.data) {
+        return response as LoginResponse;
+      }
+      
+      console.error('Invalid login response structure:', response);
+      return false;
     } catch (error) {
       console.error('Login error:', error);
       return false;
