@@ -4,11 +4,19 @@ export interface User {
   email?: string;
 }
 
+export interface LoginResponse {
+  status: number;
+  data: {
+    access_token: string;
+    message?: string;
+  };
+}
+
 export interface UserContextType {
   user: User | null;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
   logout: () => void;
-  login: (email: string, password: string) => Promise<any>;
+  login: (email: string, password: string) => Promise<LoginResponse | false>;
   authenticated: boolean;
-  setAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
+  setAuthenticated: (isAuthenticated: boolean) => void;
 }

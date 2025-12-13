@@ -12,13 +12,8 @@ import { Separator } from "@/components/ui/separator"
 import { AppSidebar } from "@/components/Barber/app-sidebar"
 
 function BarberLayout() {
-  type User = {
-    name: string
-    email: string
-  }
-
   const navigate = useNavigate()
-  const { setUser, authenticated, setAuthenticated, user, logout } = useUsercontext()
+  const { setUser, setAuthenticated, user, logout } = useUsercontext()
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
