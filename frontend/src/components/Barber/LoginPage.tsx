@@ -1,6 +1,5 @@
 
 import { useNavigate } from 'react-router-dom';
-import axiosClient from '../../api/axios';
 
 import { BARBER_DASHBOARD_ROUTE } from '@/router';
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -34,7 +33,7 @@ export default function LoginPage() {
 
   const { isSubmitting } = form.formState
   const navigate = useNavigate();
-  const { login, user, setAuthenticated , authenticated} = useUsercontext()
+  const { login, setAuthenticated } = useUsercontext()
 //   const onSubmit = async (values: z.infer<typeof formSchema>) => {
 //   try {
 //     const response = await login(values.email, values.password);

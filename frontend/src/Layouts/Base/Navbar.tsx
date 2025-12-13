@@ -2,7 +2,7 @@
 
 import * as React from "react"
 
-import { Menu, Scissors } from "lucide-react"
+import { Menu } from "lucide-react"
 
 
 import { Button } from "@/components/ui/button"
@@ -10,7 +10,6 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Link } from "react-router-dom"
 import DropDown from "@/components/UIcomponents/DropDown"
 import { ModeToggle } from "@/components/ui/mode-toggle"
-import logo from "../../assets/images/logo.jpeg"
 
 const navigation = [
   { name: "Home", to: "/" },

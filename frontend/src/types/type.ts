@@ -10,5 +10,5 @@ export interface UserContextType {
   logout: () => void;
   login: (email: string, password: string) => Promise<any>;
   authenticated: boolean;
-  setAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
+  setAuthenticated: (isAuthenticated: boolean) => void;
 }

@@ -120,8 +120,8 @@ const settingsItems = [
 interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
   user?: {
     name: string
-    email: string
-  }
+    email?: string
+  } | null
 }
 
 export function AppSidebar({ user, ...props }: AppSidebarProps) {
