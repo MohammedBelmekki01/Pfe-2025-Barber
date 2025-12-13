@@ -17,6 +17,18 @@ import {
 import { Input } from "@/components/ui/input"
 import { Loader2 } from 'lucide-react';
 import { useUsercontext } from '@/context/UserContext';
+import type { LoginResponse } from '@/types/type';
+
+// Type guard for LoginResponse
+function isLoginResponse(response: LoginResponse | false): response is LoginResponse {
+  return response !== false && typeof response === 'object' && 'status' in response && 'data' in response;
+}
+
+// Type guard for API errors
+function isApiError(error: unknown): error is { response?: { data?: { message?: string } } } {
+  return typeof error === 'object' && error !== null && 'response' in error;
+}
+
 const formSchema = z.object({
   email: z.string().min(2),
   password: z.string().min(8)
@@ -55,10 +67,10 @@ export default function LoginPage() {
 
 const onSubmit = async (values: z.infer<typeof formSchema>) => {
   try {
-    const response = await login(values.email, values.password) as { status?: number; data?: { access_token?: string; message?: string } };
+    const response = await login(values.email, values.password);
 
-    if (response && (response.status === 200 || response.status === 204)) {
-      localStorage.setItem("token", response.data?.access_token || "");
+    if (isLoginResponse(response) && (response.status === 200 || response.status === 204)) {
+      localStorage.setItem("token", response.data.access_token);
       setAuthenticated(true);
       setTimeout(() => {
         navigate(BARBER_DASHBOARD_ROUTE);
@@ -66,13 +78,17 @@ const onSubmit = async (values: z.infer<typeof formSchema>) => {
     } else {
       console.log("Login failed response:", response);
       form.setError("email", {
-      message: response?.data?.message ?? "Invalid credentials",
-    });
+        message: isLoginResponse(response) ? response.data.message ?? "Invalid credentials" : "Invalid credentials",
+      });
     }
   } catch (error: unknown) {
-    const response = (error as { response?: { data?: { message?: string } } }).response;
-    console.log(response)
-    
+    console.error("Login error:", error);
+    if (isApiError(error)) {
+      const errorMessage = error.response?.data?.message ?? "An error occurred during login";
+      form.setError("email", { message: errorMessage });
+    } else {
+      form.setError("email", { message: "An unexpected error occurred" });
+    }
   }
 };
 

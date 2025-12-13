@@ -1,13 +1,13 @@
 // UserContext.tsx
 import { BarberApi } from "@/Services/Api/Barber/barberApi";
-import type { User, UserContextType } from "@/types/type";
+import type { User, UserContextType, LoginResponse } from "@/types/type";
 import { createContext, useContext, useState } from "react";
 
 export const UserStateContext = createContext<UserContextType>({
   user: null,
   setUser: () => {},
   logout: () => {},
-  login: async () => {},
+  login: async () => false,
   authenticated : false,
   setAuthenticated : () =>  {}
 });
@@ -18,11 +18,12 @@ const [authenticated, _setAuthenticated] = useState<boolean>(() => {
   const stored = window.localStorage.getItem('AUTHENTICATED');
   return stored === 'true'; // localStorage stores strings
 });
-  const login = async (email: string, password: string): Promise<unknown> => {
+  const login = async (email: string, password: string): Promise<LoginResponse | false> => {
     try {
       await BarberApi.getCsrfToken();
-      return await BarberApi.login(email, password);
-    } catch {
+      return await BarberApi.login(email, password) as LoginResponse;
+    } catch (error) {
+      console.error('Login error:', error);
       return false;
     }
   };
