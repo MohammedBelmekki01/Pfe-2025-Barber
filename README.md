@@ -372,7 +372,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 For any questions or inquiries about this project, please reach out through:
 
 - GitHub Issues: [Create an issue](https://github.com/MohammedBelmekki01/Pfe-2025-Barber/issues)
-- Email: [Your Email Address]
+- Email: belmekki.meh@gmail.com
 
 ---
 
