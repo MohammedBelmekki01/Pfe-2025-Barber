@@ -1,7 +1,7 @@
 import {Navbar} from './Base/Navbar'
 import { Outlet, useNavigate } from 'react-router-dom'
 import {Footer} from './Base/Footer'
-import { useContext, useEffect } from 'react';
+import { useEffect } from 'react';
 import { BARBER_DASHBOARD_ROUTE } from '@/router';
 import { useUsercontext } from '@/context/UserContext';
 

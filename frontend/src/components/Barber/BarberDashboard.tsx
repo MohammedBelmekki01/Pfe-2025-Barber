@@ -1,7 +1,3 @@
-import { ModeToggle } from "../ui/mode-toggle";
-
-
-
 export default function BarberDashboard() {
 
 
