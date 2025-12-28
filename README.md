@@ -1,11 +1,11 @@
-# 💈 Barbershop Management System
+# Barbershop Management System
 
 Projet PFE développé par Mohammed Belmekki et Mohsine Lahfari , enjoy : 
 
 
-A modern, full-stack barbershop management application built with Laravel 12 and React TypeScript. This project is developed as a Final Year Project (PFE) demonstrating enterprise-level architecture and best practices.
+A modern, full-stack barbershop management application built with Laravel 12 and React TypeScript. This project is developed as a Final Year Project (PFE) demonstrating enterprise-level architecture and modern development practices.
 
-## 📋 Table of Contents
+## Table of Contents
 
 - [Overview](#overview)
 - [Features](#features)
@@ -21,39 +21,39 @@ A modern, full-stack barbershop management application built with Laravel 12 and
 - [License](#license)
 - [Contact](#contact)
 
-## 🎯 Overview
+## Overview
 
-This Barbershop Management System is a comprehensive solution designed to streamline barbershop operations, manage appointments, handle customer relationships, and provide an intuitive user experience for both staff and clients.
+This Barbershop Management System is a comprehensive solution designed to streamline barbershop operations, manage appointments, handle customer relationships, and provide an intuitive user experience for both staff and customers.
 
 **Project Type:** Final Year Project (PFE)  
 **Academic Year:** 2024-2025  
-**Status:** ✅ Production Ready
+**Status:** Production Ready
 
-## ✨ Features
+## Features
 
 ### Backend (Laravel 12)
 
-- 🔐 **Authentication System** - Secure user authentication using Laravel Sanctum
-- 👤 **User Management** - Role-based access control for administrators and staff
-- 📅 **Appointment Management** - Schedule and manage customer appointments
-- 💼 **Service Management** - Define and manage barbershop services
-- 📊 **Dashboard & Analytics** - Real-time business insights
-- 🔒 **RESTful API** - Well-structured API endpoints
-- ✅ **Input Validation** - Robust data validation and error handling
-- 🚀 **Performance Optimized** - Efficient database queries and caching
+- **Authentication System** - Secure user authentication using Laravel Sanctum
+- **User Management** - Role-based access control for administrators and staff
+- **Appointment Management** - Schedule and manage customer appointments
+- **Service Management** - Define and manage barbershop services
+- **Dashboard & Analytics** - Real-time business insights
+- **RESTful API** - Well-structured API endpoints
+- **Input Validation** - Robust data validation and error handling
+- **Performance Optimized** - Efficient database queries and caching
 
 ### Frontend (React + TypeScript)
 
-- 🎨 **Modern UI/UX** - Responsive design with Tailwind CSS
-- ⚡ **Fast Performance** - Built with Vite for optimal loading times
-- 🧩 **Component Library** - Reusable components with Radix UI
-- 📱 **Mobile Responsive** - Works seamlessly on all devices
-- 🔄 **Real-time Updates** - Dynamic content updates without page refresh
-- 🎯 **Type Safety** - Full TypeScript implementation
-- 📋 **Form Management** - React Hook Form with Zod validation
-- 🎭 **State Management** - Context API for global state
+- **Modern UI/UX** - Responsive design with Tailwind CSS
+- **Fast Performance** - Built with Vite for optimal loading times
+- **Component Library** - Reusable components with Radix UI
+- **Mobile Responsive** - Works seamlessly on all devices
+- **Real-time Updates** - Dynamic content updates without page refresh
+- **Type Safety** - Full TypeScript implementation
+- **Form Management** - React Hook Form with Zod validation
+- **State Management** - Context API for global state
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Backend
 
@@ -77,7 +77,7 @@ This Barbershop Management System is a comprehensive solution designed to stream
 - **Form Management:** React Hook Form + Zod
 - **Icons:** Lucide React
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 Pfe-2025-Barber/
@@ -137,7 +137,7 @@ Pfe-2025-Barber/
 └── README.md               # This file
 ```
 
-## 📦 Prerequisites
+## Prerequisites
 
 Before you begin, ensure you have the following installed:
 
@@ -148,7 +148,7 @@ Before you begin, ensure you have the following installed:
 - **MySQL** (8.x) or **PostgreSQL** or **SQLite**
 - **Git**
 
-## 🚀 Installation
+## Installation
 
 ### 1. Clone the Repository
 
@@ -196,7 +196,7 @@ npm install
 cp .env.example .env
 ```
 
-## ⚙️ Configuration
+## Configuration
 
 ### Backend Configuration (.env)
 
@@ -227,7 +227,7 @@ Update the API base URL in your frontend configuration:
 const API_BASE_URL = "http://localhost:8000/api";
 ```
 
-## 🏃 Running the Application
+## Running the Application
 
 ### Option 1: Run Separately
 
@@ -262,7 +262,7 @@ cd frontend
 npm run dev
 ```
 
-## 🔌 API Documentation
+## API Documentation
 
 ### Authentication Endpoints
 
@@ -292,11 +292,11 @@ curl -X GET http://localhost:8000/api/user \
   -H "Authorization: Bearer YOUR_TOKEN_HERE"
 ```
 
-## 📸 Screenshots
+## Screenshots
 
 <!-- Add your application screenshots here -->
 
-## 🧪 Testing
+## Testing
 
 ### Backend Tests
 
@@ -312,7 +312,7 @@ cd frontend
 npm run test
 ```
 
-## 🏗️ Building for Production
+## Building for Production
 
 ### Backend
 
@@ -332,12 +332,12 @@ npm run build
 # Output will be in the dist/ directory
 ```
 
-## 📚 Version History
+## Version History
 
 - **v2/** - Current active version (main development)
 - **v1/** - Previous iteration (archived)
 
-## 🤝 Contributing
+## Contributing
 
 This is a final year project (PFE), but suggestions and feedback are welcome!
 
@@ -347,18 +347,18 @@ This is a final year project (PFE), but suggestions and feedback are welcome!
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📝 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 👨‍💻 Author
+## Author
 
 **Mohammed Belmekki**
 
 - GitHub: [@MohammedBelmekki01](https://github.com/MohammedBelmekki01)
 - Repository: [Pfe-2025-Barber](https://github.com/MohammedBelmekki01/Pfe-2025-Barber)
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Laravel Framework
 - React Community
@@ -367,7 +367,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Radix UI
 - All open-source contributors
 
-## 📞 Contact
+## Contact
 
 For any questions or inquiries about this project, please reach out through:
 
@@ -378,4 +378,4 @@ For any questions or inquiries about this project, please reach out through:
 
 **Note:** This project is developed as a Final Year Project (PFE) for academic purposes.
 
-**⭐ If you find this project useful, please consider giving it a star!**
+**If you find this project useful, please consider giving it a star!**
