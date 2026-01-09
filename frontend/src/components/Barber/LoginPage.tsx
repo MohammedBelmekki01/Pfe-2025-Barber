@@ -1,7 +1,4 @@
-
 import { useNavigate } from 'react-router-dom';
-import axiosClient from '../../api/axios';
-
 import { BARBER_DASHBOARD_ROUTE } from '@/router';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -18,6 +15,26 @@ import {
 import { Input } from "@/components/ui/input"
 import { Loader2 } from 'lucide-react';
 import { useUsercontext } from '@/context/UserContext';
+import type { LoginResponse } from '@/types/type';
+
+// Type guard for LoginResponse with runtime validation
+function isLoginResponse(response: LoginResponse | false): response is LoginResponse {
+  if (response === false || typeof response !== 'object') return false;
+  
+  return 'status' in response && 
+         typeof response.status === 'number' &&
+         'data' in response && 
+         typeof response.data === 'object' &&
+         response.data !== null &&
+         'access_token' in response.data &&
+         typeof response.data.access_token === 'string';
+}
+
+// Type guard for API errors
+function isApiError(error: unknown): error is { response?: { data?: { message?: string } } } {
+  return typeof error === 'object' && error !== null && 'response' in error;
+}
+
 const formSchema = z.object({
   email: z.string().min(2),
   password: z.string().min(8)
@@ -34,7 +51,7 @@ export default function LoginPage() {
 
   const { isSubmitting } = form.formState
   const navigate = useNavigate();
-  const { login, user, setAuthenticated , authenticated} = useUsercontext()
+  const { login, setAuthenticated } = useUsercontext()
 //   const onSubmit = async (values: z.infer<typeof formSchema>) => {
 //   try {
 //     const response = await login(values.email, values.password);
@@ -58,7 +75,7 @@ const onSubmit = async (values: z.infer<typeof formSchema>) => {
   try {
     const response = await login(values.email, values.password);
 
-    if (response && (response.status === 200 || response.status === 204)) {
+    if (isLoginResponse(response) && (response.status === 200 || response.status === 204)) {
       localStorage.setItem("token", response.data.access_token);
       setAuthenticated(true);
       setTimeout(() => {
@@ -67,12 +84,17 @@ const onSubmit = async (values: z.infer<typeof formSchema>) => {
     } else {
       console.log("Login failed response:", response);
       form.setError("email", {
-      message: response?.data?.message ?? "Invalid credentials",
-    });
+        message: isLoginResponse(response) ? response.data.message ?? "Invalid credentials" : "Invalid credentials",
+      });
     }
-  } catch ({ response }: any) {
-    console.log(response)
-    
+  } catch (error: unknown) {
+    console.error("Login error:", error);
+    if (isApiError(error)) {
+      const errorMessage = error.response?.data?.message ?? "An error occurred during login";
+      form.setError("email", { message: errorMessage });
+    } else {
+      form.setError("email", { message: "An unexpected error occurred" });
+    }
   }
 };
 
