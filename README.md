@@ -2,6 +2,9 @@
 
 Projet PFE développé par Mohammed Belmekki et Mohsine Lahfari , enjoy : 
 
+figma design : https://www.figma.com/design/nMkvwYWNhVKUZn5i6u4Awx/DIGILIK--BarberShop--ui-ux?node-id=0-1&t=xK7tEyYkRfvv5iGE-1
+
+
 
 A modern, full-stack barbershop management application built with Laravel 12 and React TypeScript. This project is developed as a Final Year Project (PFE) demonstrating enterprise-level architecture and modern development practices.
 
