@@ -377,7 +377,16 @@ For any questions or inquiries about this project, please reach out through:
 - GitHub Issues: [Create an issue](https://github.com/MohammedBelmekki01/Pfe-2025-Barber/issues)
 - Email: belmekki.meh@gmail.com
 
----
+
+et voila le demo vedio :
+
+
+Uploading barber shop projet pfe.mp4…
+
+
+
+
+
 
 **Note:** This project is developed as a Final Year Project (PFE) for academic purposes.
 
