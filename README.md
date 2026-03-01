@@ -381,7 +381,10 @@ For any questions or inquiries about this project, please reach out through:
 et voila le demo vedio :
 
 
-Uploading barber shop projet pfe.mp4…
+
+
+
+Uploading barber shop projet pfe.mp4
 
 
 
